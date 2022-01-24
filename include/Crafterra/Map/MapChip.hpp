@@ -29,30 +29,30 @@
 namespace Crafterra {
 
 	// バイオームの種類
-	enum MapChipTypeBiome : BiomeType {
-		map_chip_type_biome_empty     // 無し
-		, map_chip_type_biome_sea        // 海
-		, map_chip_type_biome_lake       // 湖
-		, map_chip_type_biome_mountain // 山
-		, map_chip_type_biome_desert    // 砂漠
-		, map_chip_type_biome_forest    // 森林
-		, map_chip_type_biome_rock      // 岩山
-		, map_chip_type_biome_hill       // 丘
-		, map_chip_type_biome_savannah // サバンナ
-		, map_chip_type_biome_grass     // 草原
-		, map_chip_type_biome_wall     // 草原
-		, map_chip_type_biome_way     // 草原
-		, map_chip_type_biome_room     // 草原
-		, map_chip_type_biome_default   // 通常の地面
-		, map_chip_type_biome_size   // バイオームの数
+	enum class MapChipTypeBiome : BiomeType {
+		empty     // 無し
+		, sea        // 海
+		, lake       // 湖
+		, mountain // 山
+		, desert    // 砂漠
+		, forest    // 森林
+		, rock      // 岩山
+		, hill       // 丘
+		, savannah // サバンナ
+		, grass     // 草原
+		, wall     // 草原
+		, way     // 草原
+		, room     // 草原
+		, normal   // 通常の地面
+		, size   // バイオームの数
 	};
 //#if (__cplusplus < 202002L)
-//	::Crafterra::DataType::Array<::Crafterra::DataType::String, map_chip_type_biome_size>
+//	::Crafterra::DataType::Array<::Crafterra::DataType::String, MapChipTypeBiome::size>
 //		MapChipTypeBiomeString{ {
 //				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
 //	} };
 //#else
-	::Crafterra::DataType::Array<::Crafterra::DataType::String, map_chip_type_biome_size>
+	::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
 		MapChipTypeBiomeString{ {
 				"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
 	} };
@@ -73,8 +73,8 @@ namespace Crafterra {
 		// ---------- 元の座標系 ----------
 
 		::Crafterra::Color::Color3 rgb{}; // マップチップの色
-		BiomeType biome{ map_chip_type_biome_empty }; // バイオーム
-		BlockType block{}; // ブロック
+		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
+		BlockType block[128]{}; // ブロック
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
 		ElevationUint elevation{}; // 元の標高値
@@ -83,19 +83,19 @@ namespace Crafterra {
 
 		// ---------- 描画座標系 ----------
 
-		MapChipTypeHomogeneousConnection cliff_top{ map_chip_type_homogeneous_connection_size }; // 崖上タイルの種類
-		MapChipTypeHomogeneousConnection cliff{ map_chip_type_homogeneous_connection_size }; // 崖タイルの種類
+		CliffConnection cliff_top{ CliffConnection::size }; // 崖上タイルの種類
+		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
 		bool is_cliff = false;
 		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
-		BiomeType draw_biome{ map_chip_type_biome_empty }; // 描画用バイオーム
+		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
 		AutoTile auto_tile{}; // 描画用オートタイル
 		int draw_chip = -1;
 
 	public:
 
 		void clearDrawValue() {
-			cliff_top = map_chip_type_homogeneous_connection_size;
-			cliff = map_chip_type_homogeneous_connection_size;
+			cliff_top = CliffConnection::size;
+			cliff = CliffConnection::size;
 			is_cliff = false;
 
 			// elevation = {}; // 元の標高値
@@ -110,33 +110,33 @@ namespace Crafterra {
 			this->draw_chip = draw_chip_;
 		}
 		void setDrawChip() {
-			if (block == 0) {
-				if (biome == 0) {
+			//if (block == 0) {
+				if (biome == MapChipTypeBiome::empty) {
 					draw_chip = -1;
 				}
 				switch (biome)
 				{
-				case map_chip_type_biome_empty:
+				case MapChipTypeBiome::empty:
 					draw_chip = -1;
 					break;
-				case map_chip_type_biome_default:
+				case MapChipTypeBiome::normal:
 					draw_chip = 0;
 					break;
-				case map_chip_type_biome_forest:
+				case MapChipTypeBiome::forest:
 					draw_chip = 1;
 					break;
-				case map_chip_type_biome_rock:
+				case MapChipTypeBiome::rock:
 					draw_chip = 7;
 					break;
-				case map_chip_type_biome_mountain:
+				case MapChipTypeBiome::mountain:
 					draw_chip = 5;
 					break;
-				case map_chip_type_biome_desert:
+				case MapChipTypeBiome::desert:
 					draw_chip = 6;
 					break;
 				}
 
-			}
+			//}
 		}
 		int getDrawChip() const {
 			return this->draw_chip;
@@ -148,23 +148,23 @@ namespace Crafterra {
 		void setColor(const ::Crafterra::Color::Color3& rgb_) {
 			this->rgb = rgb_;
 		}
-		BiomeType getBiome() const {
+		MapChipTypeBiome getBiome() const {
 			return this->biome;
 		}
-		void setBiome(const BiomeType& biome_) {
+		void setBiome(const MapChipTypeBiome& biome_) {
 			this->biome = biome_;
 		}
-		BiomeType getDrawBiome() const {
+		MapChipTypeBiome getDrawBiome() const {
 			return this->draw_biome;
 		}
-		void setDrawBiome(const BiomeType& draw_biome_) {
+		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->draw_biome = draw_biome_;
 		}
-		BlockType getBlock() const {
-			return this->block;
+		BlockType getBlock(const IndexUint index_) const {
+			return this->block[index_];
 		}
-		void setBlock(const BlockType& block_) {
-			this->block = block_;
+		void setBlock(const BlockType& block_, const IndexUint index_) {
+			this->block[index_] = block_;
 		}
 		ElevationUint getElevation() const {
 			return this->elevation;
@@ -200,16 +200,16 @@ namespace Crafterra {
 
 
 		// 暫定
-		MapChipTypeHomogeneousConnection getCliffTop() const {
+		CliffConnection getCliffTop() const {
 			return this->cliff_top;
 		}
-		void setCliffTop(const MapChipTypeHomogeneousConnection& cliff_top_) {
+		void setCliffTop(const CliffConnection& cliff_top_) {
 			this->cliff_top = cliff_top_;
 		}
-		MapChipTypeHomogeneousConnection getCliff() const {
+		CliffConnection getCliff() const {
 			return this->cliff;
 		}
-		void setCliff(const MapChipTypeHomogeneousConnection& cliff_) {
+		void setCliff(const CliffConnection& cliff_) {
 			this->cliff = cliff_;
 		}
 		// 崖であるかどうか？

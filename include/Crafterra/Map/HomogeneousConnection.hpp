@@ -29,38 +29,38 @@
 namespace Crafterra {
 
 	// 同じ性質のブロックとの接続タイプ ( 崖 )
-	MapChipTypeHomogeneousConnection getHomogeneousConnectionCliff(
+	CliffConnection getHomogeneousConnectionCliff(
 		const bool left_
 		, const bool right_
 		, const bool down_
 	) {
 		if (down_) {
 			if (left_) {
-				if (right_) return map_chip_type_homogeneous_connection_left_right_down_cliff;
-				else        return map_chip_type_homogeneous_connection_left_down_cliff;
+				if (right_) return CliffConnection::left_right_down_cliff;
+				else        return CliffConnection::left_down_cliff;
 			}
 			else {
-				if (right_) return map_chip_type_homogeneous_connection_right_down_cliff;
-				else        return map_chip_type_homogeneous_connection_down_cliff;
+				if (right_) return CliffConnection::right_down_cliff;
+				else        return CliffConnection::down_cliff;
 			}
 		}
 		else {
 			if (left_) {
-				if (right_) return map_chip_type_homogeneous_connection_left_right_up_cliff;
-				else        return map_chip_type_homogeneous_connection_left_up_cliff;
+				if (right_) return CliffConnection::left_right_up_cliff;
+				else        return CliffConnection::left_up_cliff;
 			}
 			else {
-				if (right_) return map_chip_type_homogeneous_connection_right_up_cliff;
-				else        return map_chip_type_homogeneous_connection_up_cliff;
+				if (right_) return CliffConnection::right_up_cliff;
+				else        return CliffConnection::up_cliff;
 			}
 		}
 	}
 
-	Uint32 getAutoTileIndex(const AutoTileTypeHomogeneousConnectionUint ahc_, const Uint32 animation_number_, const Uint32 animation_max_number_) {
+	Uint32 getAutoTileIndex(const AutoTileConnection ahc_, const Uint32 animation_number_, const Uint32 animation_max_number_) {
 		const Uint32 an2 = animation_number_ * 2; // アニメーション数の 2 倍
 		const Uint32 amn2 = animation_max_number_ * 2; // 最大アニメーション数の 2 倍
 		const Uint32 ahc = Uint32(ahc_);
-		const Uint32 ahcp2 = ahc_ / 2;
+		const Uint32 ahcp2 = Uint32(ahc_) / 2;
 		const Uint32 right = ((ahc % 2 == 0) ? 0 : 1);
 		return amn2 * ahcp2 + an2 + right;
 	}
@@ -95,57 +95,57 @@ namespace Crafterra {
 		// 左上
 		if (up_) {
 			if (left_) {
-				if (upper_left_) at.auto_tile_upper_left = auto_tile_type_homogeneous_connection_all_upper_left;
-				else              at.auto_tile_upper_left = auto_tile_type_homogeneous_connection_cross_upper_left;
+				if (upper_left_) at.auto_tile_upper_left = AutoTileConnection::all_upper_left;
+				else              at.auto_tile_upper_left = AutoTileConnection::cross_upper_left;
 			}
-			else                  at.auto_tile_upper_left = auto_tile_type_homogeneous_connection_up_and_down_upper_left;
+			else                  at.auto_tile_upper_left = AutoTileConnection::up_and_down_upper_left;
 		}
 		else {
-			if (left_)             at.auto_tile_upper_left = auto_tile_type_homogeneous_connection_left_and_right_upper_left;
-			else                  at.auto_tile_upper_left = auto_tile_type_homogeneous_connection_nothing_upper_left;
+			if (left_)             at.auto_tile_upper_left = AutoTileConnection::left_and_right_upper_left;
+			else                  at.auto_tile_upper_left = AutoTileConnection::nothing_upper_left;
 		}
 		// 右上
 		if (up_) {
 			if (right_) {
-				if (upper_right_) at.auto_tile_upper_right = auto_tile_type_homogeneous_connection_all_upper_right;
-				else              at.auto_tile_upper_right = auto_tile_type_homogeneous_connection_cross_upper_right;
+				if (upper_right_) at.auto_tile_upper_right = AutoTileConnection::all_upper_right;
+				else              at.auto_tile_upper_right = AutoTileConnection::cross_upper_right;
 			}
-			else                  at.auto_tile_upper_right = auto_tile_type_homogeneous_connection_up_and_down_upper_right;
+			else                  at.auto_tile_upper_right = AutoTileConnection::up_and_down_upper_right;
 		}
 		else {
-			if (right_)             at.auto_tile_upper_right = auto_tile_type_homogeneous_connection_left_and_right_upper_right;
-			else                  at.auto_tile_upper_right = auto_tile_type_homogeneous_connection_nothing_upper_right;
+			if (right_)             at.auto_tile_upper_right = AutoTileConnection::left_and_right_upper_right;
+			else                  at.auto_tile_upper_right = AutoTileConnection::nothing_upper_right;
 		}
 		// 左下
 		if (down_) {
 			if (left_) {
-				if (lower_left_) at.auto_tile_lower_left = auto_tile_type_homogeneous_connection_all_lower_left;
-				else              at.auto_tile_lower_left = auto_tile_type_homogeneous_connection_cross_lower_left;
+				if (lower_left_) at.auto_tile_lower_left = AutoTileConnection::all_lower_left;
+				else              at.auto_tile_lower_left = AutoTileConnection::cross_lower_left;
 			}
-			else                  at.auto_tile_lower_left = auto_tile_type_homogeneous_connection_up_and_down_lower_left;
+			else                  at.auto_tile_lower_left = AutoTileConnection::up_and_down_lower_left;
 		}
 		else {
-			if (left_)             at.auto_tile_lower_left = auto_tile_type_homogeneous_connection_left_and_right_lower_left;
-			else                  at.auto_tile_lower_left = auto_tile_type_homogeneous_connection_nothing_lower_left;
+			if (left_)             at.auto_tile_lower_left = AutoTileConnection::left_and_right_lower_left;
+			else                  at.auto_tile_lower_left = AutoTileConnection::nothing_lower_left;
 		}
 		// 右上
 		if (down_) {
 			if (right_) {
-				if (lower_right_) at.auto_tile_lower_right = auto_tile_type_homogeneous_connection_all_lower_right;
-				else              at.auto_tile_lower_right = auto_tile_type_homogeneous_connection_cross_lower_right;
+				if (lower_right_) at.auto_tile_lower_right = AutoTileConnection::all_lower_right;
+				else              at.auto_tile_lower_right = AutoTileConnection::cross_lower_right;
 			}
-			else                  at.auto_tile_lower_right = auto_tile_type_homogeneous_connection_up_and_down_lower_right;
+			else                  at.auto_tile_lower_right = AutoTileConnection::up_and_down_lower_right;
 		}
 		else {
-			if (right_)             at.auto_tile_lower_right = auto_tile_type_homogeneous_connection_left_and_right_lower_right;
-			else                  at.auto_tile_lower_right = auto_tile_type_homogeneous_connection_nothing_lower_right;
+			if (right_)             at.auto_tile_lower_right = AutoTileConnection::left_and_right_lower_right;
+			else                  at.auto_tile_lower_right = AutoTileConnection::nothing_lower_right;
 		}
 
 		return at;
 	}
 
 	// 同じ性質のブロックとの接続タイプ ( 通常 )
-	MapChipTypeHomogeneousConnection getHomogeneousConnection(
+	CliffConnection getHomogeneousConnection(
 		const bool up_
 		, const bool left_
 		, const bool right_
@@ -155,49 +155,49 @@ namespace Crafterra {
 		, const bool lower_left_
 		, const bool lower_right_
 	) {
-		MapChipTypeHomogeneousConnection mcthc = map_chip_type_homogeneous_connection_all;
+		CliffConnection mcthc = CliffConnection::all;
 
 		if (up_) {
 			if (left_) {
 				if (right_) {
-					if (down_) return   map_chip_type_homogeneous_connection_all;
-					else        mcthc = map_chip_type_homogeneous_connection_up_left_right_0;
+					if (down_) return   CliffConnection::all;
+					else        mcthc = CliffConnection::up_left_right_0;
 				}
 				else {
-					if (down_) mcthc = map_chip_type_homogeneous_connection_up_left_down_0;
-					else        mcthc = map_chip_type_homogeneous_connection_up_left_0;
+					if (down_) mcthc = CliffConnection::up_left_down_0;
+					else        mcthc = CliffConnection::up_left_0;
 				}
 			}
 			else {
 				if (right_) {
-					if (down_) mcthc = map_chip_type_homogeneous_connection_up_right_down_0;
-					else        mcthc = map_chip_type_homogeneous_connection_up_right_0;
+					if (down_) mcthc = CliffConnection::up_right_down_0;
+					else        mcthc = CliffConnection::up_right_0;
 				}
 				else {
-					if (down_) return   map_chip_type_homogeneous_connection_up_down;
-					else        return   map_chip_type_homogeneous_connection_up;
+					if (down_) return   CliffConnection::up_down;
+					else        return   CliffConnection::up;
 				}
 			}
 		}
 		else {
 			if (left_) {
 				if (right_) {
-					if (down_) mcthc = map_chip_type_homogeneous_connection_left_right_down_0;
-					else        return   map_chip_type_homogeneous_connection_left_right;
+					if (down_) mcthc = CliffConnection::left_right_down_0;
+					else        return   CliffConnection::left_right;
 				}
 				else {
-					if (down_) mcthc = map_chip_type_homogeneous_connection_left_down_0;
-					else        return   map_chip_type_homogeneous_connection_left;
+					if (down_) mcthc = CliffConnection::left_down_0;
+					else        return   CliffConnection::left;
 				}
 			}
 			else {
 				if (right_) {
-					if (down_) mcthc = map_chip_type_homogeneous_connection_right_down_0;
-					else        return   map_chip_type_homogeneous_connection_right;
+					if (down_) mcthc = CliffConnection::right_down_0;
+					else        return   CliffConnection::right;
 				}
 				else {
-					if (down_) return   map_chip_type_homogeneous_connection_down;
-					else        return   map_chip_type_homogeneous_connection_nothing;
+					if (down_) return   CliffConnection::down;
+					else        return   CliffConnection::nothing;
 				}
 			}
 		}
@@ -206,7 +206,7 @@ namespace Crafterra {
 
 
 	template<typename Type_>
-	MapChipTypeHomogeneousConnection getHomogeneousConnectionValueElevation3(
+	CliffConnection getHomogeneousConnectionValueElevation3(
 		const Type_ center_
 		, const Type_ up_
 		, const Type_ left_
@@ -230,7 +230,7 @@ namespace Crafterra {
 	}
 
 	template<typename Type_>
-	MapChipTypeHomogeneousConnection getHomogeneousConnectionCliffValueElevation3(
+	CliffConnection getHomogeneousConnectionCliffValueElevation3(
 		const Type_ center_
 		, const Type_ left_
 		, const Type_ right_
@@ -244,7 +244,7 @@ namespace Crafterra {
 	}
 
 	template<typename Type_>
-	MapChipTypeHomogeneousConnection getHomogeneousConnectionValue(
+	CliffConnection getHomogeneousConnectionValue(
 		const Type_ center_
 		, const Type_ up_
 		, const Type_ left_
@@ -268,8 +268,8 @@ namespace Crafterra {
 	}
 
 	template<typename Matrix_, typename Type_>
-	MapChipTypeHomogeneousConnection getHomogeneousConnectionArray(
-		const Matrix_ matrix_
+	CliffConnection getHomogeneousConnectionArray(
+		const Matrix_& matrix_
 		, const Type_ x_
 		, const Type_ y_
 	) {

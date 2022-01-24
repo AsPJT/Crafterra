@@ -24,7 +24,7 @@
 #include <memory>
 
 #include <chrono>
-//
+
 namespace Crafterra {
 
 	namespace System {
@@ -39,8 +39,8 @@ namespace Crafterra {
 
 			resource_.getMusic().playLoop();
 
-			std::random_device seed_gen;
-			std::mt19937 engine(seed_gen());
+			::std::random_device seed_gen;
+			::std::mt19937 engine(seed_gen());
 			const Uint32 temperature_seed = engine();
 			const Uint32 amount_of_rainfall_seed = engine();
 			const Uint32 elevation_seed = engine();
@@ -51,10 +51,10 @@ namespace Crafterra {
 			using FieldMapMatrix = ::Crafterra::DataType::Matrix<MapChip, init_field_map_width, init_field_map_height>; // 世界
 			using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
-			FieldMapMatrixPtr map_chip_type_biome_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix); // フィールドマップのポインタ
-			if (!map_chip_type_biome_map_matrix_ptr) return; // メモリ確保できなかった時は return
+			FieldMapMatrixPtr field_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix); // フィールドマップのポインタ
+			if (!field_map_matrix_ptr) return; // メモリ確保できなかった時は return
 
-			FieldMapMatrix& field_map_matrix = (*map_chip_type_biome_map_matrix_ptr); // フィールドマップ
+			FieldMapMatrix& field_map_matrix = (*field_map_matrix_ptr); // フィールドマップ
 
 
 
@@ -75,8 +75,8 @@ namespace Crafterra {
 
 			::AsLib2::InputKey key;
 
-			OperationActorStateInFieldMap operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
-			cs.setMapChipSize(6.f);
+			OperationActorStateInFieldMap operation_actor_state_in_field = OperationActorStateInFieldMap::airship;
+			cs.setMapChipSize(10.f);
 			//OperationActorStateInFieldMap operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
 			//cs.setMapChipSize(64.f);
 
@@ -112,13 +112,13 @@ namespace Crafterra {
 
 					//----------------------------------------------------------------------------------------------------
 					// 🚶 人間 ( 陸を歩行する者 ) 🚶 
-				case ::Crafterra::Enum::operation_actor_state_in_field_map_walking:
+				case ::Crafterra::Enum::OperationActorStateInFieldMap::walking:
 					key_displacement = 0.2f;
 					break;
 
 					//----------------------------------------------------------------------------------------------------
 					// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
-				case ::Crafterra::Enum::operation_actor_state_in_field_map_airship:
+				case ::Crafterra::Enum::OperationActorStateInFieldMap::airship:
 					key_displacement = 2.f;
 					break;
 				}
@@ -162,12 +162,12 @@ namespace Crafterra {
 							cs.expandMapChipSize(1.005f); // 画面拡大
 						}
 						if (key.isDown(::AsLib2::Key::key_1)) {
-							cs.setMapChipSize(6.f);
-							operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_airship;
+							cs.setMapChipSize(10.f);
+							operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::airship;
 						}
 						if (key.isDown(::AsLib2::Key::key_2)) {
 							cs.setMapChipSize(64.f);
-							operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
+							operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::walking;
 						}
 					}
 				}
@@ -227,7 +227,7 @@ namespace Crafterra {
 							bool is_map_chip_type_homogeneous_connection_all = false;
 							bool is_auto_tile_desert_alpha = false;
 
-							if (field_map.getDrawBiome() == map_chip_type_biome_desert) {
+							if (field_map.getDrawBiome() == MapChipTypeBiome::desert) {
 								AutoTileIndex auto_tile_index(field_map.getAutoTile(), 0, 2);
 								if (resource_.getMapChip().getIsSeaAlpha(auto_tile_index)) is_auto_tile_desert_alpha = true;
 							}
@@ -237,13 +237,13 @@ namespace Crafterra {
 
 							// 崖を先に描画
 							if (field_map.getIsCliff()) {
-								if (resource_.getMapChip().getMapChipCliffTopAlpha(field_map.getCliff()) == 0) {
+								if (resource_.getMapChip().getMapChipCliffTopAlpha(IndexUint(field_map.getCliff())) == 0) {
 									::AsLib2::Image(resource_.getMapChip().getMapChip(0)).draw(map_chip_rect);
 								}
-								::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(field_map.getCliff())).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(IndexUint(field_map.getCliff()))).draw(map_chip_rect);
 							}
 							// 海を描画
-							else if (field_map.getDrawBiome() == map_chip_type_biome_sea) {
+							else if (field_map.getDrawBiome() == MapChipTypeBiome::sea) {
 
 								AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);
 
@@ -257,19 +257,19 @@ namespace Crafterra {
 									resource_.getMapChip().getSea(auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 							}
 							// 崖上を描画
-							else if (field_map.getCliffTop() != map_chip_type_homogeneous_connection_size) {
+							else if (field_map.getCliffTop() != CliffConnection::size) {
 								if (is_auto_tile_desert_alpha) {
 									is_map_chip_type_homogeneous_connection_all = true;
-									if (resource_.getMapChip().getMapChipCliffTopAlpha(field_map.getCliffTop()) == 0) {
+									if (resource_.getMapChip().getMapChipCliffTopAlpha(IndexUint(field_map.getCliffTop())) == 0) {
 										::AsLib2::Image(resource_.getMapChip().getMapChip(0)).draw(map_chip_rect);
 									}
 
-									::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(field_map.getCliffTop())).draw(map_chip_rect);
+									::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(IndexUint(field_map.getCliffTop()))).draw(map_chip_rect);
 								}
 							}
 							// ------------------------------------------------------------------------------------------------------------------------------------
 							if (field_map.getIsCliff()) return;
-							if (field_map.getDrawBiome() == map_chip_type_biome_desert) {
+							if (field_map.getDrawBiome() == MapChipTypeBiome::desert) {
 
 								AutoTileIndex auto_tile_index(field_map.getAutoTile(), 0, 2);
 
@@ -304,7 +304,7 @@ namespace Crafterra {
 
 					//----------------------------------------------------------------------------------------------------
 					// 🚶 人間 ( 陸を歩行する者 ) 🚶 
-				case ::Crafterra::Enum::operation_actor_state_in_field_map_walking:
+				case ::Crafterra::Enum::OperationActorStateInFieldMap::walking:
 #ifdef __DXLIB
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
 						cs.map_chip_size.getWidthHalf() / 16, 0.0,
@@ -314,22 +314,22 @@ namespace Crafterra {
 
 					//----------------------------------------------------------------------------------------------------
 					// 🚢 船 ( 海上に浮かんでいる者 ) 🚢 
-				case ::Crafterra::Enum::operation_actor_state_in_field_map_ship:
+				case ::Crafterra::Enum::OperationActorStateInFieldMap::ship:
 					break;
 
 					//----------------------------------------------------------------------------------------------------
 					// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
-				case ::Crafterra::Enum::operation_actor_state_in_field_map_airship:
+				case ::Crafterra::Enum::OperationActorStateInFieldMap::airship:
 					// 飛空艇の影を描画
 #ifdef __DXLIB
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-					::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32),
-						int(cs.map_chip_size.getWidthHalf() * 8), int(cs.map_chip_size.getHeightHalf() * 4), 0x00111111, TRUE);
+					::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 16),
+						int(cs.map_chip_size.getWidthHalf() * 6), int(cs.map_chip_size.getHeightHalf() * 3), 0x00111111, TRUE);
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 					// 飛空艇を描画
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
-						cs.map_chip_size.getWidthHalf(), 0.0,
+						cs.map_chip_size.getWidthHalf() * 2 / 3, 0.0,
 						resource_.getCharacterChip().getCharacterChip(0, dir), TRUE, FALSE);
 #endif // __DXLIB
 					break;
@@ -352,7 +352,7 @@ namespace Crafterra {
 					//#endif
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-					, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome()].c_str()
+					, MapChipTypeBiomeString[IndexUint(field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
 					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
 					, resource_.getMapChip().getDesert(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
 					//, field_map_matrix[100][100].getCliffTop()

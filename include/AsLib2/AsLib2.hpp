@@ -20,7 +20,7 @@
 #define INCLUDED_ASLIB2_ASLIB2_ASLIB2_HPP
 
 //##########################################################################################
-//#ifdef CRAFTERRA_USE_DXLIB
+
 #include <AsLib2/ThirdParty/Framework/DataType.hpp>
 // 入力系
 #include <AsLib2/ThirdParty/Framework/Keyboard.hpp>
@@ -29,12 +29,9 @@
 #include <AsLib2/ThirdParty/Framework/MapChip.hpp>
 #include <AsLib2/ThirdParty/Framework/CharacterChip.hpp>
 
-// DxLib 系の中でも 1 番遅く include する
+// フレームワーク中でも 1 番遅く include する
 #include <AsLib2/ThirdParty/Framework/Framework.hpp>
 
-//#else
-
-//#endif // CRAFTERRA_USE_DXLIB
 //##########################################################################################
 
 #include <AsLib2/Macro/ThirdParty.hpp>

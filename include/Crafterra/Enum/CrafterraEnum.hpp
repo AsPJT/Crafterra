@@ -26,105 +26,105 @@ namespace Crafterra {
 
 		// アクタの向き
 		enum class ActorDirection : ::Crafterra::DataType::ActorDirectionUint {
-			empty
-			, down
-			, left
-			, right
-			, up
-			, lower_left
-			, lower_right
-			, upper_left
-			, upper_right
+			  empty       // 無し
+			, down        // 下
+			, left         // 左
+			, right        // 右
+			, up           // 上
+			, lower_left  // 左下
+			, lower_right // 右下
+			, upper_left  // 左上
+			, upper_right // 右上
 			, size
 		};
 		// フィールドマップにおける操作アクタの状態
-		enum OperationActorStateInFieldMap : ::Crafterra::DataType::OperationActorStateInFieldMapUint {
-			operation_actor_state_in_field_map_empty
-			, operation_actor_state_in_field_map_walking // 陸路の歩行
-			, operation_actor_state_in_field_map_ratite_bird // 飛べない鳥 ( 地上の高速移動 )
-			, operation_actor_state_in_field_map_ship // 船
-			, operation_actor_state_in_field_map_airship // 飛空艇
-			, operation_actor_state_in_field_map_size
+		enum class OperationActorStateInFieldMap : ::Crafterra::DataType::OperationActorStateInFieldMapUint {
+			  empty
+			, walking     // 陸路の歩行
+			, ratite_bird // 飛べない鳥 ( 地上の高速移動 )
+			, ship        // 船
+			, airship     // 飛空艇
+			, size
 		};
 
 
 		// 同じ性質のブロックとの接続タイプ ( 通常 + 崖 )
-		enum MapChipTypeHomogeneousConnection : MapChipTypeHomogeneousConnectionUint {
-			map_chip_type_homogeneous_connection_nothing
-			, map_chip_type_homogeneous_connection_all
-			, map_chip_type_homogeneous_connection_up_down
-			, map_chip_type_homogeneous_connection_left_right
-			, map_chip_type_homogeneous_connection_up
-			, map_chip_type_homogeneous_connection_left
-			, map_chip_type_homogeneous_connection_right
-			, map_chip_type_homogeneous_connection_down
-			, map_chip_type_homogeneous_connection_up_left_0
-			, map_chip_type_homogeneous_connection_up_right_0
-			, map_chip_type_homogeneous_connection_left_down_0
-			, map_chip_type_homogeneous_connection_right_down_0
-			, map_chip_type_homogeneous_connection_up_left_1
-			, map_chip_type_homogeneous_connection_up_right_1
-			, map_chip_type_homogeneous_connection_left_down_1
-			, map_chip_type_homogeneous_connection_right_down_1
-			, map_chip_type_homogeneous_connection_up_left_right_0
-			, map_chip_type_homogeneous_connection_up_left_down_0
-			, map_chip_type_homogeneous_connection_up_right_down_0
-			, map_chip_type_homogeneous_connection_left_right_down_0
-			, map_chip_type_homogeneous_connection_up_left_right_1
-			, map_chip_type_homogeneous_connection_up_left_down_1
-			, map_chip_type_homogeneous_connection_up_right_down_1
-			, map_chip_type_homogeneous_connection_left_right_down_1
-			, map_chip_type_homogeneous_connection_up_left_right_2
-			, map_chip_type_homogeneous_connection_up_left_down_2
-			, map_chip_type_homogeneous_connection_up_right_down_2
-			, map_chip_type_homogeneous_connection_left_right_down_2
-			, map_chip_type_homogeneous_connection_up_left_right_3
-			, map_chip_type_homogeneous_connection_up_left_down_3
-			, map_chip_type_homogeneous_connection_up_right_down_3
-			, map_chip_type_homogeneous_connection_left_right_down_3
-			, map_chip_type_homogeneous_connection_right_down_cliff
-			, map_chip_type_homogeneous_connection_left_right_down_cliff
-			, map_chip_type_homogeneous_connection_left_down_cliff
-			, map_chip_type_homogeneous_connection_down_cliff
-			, map_chip_type_homogeneous_connection_right_up_cliff
-			, map_chip_type_homogeneous_connection_left_right_up_cliff
-			, map_chip_type_homogeneous_connection_left_up_cliff
-			, map_chip_type_homogeneous_connection_up_cliff
-			, map_chip_type_homogeneous_connection_size
+		enum class CliffConnection : CliffConnectionUint {
+			nothing
+			, all
+			, up_down
+			, left_right
+			, up
+			, left
+			, right
+			, down
+			, up_left_0
+			, up_right_0
+			, left_down_0
+			, right_down_0
+			, up_left_1
+			, up_right_1
+			, left_down_1
+			, right_down_1
+			, up_left_right_0
+			, up_left_down_0
+			, up_right_down_0
+			, left_right_down_0
+			, up_left_right_1
+			, up_left_down_1
+			, up_right_down_1
+			, left_right_down_1
+			, up_left_right_2
+			, up_left_down_2
+			, up_right_down_2
+			, left_right_down_2
+			, up_left_right_3
+			, up_left_down_3
+			, up_right_down_3
+			, left_right_down_3
+			, right_down_cliff
+			, left_right_down_cliff
+			, left_down_cliff
+			, down_cliff
+			, right_up_cliff
+			, left_right_up_cliff
+			, left_up_cliff
+			, up_cliff
+			, size
 		};
 
 
 		// ( オートタイル ) 同じ性質のブロックとの接続タイプ ( 通常 + 崖 )
-		enum AutoTileTypeHomogeneousConnection : AutoTileTypeHomogeneousConnectionUint {
-			  auto_tile_type_homogeneous_connection_nothing_upper_left
-			, auto_tile_type_homogeneous_connection_nothing_upper_right
-			, auto_tile_type_homogeneous_connection_nothing_lower_left
-			, auto_tile_type_homogeneous_connection_nothing_lower_right
-			, auto_tile_type_homogeneous_connection_up_and_down_upper_left
-			, auto_tile_type_homogeneous_connection_up_and_down_upper_right
-			, auto_tile_type_homogeneous_connection_up_and_down_lower_left
-			, auto_tile_type_homogeneous_connection_up_and_down_lower_right
-			, auto_tile_type_homogeneous_connection_left_and_right_upper_left
-			, auto_tile_type_homogeneous_connection_left_and_right_upper_right
-			, auto_tile_type_homogeneous_connection_left_and_right_lower_left
-			, auto_tile_type_homogeneous_connection_left_and_right_lower_right
-			, auto_tile_type_homogeneous_connection_cross_upper_left
-			, auto_tile_type_homogeneous_connection_cross_upper_right
-			, auto_tile_type_homogeneous_connection_cross_lower_left
-			, auto_tile_type_homogeneous_connection_cross_lower_right
-			, auto_tile_type_homogeneous_connection_all_upper_left
-			, auto_tile_type_homogeneous_connection_all_upper_right
-			, auto_tile_type_homogeneous_connection_all_lower_left
-			, auto_tile_type_homogeneous_connection_all_lower_right
-			, auto_tile_type_homogeneous_connection_size
+		enum class AutoTileConnection : AutoTileConnectionUint {
+			  nothing_upper_left
+			, nothing_upper_right
+			, nothing_lower_left
+			, nothing_lower_right
+			, up_and_down_upper_left
+			, up_and_down_upper_right
+			, up_and_down_lower_left
+			, up_and_down_lower_right
+			, left_and_right_upper_left
+			, left_and_right_upper_right
+			, left_and_right_lower_left
+			, left_and_right_lower_right
+			, cross_upper_left
+			, cross_upper_right
+			, cross_lower_left
+			, cross_lower_right
+			, all_upper_left
+			, all_upper_right
+			, all_lower_left
+			, all_lower_right
+			, size
 		};
 
 		// 今後、別の hpp を作成して管理
 		struct AutoTile {
-			AutoTileTypeHomogeneousConnection auto_tile_upper_left{ auto_tile_type_homogeneous_connection_nothing_upper_left };
-			AutoTileTypeHomogeneousConnection auto_tile_upper_right{ auto_tile_type_homogeneous_connection_nothing_upper_right };
-			AutoTileTypeHomogeneousConnection auto_tile_lower_left{ auto_tile_type_homogeneous_connection_nothing_lower_left };
-			AutoTileTypeHomogeneousConnection auto_tile_lower_right{ auto_tile_type_homogeneous_connection_nothing_lower_right };
+			AutoTileConnection auto_tile_upper_left{ AutoTileConnection::nothing_upper_left };
+			AutoTileConnection auto_tile_upper_right{ AutoTileConnection::nothing_upper_right };
+			AutoTileConnection auto_tile_lower_left{ AutoTileConnection::nothing_lower_left };
+			AutoTileConnection auto_tile_lower_right{ AutoTileConnection::nothing_lower_right };
 		};
 
 	}

@@ -108,43 +108,43 @@ namespace Crafterra {
 					}
 
 					switch (field_map.getBiome()) {
-					case map_chip_type_biome_sea:
+					case MapChipTypeBiome::sea:
 						field_map.setColor(getDxColor(33, 97, 124));
 						break;
-					case map_chip_type_biome_lake:
+					case MapChipTypeBiome::lake:
 						field_map.setColor(getDxColor(88, 124, 139));
 						break;
-					case map_chip_type_biome_mountain:
+					case MapChipTypeBiome::mountain:
 						field_map.setColor(getDxColor(101, 100, 60));
 						break;
-					case map_chip_type_biome_desert:
+					case MapChipTypeBiome::desert:
 						field_map.setColor(getDxColor(217, 195, 143));
 						break;
-					case map_chip_type_biome_forest:
+					case MapChipTypeBiome::forest:
 						field_map.setColor(getDxColor(110, 149, 59));
 						break;
-					case map_chip_type_biome_rock:
+					case MapChipTypeBiome::rock:
 						field_map.setColor(getDxColor(120, 125, 108));
 						break;
-					case map_chip_type_biome_hill:
+					case MapChipTypeBiome::hill:
 						field_map.setColor(getDxColor(145, 177, 113));
 						break;
-					case map_chip_type_biome_savannah:
+					case MapChipTypeBiome::savannah:
 						field_map.setColor(getDxColor(144, 140, 73));
 						break;
-					case map_chip_type_biome_grass:
+					case MapChipTypeBiome::grass:
 						field_map.setColor(getDxColor(90, 128, 63));
 						break;
-					case map_chip_type_biome_wall:
+					case MapChipTypeBiome::wall:
 						field_map.setColor(getDxColor(200, 200, 200));
 						break;
-					case map_chip_type_biome_way:
+					case MapChipTypeBiome::way:
 						field_map.setColor(getDxColor(90, 128, 63));
 						break;
-					case map_chip_type_biome_room:
+					case MapChipTypeBiome::room:
 						field_map.setColor(getDxColor(50, 160, 70));
 						break;
-					case map_chip_type_biome_default:
+					case MapChipTypeBiome::normal:
 						field_map.setColor(getDxColor(170, 160, 70));
 						break;
 					}
@@ -207,9 +207,9 @@ namespace Crafterra {
 					);
 					// オブジェクトの自動配置の実験
 					// 海でも崖でもない時
-					//if (field_map_matrix[row][col].getBiome() != map_chip_type_biome_sea && (!field_map_matrix[row][col].getIsCliff())) {
+					//if (field_map_matrix[row][col].getBiome() != MapChipTypeBiome::sea && (!field_map_matrix[row][col].getIsCliff())) {
 					//	if (uid(engine)) {
-					//		if (field_map_matrix[row][col].getBiome() == map_chip_type_biome_default) {
+					//		if (field_map_matrix[row][col].getBiome() == MapChipTypeBiome::default) {
 					//			field_map_matrix[row][col].setDrawChip(52); // 花を設置
 					//		}
 					//		else {
@@ -289,6 +289,8 @@ namespace Crafterra {
 		// フィールドマップを生成
 		void generation(MapMat& field_map_matrix, const Uint32 chunk_index_x_, const Uint32 chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
 
+			const ElevationUint sea_elevation = 110;
+
 			perlinNoiseGeneration(field_map_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
 
 			//バイオームの分類分け
@@ -301,29 +303,29 @@ namespace Crafterra {
 					const ElevationUint elevation = field_map.getElevation();
 					const ElevationUint amount_of_rainfall = field_map.getAmountOfRainfall();
 
-					if (elevation < 110) {
-						field_map.setBiome(map_chip_type_biome_sea);
+					if (elevation < sea_elevation) {
+						field_map.setBiome(MapChipTypeBiome::sea);
 					}
 					else
-						if (temperature < 45) field_map.setBiome(map_chip_type_biome_rock);
-						else if (amount_of_rainfall < 25) field_map.setBiome(map_chip_type_biome_savannah);
+						if (temperature < 45) field_map.setBiome(MapChipTypeBiome::rock);
+						else if (amount_of_rainfall < 25) field_map.setBiome(MapChipTypeBiome::savannah);
 						else if (amount_of_rainfall < 75) {
-							if (temperature < 120) field_map.setBiome(map_chip_type_biome_desert);
-							else field_map.setBiome(map_chip_type_biome_desert);
+							if (temperature < 120) field_map.setBiome(MapChipTypeBiome::desert);
+							else field_map.setBiome(MapChipTypeBiome::desert);
 						}
-						else if (temperature < 69) field_map.setBiome(map_chip_type_biome_grass);
-						else if (temperature < 96) field_map.setBiome(map_chip_type_biome_default);
-						else if (temperature < 120) field_map.setBiome(map_chip_type_biome_forest);
-						else if (amount_of_rainfall < 125) field_map.setBiome(map_chip_type_biome_mountain);
-						else if (temperature < 132) field_map.setBiome(map_chip_type_biome_mountain);
-						else field_map.setBiome(map_chip_type_biome_mountain);
+						else if (temperature < 69) field_map.setBiome(MapChipTypeBiome::grass);
+						else if (temperature < 96) field_map.setBiome(MapChipTypeBiome::normal);
+						else if (temperature < 120) field_map.setBiome(MapChipTypeBiome::forest);
+						else if (amount_of_rainfall < 125) field_map.setBiome(MapChipTypeBiome::mountain);
+						else if (temperature < 132) field_map.setBiome(MapChipTypeBiome::mountain);
+						else field_map.setBiome(MapChipTypeBiome::mountain);
 
 					// 海
-					if (field_map.getBiome() == map_chip_type_biome_sea) {
-						field_map.setElevation(110);
-						field_map.setBlockElevation(110);
+					if (field_map.getBiome() == MapChipTypeBiome::sea) {
+						field_map.setElevation(sea_elevation);
+						field_map.setBlockElevation(sea_elevation / 2);
 					}
-					else field_map.setBlockElevation(elevation);
+					else field_map.setBlockElevation(elevation / 2);
 				}
 			setTerrain(field_map_matrix);
 		}
