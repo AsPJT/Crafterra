@@ -58,6 +58,26 @@ namespace Crafterra {
 	} };
 //#endif
 
+	// 未完成
+	enum class Block : BlockType {
+		  empty     // 無し
+		, normal_ground        // 地面
+		, water_ground       // 水
+		, running_water // 流水
+		, waterfall    // 滝
+		, cliff    // 崖
+		, cliff_top      // 崖上
+		, flower_1      // 花
+		, flower_2      // 花
+		, flower_3      // 花
+		, flower_4      // 花
+		, grass_1      // 草
+		, grass_2      // 草
+		, grass_3      // 草
+		, grass_4      // 草
+		, size   // ブロックの数
+	};
+
 	// 148,185,32
 	// 110,163,0
 	// 170,212,43
@@ -72,20 +92,22 @@ namespace Crafterra {
 	private:
 		// ---------- 元の座標系 ----------
 
-		::Crafterra::Color::Color3 rgb{}; // マップチップの色
+		Block block[128]{}; // ブロック
+		::Crafterra::Color::Color3 rgb{}; // マップチップの色 ( 廃止予定 )
 		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
-		BlockType block[128]{}; // ブロック
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
 		ElevationUint elevation{}; // 元の標高値
 		ElevationUint temperature{}; // 気温
 		ElevationUint amount_of_rainfall{}; // 降水量
+		Uint32 seed{}; // 乱数シード
 
 		// ---------- 描画座標系 ----------
 
 		CliffConnection cliff_top{ CliffConnection::size }; // 崖上タイルの種類
 		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
 		bool is_cliff = false;
+		Block draw_block{}; // 後に配列になる予定
 		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
 		AutoTile auto_tile{}; // 描画用オートタイル
@@ -160,11 +182,17 @@ namespace Crafterra {
 		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->draw_biome = draw_biome_;
 		}
-		BlockType getBlock(const IndexUint index_) const {
+		Block getBlock(const IndexUint index_) const {
 			return this->block[index_];
 		}
-		void setBlock(const BlockType& block_, const IndexUint index_) {
+		void setBlock(const Block& block_, const IndexUint index_) {
 			this->block[index_] = block_;
+		}
+		Block getDrawBlock() const {
+			return this->draw_block;
+		}
+		void setDrawBlock(const Block& block_) {
+			this->draw_block = block_;
 		}
 		ElevationUint getElevation() const {
 			return this->elevation;
@@ -189,6 +217,12 @@ namespace Crafterra {
 		}
 		void setBlockElevation(const ElevationUint& elevation_) {
 			this->block_elevation = elevation_;
+		}
+		Uint32 getSeed() const {
+			return this->seed;
+		}
+		void setSeed(const Uint32 seed_) {
+			this->seed = seed_;
 		}
 		// 暫定
 		ElevationUint getElevation3() const {

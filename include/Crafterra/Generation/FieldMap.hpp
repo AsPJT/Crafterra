@@ -60,6 +60,32 @@ namespace Crafterra {
 					));
 	}
 
+	class XorShift32 {
+	private:
+		Uint32 seed;
+	public:
+		Uint32 getRand() {
+			seed ^= seed << 13;
+			seed ^= seed >> 17;
+			seed ^= seed << 5;
+			return seed;
+		}
+		double getRand2() {
+			return double(getRand() - 1) / 4294967295.0;
+		}
+		bool getProbability(const double probability_) {
+			return (probability_ > getRand2());
+		}
+		Int32 getProbabilityDivision(const double probability_, const Int32 division_) {
+			if (probability_ <= getRand2() || division_ <= 0) return -1;
+			return (getRand2() / probability_ * double(division_));
+		}
+		void setSeed(const Uint32 seed_) {
+			seed = seed_;
+		}
+		XorShift32(const Uint32 seed_) : seed(seed_) {}
+	};
+
 
 	class Terrain {
 
@@ -84,10 +110,7 @@ namespace Crafterra {
 			, elevation_seed(elevation_seed_)
 			, perlin_temperature_seed(temperature_seed_)
 			, perlin_amount_of_rainfall_seed(amount_of_rainfall_seed_)
-			, perlin_elevation_seed(elevation_seed_)
-		{
-
-		}
+			, perlin_elevation_seed(elevation_seed_) {}
 
 		void setTerrain(MapMat& field_map_matrix) const {
 
@@ -99,11 +122,15 @@ namespace Crafterra {
 			for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height; ++row)
 				for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
 					MapChip& field_map = field_map_matrix[row][col];
-					field_map.setElevation3(0);
+					field_map.setElevation3(0); // 初期化
 
 					ElevationUint elevation3 = 0;
-					for (::Crafterra::DataType::IndexUint row3{ row }; elevation3 <= field_map.getBlockElevation(); --row3, ++elevation3) {
+					for (::Crafterra::DataType::IndexUint row3{ row }, block_index{}; elevation3 <= field_map.getBlockElevation() && block_index < 128; --row3, ++elevation3, ++block_index) {
 						if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
+						field_map_matrix[row3][col].setIsCliff(field_map_matrix[row][col].getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
+						if (field_map_matrix[row][col].getBlock(block_index)!=Block::empty) {
+							field_map_matrix[row3][col].setDrawBlock(field_map_matrix[row][col].getBlock(block_index)); // ブロックを格納
+						}
 						if (row3 == 0) break;
 					}
 
@@ -159,10 +186,10 @@ namespace Crafterra {
 
 				}
 			// どこが崖になっているか調べる
-			for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col)
-				for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height; ++row) {
-						field_map_matrix[row][col].setIsCliff(field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()); // 崖
-				}
+			//for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col)
+			//	for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height; ++row) {
+			//			field_map_matrix[row][col].setIsCliff(field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()); // 崖
+			//	}
 			// 崖のオートタイルを計算
 			for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
 				for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height - 1; ++row) {
@@ -293,6 +320,8 @@ namespace Crafterra {
 
 			perlinNoiseGeneration(field_map_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
 
+			XorShift32 xs32(elevation_seed);
+
 			//バイオームの分類分け
 			for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
 				for (::Crafterra::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
@@ -320,12 +349,57 @@ namespace Crafterra {
 						else if (temperature < 132) field_map.setBiome(MapChipTypeBiome::mountain);
 						else field_map.setBiome(MapChipTypeBiome::mountain);
 
+					for (IndexUint i = 0; i < elevation / 2; ++i) {
+						field_map.setBlock(Block::cliff, i);
+					}
+					for (IndexUint i = elevation / 2 + 1; i < 128; ++i) {
+						field_map.setBlock(Block::empty, i); // からの場合 ( 崖上を除く )
+					}
+					field_map.setBlock(Block::cliff_top, elevation / 2); // からだけど崖上の場合
+
 					// 海
 					if (field_map.getBiome() == MapChipTypeBiome::sea) {
 						field_map.setElevation(sea_elevation);
 						field_map.setBlockElevation(sea_elevation / 2);
+
+						for (IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
+							field_map.setBlock(Block::water_ground, i);
+						}
 					}
-					else field_map.setBlockElevation(elevation / 2);
+					else {
+						field_map.setBlockElevation(elevation / 2);
+
+						// 草花の生成テスト
+						switch (xs32.getProbabilityDivision(0.1, 4)) {
+						case 0:
+							field_map.setBlock(Block::grass_1, elevation / 2); // テスト
+							break;
+						case 1:
+							field_map.setBlock(Block::grass_2, elevation / 2); // テスト
+							break;
+						case 2:
+							field_map.setBlock(Block::grass_3, elevation / 2); // テスト
+							break;
+						case 3:
+							field_map.setBlock(Block::grass_4, elevation / 2); // テスト
+							break;
+						case 4:
+							field_map.setBlock(Block::flower_1, elevation / 2); // テスト
+							break;
+						case 5:
+							field_map.setBlock(Block::flower_2, elevation / 2); // テスト
+							break;
+						case 6:
+							field_map.setBlock(Block::flower_3, elevation / 2); // テスト
+							break;
+						case 7:
+							field_map.setBlock(Block::flower_4, elevation / 2); // テスト
+							break;
+						}
+					}
+
+					
+
 				}
 			setTerrain(field_map_matrix);
 		}
