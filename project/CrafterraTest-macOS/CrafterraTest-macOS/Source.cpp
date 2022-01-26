@@ -129,8 +129,8 @@ namespace Crafterra {
 				elapsed_time.update();
 				const Int64 elapsed = elapsed_time.getMicroseconds();
 #ifdef __DXLIB
-				//::DxLib::clsDx();
-				//::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
+				::DxLib::clsDx();
+				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
 #endif // __DXLIB
 
 				++time_count;
@@ -162,8 +162,8 @@ namespace Crafterra {
 					key_displacement = 2.f;
 					break;
 				}
-//#ifndef __APPLE__
-				// キー関連
+				//#ifndef __APPLE__
+								// キー関連
 				{
 					key.setKey();
 					{
@@ -178,7 +178,7 @@ namespace Crafterra {
 							//	}
 							//}
 							//else 
-								cs.camera_size.moveX(-key_displacement);
+							cs.camera_size.moveX(-key_displacement);
 							player.setDirection(::Crafterra::Enum::ActorDirection::left);
 						}
 						if (key.isPressed(::AsLib2::Key::key_d) || key.isPressed(::AsLib2::Key::key_right)) {
@@ -212,8 +212,8 @@ namespace Crafterra {
 						}
 					}
 				}
-//#endif // !__APPLE__
-				// 無限生成処理
+				//#endif // !__APPLE__
+								// 無限生成処理
 				{
 					// 右側に生成
 					if (cs.camera_size.getCenterX() > float(cs.field_map_size.getCenterX() + (cs.field_map_size.getWidthHalf() * 2 / 3))) {
@@ -280,9 +280,9 @@ namespace Crafterra {
 							//if (field_map.getIsCliff()) {
 							if (field_map.getDrawBlock() == Block::cliff) {
 								if (resource_.getMapChip().getMapChipCliffTopAlpha(IndexUint(field_map.getCliff())) == 0) {
-									::AsLib2::Image(resource_.getMapChip().getMapChip(0)).draw(map_chip_rect);
+									::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
 								}
-								::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(IndexUint(field_map.getCliff()))).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Cliff", IndexUint(field_map.getCliff()))).draw(map_chip_rect);
 							}
 							// 海を描画
 							//else if (field_map.getDrawBiome() == MapChipTypeBiome::sea) {
@@ -291,66 +291,70 @@ namespace Crafterra {
 								AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);
 
 								if (resource_.getMapChip().getIsSeaAlpha(auto_tile_index)) {
-									::AsLib2::Image(resource_.getMapChip().getMapChip(0)).draw(map_chip_rect);
+									::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
 								}
 								::AsLib2::ImageQuadrant(
-									resource_.getMapChip().getSea(auto_tile_index.auto_tile_upper_left),
-									resource_.getMapChip().getSea(auto_tile_index.auto_tile_upper_right),
-									resource_.getMapChip().getSea(auto_tile_index.auto_tile_lower_left),
-									resource_.getMapChip().getSea(auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
+									resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_upper_left),
+									resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_upper_right),
+									resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_lower_left),
+									resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 							}
 							// 崖上を描画
 							else if (field_map.getCliffTop() != CliffConnection::size) {
 								if (is_auto_tile_desert_alpha) {
 									is_map_chip_type_homogeneous_connection_all = true;
 									if (resource_.getMapChip().getMapChipCliffTopAlpha(IndexUint(field_map.getCliffTop())) == 0) {
-										::AsLib2::Image(resource_.getMapChip().getMapChip(0)).draw(map_chip_rect);
+										::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
 									}
 
-									::AsLib2::Image(resource_.getMapChip().getMapChipCliffTop(IndexUint(field_map.getCliffTop()))).draw(map_chip_rect);
+									::AsLib2::Image(resource_.getMapChip().getMapChip("Cliff", IndexUint(field_map.getCliffTop()))).draw(map_chip_rect);
 								}
 							}
 
 							// ------------------------------------------------------------------------------------------------------------------------------------
 							if (field_map.getIsCliff()) return;
-							if (field_map.getDrawBiome() == MapChipTypeBiome::desert) {
-
+							if (field_map.getDrawBiome() != MapChipTypeBiome::empty
+								&& field_map.getDrawBiome() != MapChipTypeBiome::sea
+								&& field_map.getDrawBiome() != MapChipTypeBiome::lake
+								&& field_map.getDrawBiome() != MapChipTypeBiome::normal
+								&& field_map.getDrawBiome() != MapChipTypeBiome::hill
+								) {
+								const ::std::string& biome_string = MapChipTypeBiomeString[IndexUint(field_map.getDrawBiome())];
 								AutoTileIndex auto_tile_index(field_map.getAutoTile(), 0, 2);
-
 								::AsLib2::ImageQuadrant(
-									resource_.getMapChip().getDesert(auto_tile_index.auto_tile_upper_left),
-									resource_.getMapChip().getDesert(auto_tile_index.auto_tile_upper_right),
-									resource_.getMapChip().getDesert(auto_tile_index.auto_tile_lower_left),
-									resource_.getMapChip().getDesert(auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
+									resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
+									resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
+									resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
+									resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 							}
-							::AsLib2::Image(resource_.getMapChip().getMapChip(field_map.getDrawChip())).draw(map_chip_rect);
+							//::AsLib2::Image(resource_.getMapChip().getMapChip("Base", field_map.getDrawChip())).draw(map_chip_rect);
 							//else
 							//	::DxLib::DrawBox(start_x, start_y, end_x, end_y, field_map.getColor(), TRUE);
 
 							switch (field_map.getDrawBlock()) {
 							case Block::grass_1:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 0)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 0)).draw(map_chip_rect);
 								break;
 							case Block::grass_2:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 1)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 1)).draw(map_chip_rect);
 								break;
 							case Block::grass_3:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 2)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 2)).draw(map_chip_rect);
 								break;
 							case Block::grass_4:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 3)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 3)).draw(map_chip_rect);
 								break;
 							case Block::flower_1:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 4)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 4)).draw(map_chip_rect);
 								break;
 							case Block::flower_2:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 5)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 5)).draw(map_chip_rect);
 								break;
 							case Block::flower_3:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 6)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 6)).draw(map_chip_rect);
 								break;
 							case Block::flower_4:
-								::AsLib2::Image(resource_.getMapChip().getMapChip(8 * 6 + 7)).draw(map_chip_rect);
+								::AsLib2::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 7)).draw(map_chip_rect);
 								break;
 							}
 
@@ -413,22 +417,23 @@ namespace Crafterra {
 				// 座標を文字として出力
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
 				//DrawBox(0, 0, 200, 180, AsLib2::Color(40).getColor(), TRUE);
-				//log_background.draw();
 #ifdef __DXLIB
-				//::DxLib::printfDx(
-				//	//#if (__cplusplus >= 202002L)
-				//	//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
-				//	//#else
-				//	u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: \n%d\nX:%f Y:%f Z:%f"
-				//	//#endif
-				//	, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
-				//	, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-				//	//, MapChipTypeBiomeString[IndexUint(field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
-				//	//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
-				//	, resource_.getMapChip().getDesert(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
-				//	,player.getX(),player.getY(),player.getZ()
-				//	//, field_map_matrix[100][100].getCliffTop()
-				//);
+				log_background.draw();
+				::DxLib::printfDx(
+					//#if (__cplusplus >= 202002L)
+					//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
+					//#else
+					//u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: \n%d\nX:%f Y:%f Z:%f"
+					"Camera CenterX: %.2f\nCamera CenterY: %.2f\nCamera StartX: %.2f\nCamera StartY: %.2f\n1:Airship View\n2:Human View\nJ:camera\nK:camera\nbiome:%s \n%d\nX:%.2f Y:%.2f Z:%.2f"
+					//#endif
+					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+					, MapChipTypeBiomeString[IndexUint(field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
+					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
+					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
+					, player.getX(), player.getY(), player.getZ()
+					//, field_map_matrix[100][100].getCliffTop()
+				);
 #endif // __DXLIB
 			}
 

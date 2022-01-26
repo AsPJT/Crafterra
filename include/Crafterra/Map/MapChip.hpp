@@ -46,16 +46,23 @@ namespace Crafterra {
 		, normal   // 通常の地面
 		, size   // バイオームの数
 	};
+
+
+	::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
+		MapChipTypeBiomeString{ {
+				"Empty","Sea","Lake","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
+	} };
+
 //#if (__cplusplus < 202002L)
 //	::Crafterra::DataType::Array<::Crafterra::DataType::String, MapChipTypeBiome::size>
 //		MapChipTypeBiomeString{ {
 //				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
 //	} };
 //#else
-	::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
-		MapChipTypeBiomeString{ {
-				"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
-	} };
+	//::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
+	//	MapChipTypeBiomeString{ {
+	//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
+	//} };
 //#endif
 
 	// 未完成
