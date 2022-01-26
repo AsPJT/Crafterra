@@ -20,7 +20,7 @@ OpenSiv3Dを用いたmacOSへのセットアップ方法
 
 図のように**Bundle Identifier**を**CrafterraTest-macOS**に変更します。(名称はなんでも良い)
 
-![](/doc-img/01.png)
+<img src="./doc-img/01.png" width = 800>
 
 ### 3. ライブラリとヘッダファイルのパスを指定
 先程の設定でSiv3Dのサンプルプロジェクトとはディレクトリ構成が変わってしまったので、パスを再設定します。
@@ -32,18 +32,18 @@ OpenSiv3Dを用いたmacOSへのセットアップ方法
 
 #### 3.1 Header Search Pathsの設定
 
-![](/doc-img/02.png)
+<img src="./doc-img/02.png" width = 800>
 
 - recursive : 指定したパスのサブディレクトリまで検索対象
 - non-recursive : サブディレクトリについてはチェックしない
 
 #### 3.2 Library Search Pathsの設定
 
-![](/doc-img/03.png)
+<img src="./doc-img/03.png" width = 800>
 
 ついでにTarget名も変えておきましょう。
 
-![](/doc-img/04.png)
+<img src="./doc-img/04.png" width = 800>
 
 (名称はなんでも良い)
 
@@ -59,10 +59,10 @@ OpenSiv3Dを用いたmacOSへのセットアップ方法
 
 あとは **Product > Run** で実行して、無事に動いてくれることを祈ります🙏
 
-![](/doc-img/05.png)
+<img src="./doc-img/05.png" width = 800>)
 
 無事に実行できましたね🎉
 
 ## その他
 
-macOSでのセットアップで何かお困りの際は、@kugi_masa までお願いします。
+macOSでのセットアップで何かお困りの際は、[**@kugimasa**](https://github.com/kugimasa) までお願いします。
