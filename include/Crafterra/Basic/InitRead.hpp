@@ -22,20 +22,88 @@
 #include <fstream>
 #include <sstream>
 
+#include <vector>
+
 #include <Crafterra/DataType/StringDataType.hpp>
 
 namespace Crafterra {
 
+	Int32 getNum(const ::Crafterra::DataType::String& str_) {
+		int num = 0;
+		for (auto& s : str_) {
+			switch (s) {
+			case '0': num = num * 10; break;
+			case '1': num = num * 10 + 1; break;
+			case '2': num = num * 10 + 2; break;
+			case '3': num = num * 10 + 3; break;
+			case '4': num = num * 10 + 4; break;
+			case '5': num = num * 10 + 5; break;
+			case '6': num = num * 10 + 6; break;
+			case '7': num = num * 10 + 7; break;
+			case '8': num = num * 10 + 8; break;
+			case '9': num = num * 10 + 9; break;
+			default:return -1;
+			}
+		}
+		return num;
+	}
+
+	struct ReadBool {
+		::Crafterra::DataType::String label;
+		bool value{};
+	};
+	struct ReadInt {
+		::Crafterra::DataType::String label;
+		Int32 value{};
+	};
+	struct ReadString {
+		::Crafterra::DataType::String label;
+		::Crafterra::DataType::String value{};
+	};
+
+	struct ReadArray {
+		::std::vector<ReadBool> bool_value;
+		::std::vector<ReadInt> int_value;
+		::std::vector<ReadString> string_value;
+	};
+
+	class ReadText {
+	private:
+		std::vector<std::vector<std::string>> string_matrix{}; // TSV ファイルの二次元配列
+
+	public:
+		// コンストラクタ
+		ReadText(const ::Crafterra::DataType::String& path_, const char char_ = '\t') {
+			::Crafterra::DataType::String str_buf{}, str_conma_buf{};
+			std::ifstream ifs(path_);
+			if (!ifs) return;
+
+			// 二次元配列に文字列を格納
+			while (::std::getline(ifs, str_buf)) {
+				std::istringstream ifss(str_buf);
+				this->string_matrix.emplace_back(std::vector<std::string>{});
+
+				while (::std::getline(ifss, str_conma_buf, char_)) {
+					this->string_matrix.back().emplace_back(str_conma_buf);
+				}
+			}
+
+		}
+		// 二次元配列を返す
+		const std::vector<std::vector<std::string>>& getMatrix() const {
+			return this->string_matrix;
+		}
+
+	};
+
 	class InitRead {
 	private:
-		bool is_fullscreen = false;
-		bool is_fullscreen_flag = false;
-		bool is_window_width_flag = false;
-		bool is_window_height_flag = false;
-		int window_width = ::Crafterra::System::init_window_width;
-		int window_height = ::Crafterra::System::init_window_height;
 
-		int getNum(const ::Crafterra::DataType::String& str_) const {
+		ReadArray read_array{};
+
+		::Crafterra::DataType::String path{};
+
+		Int32 getNum(const ::Crafterra::DataType::String& str_) const {
 			int num = 0;
 			for (auto& s : str_) {
 				switch (s) {
@@ -55,24 +123,6 @@ namespace Crafterra {
 			return num;
 		}
 
-		void setBool(bool& flag_, const ::Crafterra::DataType::String& label_buf_, const ::Crafterra::DataType::String& label_) {
-			if (flag_) {
-				flag_ = false;
-				is_fullscreen = (label_buf_ == ::Crafterra::DataType::String("ON") || label_buf_ == ::Crafterra::DataType::String("on"));
-			}
-			// フルスクリーンフラグ
-			else flag_ = (label_buf_ == label_);
-		}
-
-		void setInt(bool& flag_, int& value_, const ::Crafterra::DataType::String& label_buf_, const ::Crafterra::DataType::String& label_) {
-			if (flag_) {
-				flag_ = false;
-				value_ = getNum(label_buf_);
-			}
-			// フルスクリーンフラグ
-			else flag_ = (label_buf_ == label_);
-		}
-
 
 	public:
 
@@ -83,25 +133,47 @@ namespace Crafterra {
 			std::ifstream ifs(input_csv_file_path);
 			if (!ifs) return;
 
-			while (getline(ifs, str_buf)) {
+			while (::std::getline(ifs, str_buf)) {
 				std::istringstream ifss(str_buf);
-				while (getline(ifss, str_conma_buf, ':')) {
 
-					setBool(is_fullscreen_flag, str_conma_buf, "Fullscreen");
-					setInt(is_window_width_flag, window_width, str_conma_buf, "Window Width");
-					setInt(is_window_height_flag, window_height, str_conma_buf, "Window Height");
+				::Crafterra::DataType::String data_type{}, label{}, value{};
+				if (!(::std::getline(ifss, data_type, '\t'))) continue;
+				if (!(::std::getline(ifss, label, '\t'))) continue;
+				if (!(::std::getline(ifss, value, '\t'))) continue;
 
-
-
+				if (data_type == "bool") {
+					read_array.bool_value.emplace_back(ReadBool{ label , (value == ::Crafterra::DataType::String("yes")) });
 				}
+				else if (data_type == "int") {
+					read_array.int_value.emplace_back(ReadInt{ label , getNum(value) });
+				}
+				else if (data_type == "string") {
+					read_array.string_value.emplace_back(ReadString{ label , value });
+				}
+
 			}
 
 		}
 
+		bool getBool(const ::Crafterra::DataType::String& label_) {
+			for (const auto& bv : read_array.bool_value) {
+				if (bv.label == label_) return bv.value;
+			}
+			return false;
+		}
+		Int32 getInt(const ::Crafterra::DataType::String& label_) {
+			for (const auto& iv : read_array.int_value) {
+				if (iv.label == label_) return iv.value;
+			}
+			return 0;
+		}
+		::Crafterra::DataType::String getString(const ::Crafterra::DataType::String& label_) {
+			for (const auto& sv : read_array.string_value) {
+				if (sv.label == label_) return sv.value;
+			}
+			return ::Crafterra::DataType::String{};
+		}
 
-		bool isFullscreen() const { return this->is_fullscreen; }
-		int getWindowWidth() const { return this->window_width; }
-		int getWindowHeight() const { return this->window_height; }
 
 	};
 

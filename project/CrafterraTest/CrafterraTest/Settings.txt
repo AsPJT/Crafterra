@@ -1,3 +1,0 @@
-Fullscreen:OFF
-Window Width:1280
-Window Height:720

@@ -122,15 +122,18 @@ namespace Crafterra {
 
 			ElapsedTime elapsed_time;
 
-			::AsLib2::DrawRect log_background(::AsLib2::Rect(0, 0, 200, 180), ::AsLib2::Color(40));
+			::AsLib2::DrawRect log_background(::AsLib2::Rect(0, 0, 250, 220), ::AsLib2::Color(40));
 
+			bool is_debug_log = true;
 
 			while (::Crafterra::System::Update()) {
 				elapsed_time.update();
 				const Int64 elapsed = elapsed_time.getMicroseconds();
 #ifdef __DXLIB
-				::DxLib::clsDx();
-				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
+				if (is_debug_log) {
+					::DxLib::clsDx();
+					::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
+				}
 #endif // __DXLIB
 
 				++time_count;
@@ -209,6 +212,12 @@ namespace Crafterra {
 						if (key.isDown(::AsLib2::Key::key_2)) {
 							cs.setMapChipSize(64.f);
 							operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::walking;
+						}
+						if (key.isDown(::AsLib2::Key::key_p)) {
+							is_debug_log = (!is_debug_log);
+#ifdef __DXLIB
+								::DxLib::clsDx();
+#endif // __DXLIB
 						}
 					}
 				}
@@ -418,22 +427,24 @@ namespace Crafterra {
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
 				//DrawBox(0, 0, 200, 180, AsLib2::Color(40).getColor(), TRUE);
 #ifdef __DXLIB
-				log_background.draw();
-				::DxLib::printfDx(
-					//#if (__cplusplus >= 202002L)
-					//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
-					//#else
-					//u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: \n%d\nX:%f Y:%f Z:%f"
-					"Camera CenterX: %.2f\nCamera CenterY: %.2f\nCamera StartX: %.2f\nCamera StartY: %.2f\n1:Airship View\n2:Human View\nJ:camera\nK:camera\nbiome:%s \n%d\nX:%.2f Y:%.2f Z:%.2f"
-					//#endif
-					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
-					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-					, MapChipTypeBiomeString[IndexUint(field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
-					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
-					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
-					, player.getX(), player.getY(), player.getZ()
-					//, field_map_matrix[100][100].getCliffTop()
-				);
+				if (is_debug_log) {
+					log_background.draw();
+					::DxLib::printfDx(
+						//#if (__cplusplus >= 202002L)
+						//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
+						//#else
+						//u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: \n%d\nX:%f Y:%f Z:%f"
+						"Camera CenterX: %.2f\nCamera CenterY: %.2f\nCamera StartX: %.2f\nCamera StartY: %.2f\n1:Airship View\n2:Human View\nJ:camera\nK:camera\nbiome:%s \n%d\nX:%.2f Y:%.2f Z:%.2f"
+						//#endif
+						, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+						, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+						, MapChipTypeBiomeString[IndexUint(field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
+						//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
+						, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
+						, player.getX(), player.getY(), player.getZ()
+						//, field_map_matrix[100][100].getCliffTop()
+					);
+				}
 #endif // __DXLIB
 			}
 

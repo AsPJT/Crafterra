@@ -24,8 +24,231 @@
 
 #include <Crafterra/Map/HomogeneousConnection.hpp> // AutoTileIndex
 
+#include <Crafterra/Basic/InitRead.hpp> // ReadText
+
 #include <vector>
 #include <string>
+
+
+#include <string>
+#include <cstdint>
+
+namespace AsLib2 {
+
+	// UTF-32(char32_t) から UTF-8(char*)へ
+	const char* utf8(const char32_t src) {
+
+		static char u8char[5];
+		u8char[0] = 0;
+		u8char[1] = 0;
+		u8char[2] = 0;
+		u8char[3] = 0;
+		u8char[4] = 0;
+
+		if (src < 0 || src > 0x10ffff) return u8char;
+
+		if (src < 0x80) u8char[0] = char(src);
+		else if (src < 0x800) {
+			u8char[0] = 0xc0 | char(src >> 6);
+			u8char[1] = 0x80 | (char(src) & 0x3f);
+		}
+		else if (src < 0x10000) {
+			u8char[0] = 0xe0 | char(src >> 12);
+			u8char[1] = 0x80 | (char(src >> 6) & 0x3f);
+			u8char[2] = 0x80 | (char(src) & 0x3f);
+		}
+		else {
+			u8char[0] = 0xf0 | char(src >> 18);
+			u8char[1] = 0x80 | (char(src >> 12) & 0x3f);
+			u8char[2] = 0x80 | (char(src >> 6) & 0x3f);
+			u8char[3] = 0x80 | (char(src) & 0x3f);
+		}
+
+		return u8char;
+	}
+
+	// UTF-32(char32_t*) から UTF-8(char*)へ
+	const char* utf8(const char32_t* src)
+	{
+		static std::string u8str;
+		u8str = "";
+
+		for (size_t j = 0;; ++j) {
+
+			if (src[j] == 0) break;
+			u8str += utf8(src[j]);
+		}
+		return u8str.c_str();
+	}
+
+	// UTF-32(u32string) から UTF-8(char*)へ
+	const char* utf8(const std::u32string& src)
+	{
+		static std::string u8str;
+		u8str = "";
+
+		const size_t src_len = src.length();
+		for (size_t j = 0; j < src_len; ++j) {
+
+			if (src[j] == 0) break;
+			u8str += utf8(src[j]);
+		}
+		return u8str.c_str();
+	}
+
+	// UTF-32(u32string) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const std::u32string& src) { return src.c_str(); }
+
+	// UTF-32(char32_t*) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const char32_t* src) { return src; }
+
+	// UTF-32(char32_t) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const char32_t src) {
+		static char32_t u32char[2];
+		u32char[0] = src;
+		u32char[1] = 0;
+		return u32char;
+	}
+
+	int32_t utf8Byte(char src) {
+		if (0 <= uint8_t(src) && uint8_t(src) < 0x80) return 1;
+		if (0xc2 <= uint8_t(src) && uint8_t(src) < 0xe0) return 2;
+		if (0xe0 <= uint8_t(src) && uint8_t(src) < 0xf0) return 3;
+		if (0xf0 <= uint8_t(src) && uint8_t(src) < 0xf8) return 4;
+		return 0;
+	}
+
+	bool utf8_0x80To0xc0(char src) { return 0x80 <= uint8_t(src) && uint8_t(src) < 0xc0; }
+
+	const char32_t char_utf32(const char src[5], int32_t& number_of_byte) {
+		char32_t u32char{};
+
+		number_of_byte = utf8Byte(src[0]);
+		if (number_of_byte == 0) return u32char;
+
+		switch (number_of_byte) {
+
+		case 1:u32char = char32_t(uint8_t(src[0])); break;
+
+		case 2:
+			if (!utf8_0x80To0xc0(src[1])) return u32char;
+			if ((uint8_t(src[0]) & 0x1e) == 0) return u32char;
+
+			u32char = char32_t(src[0] & 0x1f) << 6;
+			u32char |= char32_t(src[1] & 0x3f);
+			break;
+
+		case 3:
+			if (!utf8_0x80To0xc0(src[1]) || !utf8_0x80To0xc0(src[2])) return u32char;
+			if ((uint8_t(src[0]) & 0x0f) == 0 && (uint8_t(src[1]) & 0x20) == 0) return u32char;
+
+			u32char = char32_t(src[0] & 0x0f) << 12;
+			u32char |= char32_t(src[1] & 0x3f) << 6;
+			u32char |= char32_t(src[2] & 0x3f);
+			break;
+
+		case 4:
+			if (!utf8_0x80To0xc0(src[1]) || !utf8_0x80To0xc0(src[2]) || !utf8_0x80To0xc0(src[3])) return u32char;
+			if ((uint8_t(src[0]) & 0x07) == 0 && (uint8_t(src[1]) & 0x30) == 0) return u32char;
+
+			u32char = char32_t(src[0] & 0x07) << 18;
+			u32char |= char32_t(src[1] & 0x3f) << 12;
+			u32char |= char32_t(src[2] & 0x3f) << 6;
+			u32char |= char32_t(src[3] & 0x3f);
+			break;
+
+		default:return u32char; break;
+
+		}
+
+		return u32char;
+	}
+
+	// UTF-8(char) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const char src) {
+		static char32_t u32char[2];
+		char u8char[5]{};
+		int32_t number_of_byte;
+		u8char[0] = src;
+
+		u32char[0] = char_utf32(u8char, number_of_byte);
+		u32char[1] = 0;
+		return u32char;
+	}
+
+	const char32_t char_utf32(const std::string& src, char u8char[5], const size_t j, int32_t& number_of_byte) {
+		u8char[0] = 0;
+		u8char[1] = 0;
+		u8char[2] = 0;
+		u8char[3] = 0;
+
+		if (src[j] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[0] = src[j];
+		if (src[j + 1] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[1] = src[j + 1];
+		if (src[j + 2] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[2] = src[j + 2];
+		if (src[j + 3] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[3] = src[j + 3];
+
+		return char_utf32(u8char, number_of_byte);
+	}
+
+	// UTF-8(string) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const std::string& src) {
+		static std::u32string u32str;
+		u32str = U"";
+
+		char u8char[5]{};
+		int32_t number_of_byte;
+
+		const size_t src_len = src.length();
+		for (size_t j = 0; j < src_len;) {
+			if (src[j] == 0) break;
+			u32str += char_utf32(src, u8char, j, number_of_byte);
+			if (number_of_byte) j += number_of_byte;
+			else ++j;
+		}
+		return u32str.c_str();
+	}
+
+	const char32_t char_utf32(const char* src, char u8char[5], const size_t j, int32_t& number_of_byte) {
+		u8char[0] = 0;
+		u8char[1] = 0;
+		u8char[2] = 0;
+		u8char[3] = 0;
+
+		if (src[j] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[0] = src[j];
+		if (src[j + 1] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[1] = src[j + 1];
+		if (src[j + 2] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[2] = src[j + 2];
+		if (src[j + 3] == 0) return char_utf32(u8char, number_of_byte);
+		u8char[3] = src[j + 3];
+
+		return char_utf32(u8char, number_of_byte);
+	}
+
+	// UTF-8(char*) から UTF-32(char32_t*)へ
+	const char32_t* utf32(const char* src)
+	{
+		static std::u32string u32str;
+		u32str = U"";
+
+		char u8char[5]{};
+		int32_t number_of_byte;
+
+		for (size_t j = 0;;) {
+			if (src[j] == 0) break;
+			u32str += char_utf32(src, u8char, j, number_of_byte);
+			if (number_of_byte) j += number_of_byte;
+			else ++j;
+		}
+		return u32str.c_str();
+	}
+
+}
 
 namespace AsLib2 {
 
@@ -148,11 +371,11 @@ namespace AsLib2 {
 		void loadMapChip(
 			::Crafterra::Uint16 width_, ::Crafterra::Uint16 height_, ::Crafterra::Uint16 x_, ::Crafterra::Uint16 y_,
 			::Crafterra::IndexUint& start_index_, const ::std::string& str_, 
-#if defined(__DXLIB)
+//#if defined(__DXLIB)
 			const ::std::string& link_
-#elif defined(SIV3D_INCLUDED)
-			const ::s3d::FilePathView& link_
-#endif
+//#elif defined(SIV3D_INCLUDED)
+//			const ::s3d::FilePathView& link_
+//#endif
 		) {
 
 			map_chip_format.emplace_back(MapChipFormat(width_, height_, x_, y_, start_index_, str_));
@@ -162,7 +385,7 @@ namespace AsLib2 {
 				int(x_), int(y_),
 				int(width_), int(height_), &(map_chip[start_index_]));
 #elif defined(SIV3D_INCLUDED)
-			texture_map_chip.emplace_back(::s3d::Texture(link_));
+			texture_map_chip.emplace_back(::s3d::Texture(::AsLib2::utf32(link_)));
 			for (::Crafterra::DataType::IndexUint y = 0, count = 0; y < y_; ++y)
 				for (::Crafterra::DataType::IndexUint x = 0; x < x_; ++x, ++count) {
 					map_chip[start_index_ + count] = (texture_map_chip.back()(double(width_ * x), double(height_ * y), double(width_), double(height_)));
@@ -172,55 +395,50 @@ namespace AsLib2 {
 		}
 
 
-		MapChipImage() {
+		MapChipImage(const ::std::string& path_, const ::Crafterra::ReadText& read_text) {
 
-#if defined(__DXLIB)
-
-			::Crafterra::IndexUint index = 0;
-			loadMapChip(32, 32, 8, 133, index, "Base", "./../../../resource/Picture/Chip/Map/Base(pipoya).png");
-			loadMapChip(32, 32, 4, 10, index, "Cliff", "./../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png");
-			loadMapChip(16, 16, 16, 10, index, "Sea", "./../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Desert", "./../../../resource/Picture/Chip/AutoTile/Dirt3(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Rock", "./../../../resource/Picture/Chip/AutoTile/Dirt2(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Savannah", "./../../../resource/Picture/Chip/AutoTile/Dirt1(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Mountain", "./../../../resource/Picture/Chip/AutoTile/Grass2(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Forest", "./../../../resource/Picture/Chip/AutoTile/Grass4(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Grass", "./../../../resource/Picture/Chip/AutoTile/LongGrass(pipoya).png");
-
-#elif defined(SIV3D_INCLUDED)
+//#if defined(__DXLIB)
 
 			::Crafterra::IndexUint index = 0;
-			loadMapChip(32, 32, 8, 133, index, "Base", U"./../../../../resource/Picture/Chip/Map/Base(pipoya).png");
-			loadMapChip(32, 32, 4, 10, index, "Cliff", U"./../../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png");
-			loadMapChip(16, 16, 16, 10, index, "Sea", U"./../../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Desert", U"./../../../../resource/Picture/Chip/AutoTile/Dirt3(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Rock", U"./../../../../resource/Picture/Chip/AutoTile/Dirt2(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Savannah", U"./../../../../resource/Picture/Chip/AutoTile/Dirt1(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Mountain", U"./../../../../resource/Picture/Chip/AutoTile/Grass2(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Forest", U"./../../../../resource/Picture/Chip/AutoTile/Grass4(pipoya).png");
-			loadMapChip(16, 16, 4, 10, index, "Grass", U"./../../../../resource/Picture/Chip/AutoTile/LongGrass(pipoya).png");
 
-			//texture_basemap = ::s3d::Texture(U"./../../../../resource/Picture/Chip/Map/Base(pipo).png");
-			//for (::Crafterra::DataType::IndexUint y = 0, count = 0; y < 249; ++y)
-			//	for (::Crafterra::DataType::IndexUint x = 0; x < 8; ++x, ++count) {
-			//		base_map[count] = texture_basemap(double(32 * x), double(32 * y), double(32), double(32));
-			//	}
-			//texture_cliff_top = ::s3d::Texture(U"./../../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png");
-			//for (::Crafterra::DataType::IndexUint y = 0, count = 0; y < 10; ++y)
-			//	for (::Crafterra::DataType::IndexUint x = 0; x < 4; ++x, ++count) {
-			//		cliff_top[count] = texture_cliff_top(double(32 * x), double(32 * y), double(32), double(32));
-			//	}
-			//texture_sea = ::s3d::Texture(U"./../../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png");
-			//for (::Crafterra::DataType::IndexUint y = 0, count = 0; y < 10; ++y)
-			//	for (::Crafterra::DataType::IndexUint x = 0; x < 16; ++x, ++count) {
-			//		sea[count] = texture_sea(double(16 * x), double(16 * y), double(16), double(16));
-			//	}
-			//texture_desert = ::s3d::Texture(U"./../../../../resource/Picture/Chip/AutoTile/[A]Dirt3_pipo.png");
-			//for (::Crafterra::DataType::IndexUint y = 0, count = 0; y < 10; ++y)
-			//	for (::Crafterra::DataType::IndexUint x = 0; x < 4; ++x, ++count) {
-			//		desert[count] = texture_desert(double(16 * x), double(16 * y), double(16), double(16));
-			//	}
-#endif // __DXLIB
+			const auto& mat = read_text.getMatrix();
+			if (mat.size() <= 1) return; // 画像データなし
+
+			for (::Crafterra::IndexUint y = 1; y < mat.size(); ++y) {
+				::Crafterra::Uint16 width{};
+				::Crafterra::Uint16 height{};
+				::Crafterra::Uint16 getx{};
+				::Crafterra::Uint16 gety{};
+				::Crafterra::IndexUint start_index{};
+				::std::string tile{};
+				::std::string label{};
+				::std::string path{};
+				for (::Crafterra::IndexUint x = 0; x < mat[y].size(); ++x) {
+					if ((mat.front()[x]) == ::std::string("width")) width = ::Crafterra::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("height")) height = ::Crafterra::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("x")) getx = ::Crafterra::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("y")) gety = ::Crafterra::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("tile")) tile = mat[y][x];
+					else if ((mat.front()[x]) == ::std::string("label")) label = mat[y][x];
+					else if ((mat.front()[x]) == ::std::string("path")) path = mat[y][x];
+				}
+				loadMapChip(width, height, getx, gety, index, label, path_ + path);
+			}
+
+//#elif defined(SIV3D_INCLUDED)
+
+			//::Crafterra::IndexUint index = 0;
+			//loadMapChip(32, 32, 8, 133, index, "Base", U"./../../../../resource/Picture/Chip/Map/Base(pipoya).png");
+			//loadMapChip(32, 32, 4, 10, index, "Cliff", U"./../../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png");
+			//loadMapChip(16, 16, 16, 10, index, "Sea", U"./../../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Desert", U"./../../../../resource/Picture/Chip/AutoTile/Dirt3(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Rock", U"./../../../../resource/Picture/Chip/AutoTile/Dirt2(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Savannah", U"./../../../../resource/Picture/Chip/AutoTile/Dirt1(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Mountain", U"./../../../../resource/Picture/Chip/AutoTile/Grass2(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Forest", U"./../../../../resource/Picture/Chip/AutoTile/Grass4(pipoya).png");
+			//loadMapChip(16, 16, 4, 10, index, "Grass", U"./../../../../resource/Picture/Chip/AutoTile/LongGrass(pipoya).png");
+
+//#endif // __DXLIB
 		}
 
 		~MapChipImage() {
