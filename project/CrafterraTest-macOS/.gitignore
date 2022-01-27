@@ -2,4 +2,7 @@
 CrafterraTest-macOS/include
 CrafterraTest-macOS/lib
 # OpenSiv3D Executables
-CrafterraTest-macOS/App
+CrafterraTest-macOS/App/*
+
+# OpenSiv3D Executables
+!CrafterraTest-macOS/App/Settings.tsv

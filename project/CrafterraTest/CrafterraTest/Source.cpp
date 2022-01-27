@@ -16,7 +16,11 @@
 
 ##########################################################################################*/
 
+#ifdef __APPLE__
+#include <Siv3D.hpp>
+#else
 #include <DxLib.h>
+#endif
 
 // Crafterra 
 #include <Crafterra/Crafterra.hpp>

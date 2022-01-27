@@ -36,7 +36,7 @@
 		94D8D4D827A0496E00E53EE7 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D8D4D727A0496E00E53EE7 /* libfreetype.a */; };
 		94D8D4DA27A0498A00E53EE7 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D8D4D927A0498A00E53EE7 /* libboost_filesystem.a */; };
 		94D8D4DC27A049A800E53EE7 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D8D4DB27A049A800E53EE7 /* libSiv3D.a */; };
-		94D8D4E227A05E3500E53EE7 /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94D8D4E127A05E3500E53EE7 /* Source.cpp */; };
+		94E284FC27A2C8B6009C237E /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94E284FB27A2C8B6009C237E /* Source.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,7 +71,7 @@
 		94D8D4D727A0496E00E53EE7 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = lib/macOS/freetype/libfreetype.a; sourceTree = "<group>"; };
 		94D8D4D927A0498A00E53EE7 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 		94D8D4DB27A049A800E53EE7 /* libSiv3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSiv3D.a; path = lib/macOS/libSiv3D.a; sourceTree = "<group>"; };
-		94D8D4E127A05E3500E53EE7 /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Source.cpp; sourceTree = "<group>"; };
+		94E284FB27A2C8B6009C237E /* Source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Source.cpp; path = ../../CrafterraTest/CrafterraTest/Source.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,8 +117,8 @@
 			children = (
 				2C6906D72298140F00A427D0 /* engine */,
 				2C1778921CE0A9EA00BB8AD0 /* Info.plist */,
-				94D8D4E127A05E3500E53EE7 /* Source.cpp */,
 				2C1778A21CE0B65500BB8AD0 /* icon.icns */,
+				94E284FB27A2C8B6009C237E /* Source.cpp */,
 				2C1778851CE0A9EA00BB8AD0 /* Products */,
 				2CC7F9861F45930A0071A239 /* Frameworks */,
 			);
@@ -234,7 +234,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94D8D4E227A05E3500E53EE7 /* Source.cpp in Sources */,
+				94E284FC27A2C8B6009C237E /* Source.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
