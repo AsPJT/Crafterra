@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_HOMOGENEOUS_CONNECTION_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_HOMOGENEOUS_CONNECTION_HPP
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_TILE_CONNECTION_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_TILE_CONNECTION_HPP
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>

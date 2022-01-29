@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_MAP_CHIP_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_MAP_CHIP_HPP
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
@@ -48,7 +48,7 @@ namespace Crafterra {
 	};
 
 
-	::As::Array<::As::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
+	::As::Array<::As::String, As::IndexUint(MapChipTypeBiome::size)>
 		MapChipTypeBiomeString{ {
 				"Empty","Sea","Lake","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
 	} };
@@ -59,7 +59,7 @@ namespace Crafterra {
 //				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
 //	} };
 //#else
-	//::Crafterra::DataType::Array<::As::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
+	//::Crafterra::DataType::Array<::As::String, As::IndexUint(MapChipTypeBiome::size)>
 	//	MapChipTypeBiomeString{ {
 	//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
 	//} };
@@ -189,10 +189,10 @@ namespace Crafterra {
 		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->draw_biome = draw_biome_;
 		}
-		Block getBlock(const As::DataType::IndexUint index_) const {
+		Block getBlock(const As::IndexUint index_) const {
 			return this->block[index_];
 		}
-		void setBlock(const Block& block_, const As::DataType::IndexUint index_) {
+		void setBlock(const Block& block_, const As::IndexUint index_) {
 			this->block[index_] = block_;
 		}
 		Block getDrawBlock() const {

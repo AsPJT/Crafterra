@@ -50,8 +50,8 @@ namespace Crafterra {
 		::As::MapChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
-		As::DataType::IndexUint window_width = 0;
-		As::DataType::IndexUint window_height = 0;
+		As::IndexUint window_width = 0;
+		As::IndexUint window_height = 0;
 
 	public:
 		void setWindowWidth(const ::As::IndexUint window_width_) { this->window_width = window_width_; }

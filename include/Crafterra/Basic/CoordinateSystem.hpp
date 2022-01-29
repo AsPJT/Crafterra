@@ -26,8 +26,8 @@ namespace Crafterra {
 	class CoordinateSystem {
 	public:
 
-		using cs_uint = As::DataType::IndexUint;
-		using cs_int = As::DataType::Int32;
+		using cs_uint = As::IndexUint;
+		using cs_int = As::Int32;
 		using cs_f32 = float;
 
 		using UintSize2D = ::Crafterra::Size2D<cs_uint>;

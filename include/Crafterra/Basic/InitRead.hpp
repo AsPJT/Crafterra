@@ -28,7 +28,7 @@
 
 namespace Crafterra {
 
-	As::DataType::Int32 getNum(const ::As::String& str_) {
+	As::Int32 getNum(const ::As::String& str_) {
 		int num = 0;
 		for (auto& s : str_) {
 			switch (s) {
@@ -54,7 +54,7 @@ namespace Crafterra {
 	};
 	struct ReadInt {
 		::As::String label;
-		As::DataType::Int32 value{};
+		As::Int32 value{};
 	};
 	struct ReadString {
 		::As::String label;
@@ -103,7 +103,7 @@ namespace Crafterra {
 
 		::As::String path{};
 
-		As::DataType::Int32 getNum(const ::As::String& str_) const {
+		As::Int32 getNum(const ::As::String& str_) const {
 			int num = 0;
 			for (auto& s : str_) {
 				switch (s) {
@@ -161,7 +161,7 @@ namespace Crafterra {
 			}
 			return false;
 		}
-		As::DataType::Int32 getInt(const ::As::String& label_) {
+		As::Int32 getInt(const ::As::String& label_) {
 			for (const auto& iv : read_array.int_value) {
 				if (iv.label == label_) return iv.value;
 			}

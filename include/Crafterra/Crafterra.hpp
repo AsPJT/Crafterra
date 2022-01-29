@@ -41,6 +41,7 @@
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
 
 #include <Crafterra/Enum/CrafterraEnum.hpp>
+#include <Crafterra/Enum/ActorDirection.hpp>
 
 #include <Crafterra/Basic/Size2D.hpp>
 #include <Crafterra/Basic/ElapsedTime.hpp>
@@ -73,7 +74,11 @@ namespace Crafterra {
 
 #include <Crafterra/Basic/CoordinateSystem.hpp>
 
-#include <Crafterra/Map/MapChip.hpp>
+#include <Crafterra/Terrain/MapChip.hpp>
+
+#include <Crafterra/Actor/Actor.hpp>
+
+#include <Crafterra/Terrain/Chunk.hpp>
 
 //##########################################################################################
 #include <AsLib2/AsLib2.hpp>

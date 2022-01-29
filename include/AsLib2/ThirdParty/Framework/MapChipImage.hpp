@@ -22,7 +22,7 @@
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
 #include <AsLib2/ThirdParty/Framework/DataType.hpp>
 
-#include <Crafterra/Map/HomogeneousConnection.hpp> // AutoTileIndex
+#include <Crafterra/Terrain/TileConnection.hpp> // AutoTileIndex
 
 #include <Crafterra/Basic/InitRead.hpp> // ReadText
 
@@ -186,7 +186,6 @@ namespace As {
 				::As::Uint16 height{};
 				::As::Uint16 getx{};
 				::As::Uint16 gety{};
-				::As::IndexUint start_index{};
 				::std::string tile{};
 				::std::string label{};
 				::std::string path{};
