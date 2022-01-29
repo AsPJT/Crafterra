@@ -33,22 +33,27 @@ namespace Crafterra {
 	// Crafterra を再生
 	void playCrafterra(::Crafterra::Resource& resource_) {
 
+		// カウンタ ----------
 		int cd_anime = 0; // アニメーション
 		int cd_anime_sea = 0; // アニメーション
 
 		int time_count = 0;
 		const int time_count_max = 5;
 
-		resource_.getMusic().playLoop(); // 曲を再生
+		// 曲を再生 ----------
+		resource_.getMusic().playLoop();
 
+		// SEED 生成 ----------
 		::std::random_device seed_gen;
 		::std::mt19937 engine(seed_gen()); // 乱数生成器
 		const ::As::Uint32 temperature_seed = engine();
 		const ::As::Uint32 amount_of_rainfall_seed = engine();
 		const ::As::Uint32 elevation_seed = engine();
 
+		// 座標系 ----------
 		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
 
+		// フィールドマップ ----------
 		using FieldMapMatrix = ::As::Matrix<MapChip, init_field_map_width, init_field_map_height>; // 世界
 		using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
@@ -57,32 +62,36 @@ namespace Crafterra {
 
 		FieldMapMatrix& field_map_matrix = (*field_map_matrix_ptr); // フィールドマップ
 
+		// 地形生成 ----------
 		Chunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
-
-		// 地形
-		Terrain terrain(temperature_seed, amount_of_rainfall_seed, elevation_seed);
-		terrain.initialGeneration(field_map_matrix, chunk.getX(), chunk.getY());
+		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed);
+		Terrain terrain;
+		terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
 		terrain.setTerrain(field_map_matrix);
 
-		// プレイヤーの位置
+		// プレイヤーの位置 ----------
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
 		player.setY(float(field_map_matrix[As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getElevation3()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
 
+		// キー入力
 		::As::InputKey key;
 
+		// 操作アクタの初期設定
 		OperationActorStateInFieldMap operation_actor_state_in_field = OperationActorStateInFieldMap::airship;
 		cs.setMapChipSize(10.f);
 		//OperationActorStateInFieldMap operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
 		//cs.setMapChipSize(64.f);
 
+		// 経過時間 ----------
 		ElapsedTime elapsed_time;
 
+		// ログ関連 ----------
 		::As::DrawRect log_background(::As::Rect(0, 0, 250, 220), ::As::Color(40));
-
 		bool is_debug_log = true;
 
+		// メインループ ----------
 		while (::Crafterra::System::update()) {
 			elapsed_time.update();
 			const ::As::Int64 elapsed = elapsed_time.getMicroseconds();
@@ -143,7 +152,7 @@ namespace Crafterra {
 					player.setDirection(::Crafterra::Enum::ActorDirection::down);
 				}
 				if (key.isDown(::As::Key::key_g)) {
-					terrain.initialGeneration(field_map_matrix, chunk.getX(), chunk.getY());
+					terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
 					terrain.setTerrain(field_map_matrix);
 				}
 				if (key.isPressed(::As::Key::key_j)) {
@@ -175,7 +184,7 @@ namespace Crafterra {
 					cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
 					chunk.moveRight();
 					terrain.moveLeft(field_map_matrix, init_field_map_width / 2);
-					terrain.generation(field_map_matrix, chunk.getX() + 1, chunk.getY(), init_field_map_width / 2, 0, init_field_map_width, init_field_map_height);
+					terrain.generation(field_map_matrix, terrain_noise, chunk.getX() + 1, chunk.getY(), init_field_map_width / 2, 0, init_field_map_width, init_field_map_height);
 					terrain.setTerrain(field_map_matrix);
 				}
 				// 左側に生成
@@ -183,7 +192,7 @@ namespace Crafterra {
 					cs.camera_size.moveX(+float(cs.field_map_size.getWidthHalf()));
 					chunk.moveLeft();
 					terrain.moveRight(field_map_matrix, init_field_map_width / 2);
-					terrain.generation(field_map_matrix, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width / 2, init_field_map_height);
+					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width / 2, init_field_map_height);
 					terrain.setTerrain(field_map_matrix);
 				}
 				// 上側に生成
@@ -191,7 +200,7 @@ namespace Crafterra {
 					cs.camera_size.moveY(-float(cs.field_map_size.getHeightHalf()));
 					chunk.moveUp();
 					terrain.moveUp(field_map_matrix, init_field_map_height / 2);
-					terrain.generation(field_map_matrix, chunk.getX(), chunk.getY() + 1, 0, init_field_map_height / 2, init_field_map_width, init_field_map_height);
+					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY() + 1, 0, init_field_map_height / 2, init_field_map_width, init_field_map_height);
 					terrain.setTerrain(field_map_matrix);
 				}
 				// 下側に生成
@@ -199,7 +208,7 @@ namespace Crafterra {
 					cs.camera_size.moveY(+float(cs.field_map_size.getHeightHalf()));
 					chunk.moveDown();
 					terrain.moveDown(field_map_matrix, init_field_map_height / 2);
-					terrain.generation(field_map_matrix, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width, init_field_map_height / 2);
+					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width, init_field_map_height / 2);
 					terrain.setTerrain(field_map_matrix);
 				}
 			}
@@ -210,13 +219,6 @@ namespace Crafterra {
 					[&field_map_matrix, &resource_, &cd_anime_sea](const float csx_, const float csy_, const float cw_, const float ch_, const ::As::IndexUint x_, const ::As::IndexUint y_) {
 
 						const MapChip& field_map = field_map_matrix[y_][x_];
-
-						const int start_x = int(csx_ + 0.5f);
-						const int start_y = int(csy_ + 0.5f);
-						const int center_x = int(csx_ + cw_ / 2.f + 0.5f);
-						const int center_y = int(csy_ + ch_ / 2.f + 0.5f);
-						const int end_x = int(csx_ + cw_ + 0.5f);
-						const int end_y = int(csy_ + ch_ + 0.5f);
 
 						const ::As::Rect map_chip_rect(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f) - int(csx_ + 0.5f), int(csy_ + ch_ + 0.5f) - int(csy_ + 0.5f));
 
@@ -386,7 +388,8 @@ namespace Crafterra {
 				);
 			}
 #endif // __DXLIB
-		}
+
+		} // メインループ
 
 	}
 
