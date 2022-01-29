@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_BASIC_RECT_HPP
 #define INCLUDED_ASLIB2_ASLIB2_BASIC_RECT_HPP
 
-namespace AsLib2 {
+namespace As {
 
 	struct Rect {
 #ifdef __DXLIB

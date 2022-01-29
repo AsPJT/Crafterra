@@ -1,6 +1,6 @@
 ﻿/*##########################################################################################
 
-	Crafterra Library 🌏
+	AsLib2 🌏
 
 	[Planning and Production]
 	2017-2022 Kasugaccho
@@ -19,37 +19,37 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_STRING_DATA_TYPE_HPP
 #define INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_STRING_DATA_TYPE_HPP
 
-#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
 
 //##########################################################################################
 // <string> のインクルード
-#ifndef CRAFTERRA_NOT_USE_STRING
-#ifndef CRAFTERRA_USE_STRING
-#define CRAFTERRA_USE_STRING
-#endif // CRAFTERRA_USE_STRING
+#ifndef ASLIB2_NOT_USE_STRING
+#ifndef ASLIB2_USE_STRING
+#define ASLIB2_USE_STRING
+#endif // ASLIB2_USE_STRING
 #include <string>
-#endif // CRAFTERRA_NOT_USE_STRING
+#endif // ASLIB2_NOT_USE_STRING
 //##########################################################################################
 // STRING_T
-#ifndef CRAFTERRA_STRING_T
-#ifdef CRAFTERRA_USE_STRING
-#define CRAFTERRA_STRING_T ::std::basic_string<::Asc::DataType::Char>
+#ifndef ASLIB2_STRING_T
+#ifdef ASLIB2_USE_STRING
+#define ASLIB2_STRING_T ::std::basic_string<::As::DataType::Char>
 #else
 // 今後、ここに string の独自実装を追加
 class TestString{};
-#define CRAFTERRA_STRING_T TestString
-#endif // CRAFTERRA_USE_STRING
-#endif // CRAFTERRA_STRING_T
+#define ASLIB2_STRING_T TestString
+#endif // ASLIB2_USE_STRING
+#endif // ASLIB2_STRING_T
 //##########################################################################################
 // STRING
-#ifndef CRAFTERRA_STRING
-#define CRAFTERRA_STRING CRAFTERRA_STRING_T
-#endif // CRAFTERRA_STRING
+#ifndef ASLIB2_STRING
+#define ASLIB2_STRING ASLIB2_STRING_T
+#endif // ASLIB2_STRING
 //##########################################################################################
 // using 型定義
-namespace Asc {
+namespace As {
 	inline namespace DataType {
-		using String = CRAFTERRA_STRING_T;
+		using String = ASLIB2_STRING_T;
 	}
 }
 //##########################################################################################

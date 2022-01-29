@@ -24,7 +24,7 @@
 #define CRAFTERRA_FOR_DXLIB_MAIN_FUNCTION
 
 #include <Crafterra/Basic/InitRead.hpp>
-#include <AsLib2C/DataType/StringDataType.hpp>
+#include <AsLib2/DataType/StringDataType.hpp>
 
 // Windows 版の場合
 #if defined(__DXLIB)
@@ -51,9 +51,9 @@ void Main()
 	// 背景色を指定
 	::DxLib::SetBackgroundColor(75, 145, 230);
 	// ウィンドウテキストにタイトル名を表示
-	const ::Asc::DataType::String title_name = 
-		::Asc::DataType::String("Crafterra v") + 
-		::Asc::DataType::String(CRAFTERRA_LIBRARY_VERSION_NAME);
+	const ::As::DataType::String title_name = 
+		::As::DataType::String("Crafterra v") + 
+		::As::DataType::String(CRAFTERRA_LIBRARY_VERSION_NAME);
 	::DxLib::SetMainWindowText(title_name.c_str());
 	// フルスクリーンではなくウィンドウで表示
 	if (!init_read.getBool("Fullscreen")) {
@@ -85,10 +85,10 @@ void Main()
 
 	::Crafterra::ReadText read_text(init_read.getString("Data Path") + "MapChip.tsv");
 
-	::AsLib2::Font font;
-	::AsLib2::Music music;
-	::AsLib2::MapChipImage map_chip_image(init_read.getString("Picture Path"), read_text);
-	::AsLib2::CharacterChipImage character_chip_image;
+	::As::Font font;
+	::As::Music music;
+	::As::MapChipImage map_chip_image(init_read.getString("Picture Path"), read_text);
+	::As::CharacterChipImage character_chip_image;
 
 	::Crafterra::Resource cm;
 

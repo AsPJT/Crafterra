@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_MAPCHIP_HPP
 #define INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_MAPCHIP_HPP
 
-#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
 #include <AsLib2/ThirdParty/Framework/DataType.hpp>
 
 #include <Crafterra/Map/HomogeneousConnection.hpp> // AutoTileIndex
@@ -33,7 +33,7 @@
 #include <string>
 #include <cstdint>
 
-namespace AsLib2 {
+namespace As {
 
 	// UTF-32(char32_t) から UTF-8(char*)へ
 	const char* utf8(const char32_t src) {
@@ -250,56 +250,56 @@ namespace AsLib2 {
 
 }
 
-namespace AsLib2 {
+namespace As {
 
 	class MapChipFormat {
 	private:
-		::Asc::Uint16 width = 32;   // 1 マップチップの横のピクセル数
-		::Asc::Uint16 height = 32;   // 1 マップチップの縦のピクセル数
-		::Asc::Uint16 x = 1; // 横のマップチップ数
-		::Asc::Uint16 y = 1;   // 縦のマップチップ数
-		::Asc::DataType::IndexUint start_index = 0;   // そのマップチップの最初の添え字番号
+		::As::Uint16 width = 32;   // 1 マップチップの横のピクセル数
+		::As::Uint16 height = 32;   // 1 マップチップの縦のピクセル数
+		::As::Uint16 x = 1; // 横のマップチップ数
+		::As::Uint16 y = 1;   // 縦のマップチップ数
+		::As::DataType::IndexUint start_index = 0;   // そのマップチップの最初の添え字番号
 		::std::string str{}; // 識別
 	public:
 		// コンストラクタ
 		MapChipFormat() = default;
-		MapChipFormat(::Asc::Uint16 width_, ::Asc::Uint16 height_, ::Asc::Uint16 x_, ::Asc::Uint16 y_, ::Asc::DataType::IndexUint start_index_, const ::std::string& str_)
+		MapChipFormat(::As::Uint16 width_, ::As::Uint16 height_, ::As::Uint16 x_, ::As::Uint16 y_, ::As::DataType::IndexUint start_index_, const ::std::string& str_)
 			:width(width_), height(height_), x(x_), y(y_), start_index(start_index_), str(str_) {}
 
-		::Asc::Uint16 getX() const {
+		::As::Uint16 getX() const {
 			return this->x;
 		}
-		::Asc::Uint16 getY() const {
+		::As::Uint16 getY() const {
 			return this->y;
 		}
-		::Asc::Uint16 getNum() const {
+		::As::Uint16 getNum() const {
 			return (this->x * this->y);
 		}
-		::Asc::Uint16 getWidth() const {
+		::As::Uint16 getWidth() const {
 			return this->width;
 		}
-		::Asc::Uint16 getHeight() const {
+		::As::Uint16 getHeight() const {
 			return this->height;
 		}
-		::Asc::DataType::IndexUint getStartIndex() const {
+		::As::DataType::IndexUint getStartIndex() const {
 			return this->start_index;
 		}
 		const ::std::string& getString() const {
 			return this->str;
 		}
-		void setX(const ::Asc::Uint16 x_) {
+		void setX(const ::As::Uint16 x_) {
 			this->x = x_;
 		}
-		void setY(const ::Asc::Uint16 y_) {
+		void setY(const ::As::Uint16 y_) {
 			this->y = y_;
 		}
-		void setWidth(const ::Asc::Uint16 width_) {
+		void setWidth(const ::As::Uint16 width_) {
 			this->width = width_;
 		}
-		void setHeight(const ::Asc::Uint16 height_) {
+		void setHeight(const ::As::Uint16 height_) {
 			this->height = height_;
 		}
-		void setStartIndex(const ::Asc::DataType::IndexUint start_index_) {
+		void setStartIndex(const ::As::DataType::IndexUint start_index_) {
 			this->start_index = start_index_;
 		}
 		void setString(const ::std::string& str_) {
@@ -328,7 +328,7 @@ namespace AsLib2 {
 		::std::vector<MapChipFormat> map_chip_format{};
 		::std::vector<Image_> map_chip{};
 
-		::Asc::DataType::Uint8 sea_alpha[16 * 10] = {
+		::As::DataType::Uint8 sea_alpha[16 * 10] = {
 			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -340,7 +340,7 @@ namespace AsLib2 {
 			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 		};
-		::Asc::DataType::Uint8 desert_alpha[4 * 10] = {
+		::As::DataType::Uint8 desert_alpha[4 * 10] = {
 			0,0,0,0
 			,0,0,0,0
 			,0,0,0,0
@@ -353,7 +353,7 @@ namespace AsLib2 {
 			,1,1,1,1
 		};
 
-		::Asc::DataType::Uint8 cliff_top_alpha[4 * 10] = {
+		::As::DataType::Uint8 cliff_top_alpha[4 * 10] = {
 			0,1,1,0
 			,1,0,0,0
 			,1,1,0,0
@@ -369,8 +369,8 @@ namespace AsLib2 {
 	public:
 
 		void loadMapChip(
-			::Asc::Uint16 width_, ::Asc::Uint16 height_, ::Asc::Uint16 x_, ::Asc::Uint16 y_,
-			::Asc::DataType::IndexUint& start_index_, const ::std::string& str_, 
+			::As::Uint16 width_, ::As::Uint16 height_, ::As::Uint16 x_, ::As::Uint16 y_,
+			::As::DataType::IndexUint& start_index_, const ::std::string& str_, 
 //#if defined(__DXLIB)
 			const ::std::string& link_
 //#elif defined(SIV3D_INCLUDED)
@@ -385,9 +385,9 @@ namespace AsLib2 {
 				int(x_), int(y_),
 				int(width_), int(height_), &(map_chip[start_index_]));
 #elif defined(SIV3D_INCLUDED)
-			texture_map_chip.emplace_back(::s3d::Texture(::AsLib2::utf32(link_)));
-			for (::Asc::DataType::IndexUint y = 0, count = 0; y < y_; ++y)
-				for (::Asc::DataType::IndexUint x = 0; x < x_; ++x, ++count) {
+			texture_map_chip.emplace_back(::s3d::Texture(::As::utf32(link_)));
+			for (::As::DataType::IndexUint y = 0, count = 0; y < y_; ++y)
+				for (::As::DataType::IndexUint x = 0; x < x_; ++x, ++count) {
 					map_chip[start_index_ + count] = (texture_map_chip.back()(double(width_ * x), double(height_ * y), double(width_), double(height_)));
 				}
 #endif
@@ -399,25 +399,25 @@ namespace AsLib2 {
 
 //#if defined(__DXLIB)
 
-			::Asc::DataType::IndexUint index = 0;
+			::As::DataType::IndexUint index = 0;
 
 			const auto& mat = read_text.getMatrix();
 			if (mat.size() <= 1) return; // 画像データなし
 
-			for (::Asc::DataType::IndexUint y = 1; y < mat.size(); ++y) {
-				::Asc::Uint16 width{};
-				::Asc::Uint16 height{};
-				::Asc::Uint16 getx{};
-				::Asc::Uint16 gety{};
-				::Asc::DataType::IndexUint start_index{};
+			for (::As::DataType::IndexUint y = 1; y < mat.size(); ++y) {
+				::As::Uint16 width{};
+				::As::Uint16 height{};
+				::As::Uint16 getx{};
+				::As::Uint16 gety{};
+				::As::DataType::IndexUint start_index{};
 				::std::string tile{};
 				::std::string label{};
 				::std::string path{};
-				for (::Asc::DataType::IndexUint x = 0; x < mat[y].size(); ++x) {
-					if ((mat.front()[x]) == ::std::string("width")) width = ::Asc::Uint16(::Crafterra::getNum(mat[y][x]));
-					else if ((mat.front()[x]) == ::std::string("height")) height = ::Asc::Uint16(::Crafterra::getNum(mat[y][x]));
-					else if ((mat.front()[x]) == ::std::string("x")) getx = ::Asc::Uint16(::Crafterra::getNum(mat[y][x]));
-					else if ((mat.front()[x]) == ::std::string("y")) gety = ::Asc::Uint16(::Crafterra::getNum(mat[y][x]));
+				for (::As::DataType::IndexUint x = 0; x < mat[y].size(); ++x) {
+					if ((mat.front()[x]) == ::std::string("width")) width = ::As::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("height")) height = ::As::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("x")) getx = ::As::Uint16(::Crafterra::getNum(mat[y][x]));
+					else if ((mat.front()[x]) == ::std::string("y")) gety = ::As::Uint16(::Crafterra::getNum(mat[y][x]));
 					else if ((mat.front()[x]) == ::std::string("tile")) tile = mat[y][x];
 					else if ((mat.front()[x]) == ::std::string("label")) label = mat[y][x];
 					else if ((mat.front()[x]) == ::std::string("path")) path = mat[y][x];
@@ -427,7 +427,7 @@ namespace AsLib2 {
 
 //#elif defined(SIV3D_INCLUDED)
 
-			//::Asc::DataType::IndexUint index = 0;
+			//::As::DataType::IndexUint index = 0;
 			//loadMapChip(32, 32, 8, 133, index, "Base", U"./../../../../resource/Picture/Chip/Map/Base(pipoya).png");
 			//loadMapChip(32, 32, 4, 10, index, "Cliff", U"./../../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png");
 			//loadMapChip(16, 16, 16, 10, index, "Sea", U"./../../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png");
@@ -444,16 +444,16 @@ namespace AsLib2 {
 		~MapChipImage() {
 
 		}
-		Image_ getMapChip(const ::std::string& str_, const::Asc::DataType::IndexUint index_) const {
+		Image_ getMapChip(const ::std::string& str_, const::As::DataType::IndexUint index_) const {
 			for (const auto& mcf : map_chip_format) {
 				if (mcf.getString() != str_) continue;
 				return this->map_chip[mcf.getStartIndex() + index_];
 			}
 			return this->map_chip[0];
 		}
-		::Asc::DataType::Uint8 getSeaAlpha(const ::Asc::DataType::IndexUint index_) const { return this->sea_alpha[index_]; }
-		bool getIsSeaAlpha(const ::Asc::DataType::IndexUint index_) const { return (this->sea_alpha[index_] == 0); }
-		bool getIsAlpha(const ::Crafterra::AutoTileIndex& auto_tile_index_, const ::Asc::DataType::Uint8* const alpha_array_) const {
+		::As::DataType::Uint8 getSeaAlpha(const ::As::DataType::IndexUint index_) const { return this->sea_alpha[index_]; }
+		bool getIsSeaAlpha(const ::As::DataType::IndexUint index_) const { return (this->sea_alpha[index_] == 0); }
+		bool getIsAlpha(const ::Crafterra::AutoTileIndex& auto_tile_index_, const ::As::DataType::Uint8* const alpha_array_) const {
 			return ((alpha_array_[auto_tile_index_.auto_tile_upper_left] == 0) ||
 				(alpha_array_[auto_tile_index_.auto_tile_upper_right] == 0) ||
 				(alpha_array_[auto_tile_index_.auto_tile_lower_left] == 0) ||
@@ -465,7 +465,7 @@ namespace AsLib2 {
 		bool getIsDesertAlpha(const ::Crafterra::AutoTileIndex& auto_tile_index_) const {
 			return getIsAlpha(auto_tile_index_, this->desert_alpha);
 		}
-		::Asc::DataType::Uint8 getMapChipCliffTopAlpha(const ::Asc::DataType::IndexUint index_) const { return this->cliff_top_alpha[index_]; }
+		::As::DataType::Uint8 getMapChipCliffTopAlpha(const ::As::DataType::IndexUint index_) const { return this->cliff_top_alpha[index_]; }
 
 	};
 }

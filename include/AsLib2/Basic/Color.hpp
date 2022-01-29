@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_BASIC_COLOR_HPP
 #define INCLUDED_ASLIB2_ASLIB2_BASIC_COLOR_HPP
 
-namespace AsLib2 {
+namespace As {
 
 	class Color {
 	private:

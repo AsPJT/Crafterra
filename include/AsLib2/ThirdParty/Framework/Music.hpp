@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_MUSIC_HPP
 #define INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_MUSIC_HPP
 
-namespace AsLib2 {
+namespace As {
 
 	class Music {
 	private:

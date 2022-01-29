@@ -1,6 +1,6 @@
 ﻿/*##########################################################################################
 
-	Crafterra Library 🌏
+	AsLib2 🌏
 
 	[Planning and Production]
 	2017-2022 Kasugaccho
@@ -147,7 +147,7 @@
 #endif // ASLIB2_CHAR8_T
 //##########################################################################################
 // using 型定義
-namespace Asc {
+namespace As {
 	inline namespace DataType {
 		// size_t
 		using IndexUint = ASLIB2_SIZE_T;

@@ -19,15 +19,15 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_COORDINATE_SYSTEM_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_COORDINATE_SYSTEM_HPP
 
-#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
 
 namespace Crafterra {
 
 	class CoordinateSystem {
 	public:
 
-		using cs_uint = Asc::DataType::IndexUint;
-		using cs_int = Asc::DataType::Int32;
+		using cs_uint = As::DataType::IndexUint;
+		using cs_int = As::DataType::Int32;
 		using cs_f32 = float;
 
 		using UintSize2D = ::Crafterra::Size2D<cs_uint>;

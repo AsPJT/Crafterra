@@ -21,7 +21,7 @@
 
 #include <vector>
 
-namespace AsLib2 {
+namespace As {
 
 	// キャラチップの状態
 	struct CharacterChipStatus {
@@ -66,8 +66,8 @@ namespace AsLib2 {
 
 		}
 
-		int getCharacterChip(const ::Asc::DataType::IndexUint character_id_, const ::Asc::DataType::IndexUint index_) const {
-			return this->character_chip[::Asc::DataType::IndexUint(this->character_start_index_chip[character_id_]) + index_];
+		int getCharacterChip(const ::As::DataType::IndexUint character_id_, const ::As::DataType::IndexUint index_) const {
+			return this->character_chip[::As::DataType::IndexUint(this->character_start_index_chip[character_id_]) + index_];
 		}
 
 	};

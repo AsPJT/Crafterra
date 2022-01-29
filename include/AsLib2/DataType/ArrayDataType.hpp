@@ -1,6 +1,6 @@
 ﻿/*##########################################################################################
 
-	Crafterra Library 🌏
+	AsLib2 🌏
 
 	[Planning and Production]
 	2017-2022 Kasugaccho
@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_ARRAY_DATA_TYPE_HPP
 #define INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_ARRAY_DATA_TYPE_HPP
 
-#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
 
 //##########################################################################################
 // <array> のインクルード
@@ -48,12 +48,12 @@ class TestArray{};
 #endif // ASLIB2_ARRAY
 //##########################################################################################
 // using 型定義
-namespace Asc {
+namespace As {
 	inline namespace DataType {
-		template <class Type_, ::Asc::DataType::IndexUint Number_>
+		template <class Type_, ::As::DataType::IndexUint Number_>
 		using Array = ASLIB2_ARRAY_T<Type_, Number_>;
 
-		template <class Type_, ::Asc::DataType::IndexUint NumberX_, ::Asc::DataType::IndexUint NumberY_>
+		template <class Type_, ::As::DataType::IndexUint NumberX_, ::As::DataType::IndexUint NumberY_>
 		using Matrix = ASLIB2_ARRAY_T<ASLIB2_ARRAY_T<Type_, NumberX_>, NumberY_>;
 	}
 }

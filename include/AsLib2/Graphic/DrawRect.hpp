@@ -22,7 +22,7 @@
 #include <AsLib2/Basic/Color.hpp>
 #include <AsLib2/Basic/Rect.hpp>
 
-namespace AsLib2 {
+namespace As {
 
 	class DrawRect {
 	public:

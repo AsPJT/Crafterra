@@ -1,6 +1,6 @@
 ﻿/*##########################################################################################
 
-	Crafterra Library 🌏
+	AsLib2 🌏
 
 	[Planning and Production]
 	2017-2022 Kasugaccho
@@ -46,7 +46,7 @@ class TestVector{};
 #endif // ASLIB2_VECTOR
 //##########################################################################################
 //// using 型定義
-//namespace Asc {
+//namespace As {
 //	inline namespace DataType {
 //		// メモリアロケータは未実装
 //		template <typename Type_>

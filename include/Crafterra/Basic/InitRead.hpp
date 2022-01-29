@@ -24,11 +24,11 @@
 
 #include <vector>
 
-#include <AsLib2C/DataType/StringDataType.hpp>
+#include <AsLib2/DataType/StringDataType.hpp>
 
 namespace Crafterra {
 
-	Asc::DataType::Int32 getNum(const ::Asc::DataType::String& str_) {
+	As::DataType::Int32 getNum(const ::As::DataType::String& str_) {
 		int num = 0;
 		for (auto& s : str_) {
 			switch (s) {
@@ -49,16 +49,16 @@ namespace Crafterra {
 	}
 
 	struct ReadBool {
-		::Asc::DataType::String label;
+		::As::DataType::String label;
 		bool value{};
 	};
 	struct ReadInt {
-		::Asc::DataType::String label;
-		Asc::DataType::Int32 value{};
+		::As::DataType::String label;
+		As::DataType::Int32 value{};
 	};
 	struct ReadString {
-		::Asc::DataType::String label;
-		::Asc::DataType::String value{};
+		::As::DataType::String label;
+		::As::DataType::String value{};
 	};
 
 	struct ReadArray {
@@ -73,8 +73,8 @@ namespace Crafterra {
 
 	public:
 		// コンストラクタ
-		ReadText(const ::Asc::DataType::String& path_, const char char_ = '\t') {
-			::Asc::DataType::String str_buf{}, str_conma_buf{};
+		ReadText(const ::As::DataType::String& path_, const char char_ = '\t') {
+			::As::DataType::String str_buf{}, str_conma_buf{};
 			std::ifstream ifs(path_);
 			if (!ifs) return;
 
@@ -101,9 +101,9 @@ namespace Crafterra {
 
 		ReadArray read_array{};
 
-		::Asc::DataType::String path{};
+		::As::DataType::String path{};
 
-		Asc::DataType::Int32 getNum(const ::Asc::DataType::String& str_) const {
+		As::DataType::Int32 getNum(const ::As::DataType::String& str_) const {
 			int num = 0;
 			for (auto& s : str_) {
 				switch (s) {
@@ -128,21 +128,21 @@ namespace Crafterra {
 
 
 
-		InitRead(const ::Asc::DataType::String& path_) {
-			::Asc::DataType::String str_buf{}, str_conma_buf{}, input_csv_file_path = path_;
+		InitRead(const ::As::DataType::String& path_) {
+			::As::DataType::String str_buf{}, str_conma_buf{}, input_csv_file_path = path_;
 			std::ifstream ifs(input_csv_file_path);
 			if (!ifs) return;
 
 			while (::std::getline(ifs, str_buf)) {
 				std::istringstream ifss(str_buf);
 
-				::Asc::DataType::String data_type{}, label{}, value{};
+				::As::DataType::String data_type{}, label{}, value{};
 				if (!(::std::getline(ifss, data_type, '\t'))) continue;
 				if (!(::std::getline(ifss, label, '\t'))) continue;
 				if (!(::std::getline(ifss, value, '\t'))) continue;
 
 				if (data_type == "bool") {
-					read_array.bool_value.emplace_back(ReadBool{ label , (value == ::Asc::DataType::String("yes")) });
+					read_array.bool_value.emplace_back(ReadBool{ label , (value == ::As::DataType::String("yes")) });
 				}
 				else if (data_type == "int") {
 					read_array.int_value.emplace_back(ReadInt{ label , getNum(value) });
@@ -155,23 +155,23 @@ namespace Crafterra {
 
 		}
 
-		bool getBool(const ::Asc::DataType::String& label_) {
+		bool getBool(const ::As::DataType::String& label_) {
 			for (const auto& bv : read_array.bool_value) {
 				if (bv.label == label_) return bv.value;
 			}
 			return false;
 		}
-		Asc::DataType::Int32 getInt(const ::Asc::DataType::String& label_) {
+		As::DataType::Int32 getInt(const ::As::DataType::String& label_) {
 			for (const auto& iv : read_array.int_value) {
 				if (iv.label == label_) return iv.value;
 			}
 			return 0;
 		}
-		::Asc::DataType::String getString(const ::Asc::DataType::String& label_) {
+		::As::DataType::String getString(const ::As::DataType::String& label_) {
 			for (const auto& sv : read_array.string_value) {
 				if (sv.label == label_) return sv.value;
 			}
-			return ::Asc::DataType::String{};
+			return ::As::DataType::String{};
 		}
 
 

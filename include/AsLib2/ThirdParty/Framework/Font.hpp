@@ -21,7 +21,7 @@
 
 // #include <Windows.h>
 
-namespace AsLib2 {
+namespace As {
 
 	class Font {
 	private:

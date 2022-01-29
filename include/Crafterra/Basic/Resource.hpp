@@ -19,9 +19,9 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_RESOURCE_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_RESOURCE_HPP
 
-#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
 
-namespace AsLib2 {
+namespace As {
 	class Font;
 	class Music;
 	class MapChipImage;
@@ -34,30 +34,30 @@ namespace Crafterra {
 
 		// 各種素材のポインタ
 	private:
-		::AsLib2::Font* font = nullptr;
-		::AsLib2::Music* music = nullptr;
-		::AsLib2::MapChipImage* map_chip = nullptr;
-		::AsLib2::CharacterChipImage* character_chip = nullptr;
+		::As::Font* font = nullptr;
+		::As::Music* music = nullptr;
+		::As::MapChipImage* map_chip = nullptr;
+		::As::CharacterChipImage* character_chip = nullptr;
 
 	public:
-		void setFont(::AsLib2::Font& font_) { this->font = &font_; }
-		::AsLib2::Font& getFont() { return *(this->font); }
-		void setMusic(::AsLib2::Music& music_) { this->music = &music_; }
-		::AsLib2::Music& getMusic() { return *(this->music); }
-		void setMapChip(::AsLib2::MapChipImage& map_chip_) { this->map_chip = &map_chip_; }
-		::AsLib2::MapChipImage& getMapChip() { return *(this->map_chip); }
-		void setCharacterChip(::AsLib2::CharacterChipImage& character_chip_) { this->character_chip = &character_chip_; }
-		::AsLib2::CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
+		void setFont(::As::Font& font_) { this->font = &font_; }
+		::As::Font& getFont() { return *(this->font); }
+		void setMusic(::As::Music& music_) { this->music = &music_; }
+		::As::Music& getMusic() { return *(this->music); }
+		void setMapChip(::As::MapChipImage& map_chip_) { this->map_chip = &map_chip_; }
+		::As::MapChipImage& getMapChip() { return *(this->map_chip); }
+		void setCharacterChip(::As::CharacterChipImage& character_chip_) { this->character_chip = &character_chip_; }
+		::As::CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
-		Asc::DataType::IndexUint window_width = 0;
-		Asc::DataType::IndexUint window_height = 0;
+		As::DataType::IndexUint window_width = 0;
+		As::DataType::IndexUint window_height = 0;
 
 	public:
-		void setWindowWidth(const ::Asc::DataType::IndexUint window_width_) { this->window_width = window_width_; }
-		void setWindowHeight(const ::Asc::DataType::IndexUint window_height_) { this->window_height = window_height_; }
-		::Asc::DataType::IndexUint getWindowWidth() const { return this->window_width; }
-		::Asc::DataType::IndexUint getWindowHeight() const { return this->window_height; }
+		void setWindowWidth(const ::As::DataType::IndexUint window_width_) { this->window_width = window_width_; }
+		void setWindowHeight(const ::As::DataType::IndexUint window_height_) { this->window_height = window_height_; }
+		::As::DataType::IndexUint getWindowWidth() const { return this->window_width; }
+		::As::DataType::IndexUint getWindowHeight() const { return this->window_height; }
 	};
 
 }
