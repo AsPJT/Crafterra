@@ -19,13 +19,13 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_KEYBOARD_HPP
 #define INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_KEYBOARD_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 #include <array>
 
 namespace AsLib2 {
 
-	enum class Key : ::Crafterra::IndexUint {
+	enum class Key : ::Asc::DataType::IndexUint {
 		  key_0
 		, key_1
 		, key_2
@@ -69,7 +69,7 @@ namespace AsLib2 {
 		, key_size
 	};
 #if defined(__DXLIB)
-	std::array<::Crafterra::IndexUint, ::Crafterra::IndexUint(Key::key_size)> dxKey{ {
+	std::array<::Asc::DataType::IndexUint, ::Asc::DataType::IndexUint(Key::key_size)> dxKey{ {
 			KEY_INPUT_0
 			,KEY_INPUT_1
 			,KEY_INPUT_2
@@ -150,7 +150,7 @@ namespace AsLib2 {
 
 		bool isPressed(const Key key_num_) const {
 #if defined(__DXLIB)
-			return (this->key[::AsLib2::dxKey[::Crafterra::IndexUint(key_num_)]]);
+			return (this->key[::AsLib2::dxKey[::Asc::DataType::IndexUint(key_num_)]]);
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.pressed(); break;
@@ -199,7 +199,7 @@ namespace AsLib2 {
 		}
 		bool isUp(const Key key_num_) const {
 #if defined(__DXLIB)
-			return this->up_key[::AsLib2::dxKey[::Crafterra::IndexUint(key_num_)]];
+			return this->up_key[::AsLib2::dxKey[::Asc::DataType::IndexUint(key_num_)]];
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.up(); break;
@@ -248,7 +248,7 @@ namespace AsLib2 {
 		}
 		bool isDown(const Key key_num_) const {
 #if defined(__DXLIB)
-			return this->down_key[::AsLib2::dxKey[::Crafterra::IndexUint(key_num_)]];
+			return this->down_key[::AsLib2::dxKey[::Asc::DataType::IndexUint(key_num_)]];
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.down(); break;

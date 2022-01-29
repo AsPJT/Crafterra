@@ -16,47 +16,47 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_ARRAY_DATA_TYPE_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_ARRAY_DATA_TYPE_HPP
+#ifndef INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_ARRAY_DATA_TYPE_HPP
+#define INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_ARRAY_DATA_TYPE_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 //##########################################################################################
 // <array> のインクルード
-#ifndef CRAFTERRA_NOT_USE_ARRAY
-#ifndef CRAFTERRA_USE_ARRAY
-#define CRAFTERRA_USE_ARRAY
-#endif // CRAFTERRA_USE_ARRAY
+#ifndef ASLIB2_NOT_USE_ARRAY
+#ifndef ASLIB2_USE_ARRAY
+#define ASLIB2_USE_ARRAY
+#endif // ASLIB2_USE_ARRAY
 #include <array>
-#endif // CRAFTERRA_NOT_USE_ARRAY
+#endif // ASLIB2_NOT_USE_ARRAY
 //##########################################################################################
 // ARRAY_T
-#ifndef CRAFTERRA_ARRAY_T
-#ifdef CRAFTERRA_USE_ARRAY
-#define CRAFTERRA_ARRAY_T ::std::array
+#ifndef ASLIB2_ARRAY_T
+#ifdef ASLIB2_USE_ARRAY
+#define ASLIB2_ARRAY_T ::std::array
 #else
 // 今後、ここに array の独自実装を追加
 template <typename Type_>
 class TestArray{};
-#define CRAFTERRA_ARRAY_T TestArray
-#endif // CRAFTERRA_USE_ARRAY
-#endif // CRAFTERRA_ARRAY_T
+#define ASLIB2_ARRAY_T TestArray
+#endif // ASLIB2_USE_ARRAY
+#endif // ASLIB2_ARRAY_T
 //##########################################################################################
 // ARRAY
-#ifndef CRAFTERRA_ARRAY
-#define CRAFTERRA_ARRAY CRAFTERRA_ARRAY_T
-#endif // CRAFTERRA_ARRAY
+#ifndef ASLIB2_ARRAY
+#define ASLIB2_ARRAY ASLIB2_ARRAY_T
+#endif // ASLIB2_ARRAY
 //##########################################################################################
 // using 型定義
-namespace Crafterra {
+namespace Asc {
 	inline namespace DataType {
-		template <class Type_, ::Crafterra::DataType::IndexUint Number_>
-		using Array = CRAFTERRA_ARRAY_T<Type_, Number_>;
+		template <class Type_, ::Asc::DataType::IndexUint Number_>
+		using Array = ASLIB2_ARRAY_T<Type_, Number_>;
 
-		template <class Type_, ::Crafterra::DataType::IndexUint NumberX_, ::Crafterra::DataType::IndexUint NumberY_>
-		using Matrix = CRAFTERRA_ARRAY_T<CRAFTERRA_ARRAY_T<Type_, NumberX_>, NumberY_>;
+		template <class Type_, ::Asc::DataType::IndexUint NumberX_, ::Asc::DataType::IndexUint NumberY_>
+		using Matrix = ASLIB2_ARRAY_T<ASLIB2_ARRAY_T<Type_, NumberX_>, NumberY_>;
 	}
 }
 //##########################################################################################
 
-#endif //Included Crafterra Library
+#endif //Included AsLib2

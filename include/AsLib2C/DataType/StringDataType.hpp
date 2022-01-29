@@ -16,10 +16,10 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_STRING_DATA_TYPE_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_STRING_DATA_TYPE_HPP
+#ifndef INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_STRING_DATA_TYPE_HPP
+#define INCLUDED_ASLIB2_ASLIB2C_DATA_TYPE_STRING_DATA_TYPE_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 //##########################################################################################
 // <string> のインクルード
@@ -33,7 +33,7 @@
 // STRING_T
 #ifndef CRAFTERRA_STRING_T
 #ifdef CRAFTERRA_USE_STRING
-#define CRAFTERRA_STRING_T ::std::basic_string<::Crafterra::DataType::Char>
+#define CRAFTERRA_STRING_T ::std::basic_string<::Asc::DataType::Char>
 #else
 // 今後、ここに string の独自実装を追加
 class TestString{};
@@ -47,11 +47,11 @@ class TestString{};
 #endif // CRAFTERRA_STRING
 //##########################################################################################
 // using 型定義
-namespace Crafterra {
+namespace Asc {
 	inline namespace DataType {
 		using String = CRAFTERRA_STRING_T;
 	}
 }
 //##########################################################################################
 
-#endif //Included Crafterra Library
+#endif //Included AsLib2

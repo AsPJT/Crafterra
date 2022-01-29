@@ -19,10 +19,10 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
-#include <Crafterra/DataType/ArrayDataType.hpp>
-#include <Crafterra/DataType/StringDataType.hpp>
+#include <AsLib2C/DataType/ArrayDataType.hpp>
+#include <AsLib2C/DataType/StringDataType.hpp>
 
 #include <Crafterra/Enum/CrafterraEnum.hpp>
 
@@ -48,18 +48,18 @@ namespace Crafterra {
 	};
 
 
-	::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
+	::Asc::DataType::Array<::Asc::DataType::String, Asc::DataType::IndexUint(MapChipTypeBiome::size)>
 		MapChipTypeBiomeString{ {
 				"Empty","Sea","Lake","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
 	} };
 
 //#if (__cplusplus < 202002L)
-//	::Crafterra::DataType::Array<::Crafterra::DataType::String, MapChipTypeBiome::size>
+//	::Crafterra::DataType::Array<::Asc::DataType::String, MapChipTypeBiome::size>
 //		MapChipTypeBiomeString{ {
 //				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
 //	} };
 //#else
-	//::Crafterra::DataType::Array<::Crafterra::DataType::String, IndexUint(MapChipTypeBiome::size)>
+	//::Crafterra::DataType::Array<::Asc::DataType::String, Asc::DataType::IndexUint(MapChipTypeBiome::size)>
 	//	MapChipTypeBiomeString{ {
 	//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
 	//} };
@@ -107,7 +107,7 @@ namespace Crafterra {
 		ElevationUint elevation{}; // 元の標高値
 		ElevationUint temperature{}; // 気温
 		ElevationUint amount_of_rainfall{}; // 降水量
-		Uint32 seed{}; // 乱数シード
+		::Asc::DataType::Uint32 seed{}; // 乱数シード
 
 		// ---------- 描画座標系 ----------
 
@@ -189,10 +189,10 @@ namespace Crafterra {
 		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->draw_biome = draw_biome_;
 		}
-		Block getBlock(const IndexUint index_) const {
+		Block getBlock(const Asc::DataType::IndexUint index_) const {
 			return this->block[index_];
 		}
-		void setBlock(const Block& block_, const IndexUint index_) {
+		void setBlock(const Block& block_, const Asc::DataType::IndexUint index_) {
 			this->block[index_] = block_;
 		}
 		Block getDrawBlock() const {
@@ -225,10 +225,10 @@ namespace Crafterra {
 		void setBlockElevation(const ElevationUint& elevation_) {
 			this->block_elevation = elevation_;
 		}
-		Uint32 getSeed() const {
+		::Asc::DataType::Uint32 getSeed() const {
 			return this->seed;
 		}
-		void setSeed(const Uint32 seed_) {
+		void setSeed(const ::Asc::DataType::Uint32 seed_) {
 			this->seed = seed_;
 		}
 		// 暫定

@@ -36,7 +36,7 @@ namespace Crafterra {
 			now_time = ::std::chrono::system_clock::now();
 		}
 
-		Int64 getMicroseconds() {
+		::Asc::DataType::Int64 getMicroseconds() {
 			return ::std::chrono::duration_cast<::std::chrono::microseconds>(now_time - old_time).count();
 		}
 

@@ -19,10 +19,10 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_HOMOGENEOUS_CONNECTION_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_HOMOGENEOUS_CONNECTION_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
-#include <Crafterra/DataType/ArrayDataType.hpp>
-#include <Crafterra/DataType/StringDataType.hpp>
+#include <AsLib2C/DataType/ArrayDataType.hpp>
+#include <AsLib2C/DataType/StringDataType.hpp>
 
 #include <Crafterra/Enum/CrafterraEnum.hpp>
 
@@ -56,23 +56,23 @@ namespace Crafterra {
 		}
 	}
 
-	Uint32 getAutoTileIndex(const AutoTileConnection ahc_, const Uint32 animation_number_, const Uint32 animation_max_number_) {
-		const Uint32 an2 = animation_number_ * 2; // アニメーション数の 2 倍
-		const Uint32 amn2 = animation_max_number_ * 2; // 最大アニメーション数の 2 倍
-		const Uint32 ahc = Uint32(ahc_);
-		const Uint32 ahcp2 = Uint32(ahc_) / 2;
-		const Uint32 right = ((ahc % 2 == 0) ? 0 : 1);
+	::Asc::DataType::Uint32 getAutoTileIndex(const AutoTileConnection ahc_, const ::Asc::DataType::Uint32 animation_number_, const ::Asc::DataType::Uint32 animation_max_number_) {
+		const ::Asc::DataType::Uint32 an2 = animation_number_ * 2; // アニメーション数の 2 倍
+		const ::Asc::DataType::Uint32 amn2 = animation_max_number_ * 2; // 最大アニメーション数の 2 倍
+		const ::Asc::DataType::Uint32 ahc = ::Asc::DataType::Uint32(ahc_);
+		const ::Asc::DataType::Uint32 ahcp2 = ::Asc::DataType::Uint32(ahc_) / 2;
+		const ::Asc::DataType::Uint32 right = ((ahc % 2 == 0) ? 0 : 1);
 		return amn2 * ahcp2 + an2 + right;
 	}
 
 	// 今後、別の hpp を作成して管理
 	struct AutoTileIndex {
-		Uint32 auto_tile_upper_left{};
-		Uint32 auto_tile_upper_right{};
-		Uint32 auto_tile_lower_left{};
-		Uint32 auto_tile_lower_right{};
+		::Asc::DataType::Uint32 auto_tile_upper_left{};
+		::Asc::DataType::Uint32 auto_tile_upper_right{};
+		::Asc::DataType::Uint32 auto_tile_lower_left{};
+		::Asc::DataType::Uint32 auto_tile_lower_right{};
 
-		AutoTileIndex(const AutoTile& auto_tile_, const Uint32 animation_number_, const Uint32 animation_max_number_) :
+		AutoTileIndex(const AutoTile& auto_tile_, const ::Asc::DataType::Uint32 animation_number_, const ::Asc::DataType::Uint32 animation_max_number_) :
 			auto_tile_upper_left(getAutoTileIndex(auto_tile_.auto_tile_upper_left, animation_number_, animation_max_number_))
 			, auto_tile_upper_right(getAutoTileIndex(auto_tile_.auto_tile_upper_right, animation_number_, animation_max_number_))
 			, auto_tile_lower_left(getAutoTileIndex(auto_tile_.auto_tile_lower_left, animation_number_, animation_max_number_))

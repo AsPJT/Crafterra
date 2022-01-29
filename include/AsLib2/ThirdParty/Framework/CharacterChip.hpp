@@ -66,8 +66,8 @@ namespace AsLib2 {
 
 		}
 
-		int getCharacterChip(const ::Crafterra::IndexUint character_id_, const ::Crafterra::IndexUint index_) const {
-			return this->character_chip[::Crafterra::IndexUint(this->character_start_index_chip[character_id_]) + index_];
+		int getCharacterChip(const ::Asc::DataType::IndexUint character_id_, const ::Asc::DataType::IndexUint index_) const {
+			return this->character_chip[::Asc::DataType::IndexUint(this->character_start_index_chip[character_id_]) + index_];
 		}
 
 	};

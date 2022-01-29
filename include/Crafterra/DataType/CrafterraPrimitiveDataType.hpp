@@ -19,42 +19,42 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_CRAFTERRA_PRIMITIVE_DATA_TYPE_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_DATA_TYPE_CRAFTERRA_PRIMITIVE_DATA_TYPE_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 //##########################################################################################
 // BIOME_T
 #ifndef CRAFTERRA_BIOME_T
-#define CRAFTERRA_BIOME_T ::Crafterra::DataType::Uint16
+#define CRAFTERRA_BIOME_T ::Asc::DataType::Uint16
 #endif // CRAFTERRA_BIOME_T
 
 // BLOCK_T
 #ifndef CRAFTERRA_BLOCK_T
-#define CRAFTERRA_BLOCK_T ::Crafterra::DataType::Uint16
+#define CRAFTERRA_BLOCK_T ::Asc::DataType::Uint16
 #endif // CRAFTERRA_BLOCK_T
 
 // ELEVATION_T
 #ifndef CRAFTERRA_ELEVATION_T
-#define CRAFTERRA_ELEVATION_T ::Crafterra::DataType::Uint16
+#define CRAFTERRA_ELEVATION_T ::Asc::DataType::Uint16
 #endif // CRAFTERRA_ELEVATION_T
 
 // ACTOR_DIRECTION_T
 #ifndef CRAFTERRA_ACTOR_DIRECTION_T
-#define CRAFTERRA_ACTOR_DIRECTION_T ::Crafterra::DataType::Uint8
+#define CRAFTERRA_ACTOR_DIRECTION_T ::Asc::DataType::Uint8
 #endif // CRAFTERRA_ACTOR_DIRECTION_T
 
 // OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
 #ifndef CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
-#define CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T ::Crafterra::DataType::Uint8
+#define CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T ::Asc::DataType::Uint8
 #endif // CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
 
 // MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
 #ifndef MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
-#define MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T ::Crafterra::DataType::Uint8
+#define MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T ::Asc::DataType::Uint8
 #endif // MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
 
 // AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
 #ifndef AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
-#define AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T ::Crafterra::DataType::Uint8
+#define AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T ::Asc::DataType::Uint8
 #endif // AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
 //##########################################################################################
 // using 型定義

@@ -24,7 +24,7 @@
 #define CRAFTERRA_FOR_DXLIB_MAIN_FUNCTION
 
 #include <Crafterra/Basic/InitRead.hpp>
-#include <Crafterra/DataType/StringDataType.hpp>
+#include <AsLib2C/DataType/StringDataType.hpp>
 
 // Windows 版の場合
 #if defined(__DXLIB)
@@ -51,9 +51,9 @@ void Main()
 	// 背景色を指定
 	::DxLib::SetBackgroundColor(75, 145, 230);
 	// ウィンドウテキストにタイトル名を表示
-	const ::Crafterra::DataType::String title_name = 
-		::Crafterra::DataType::String("Crafterra v") + 
-		::Crafterra::DataType::String(CRAFTERRA_LIBRARY_VERSION_NAME);
+	const ::Asc::DataType::String title_name = 
+		::Asc::DataType::String("Crafterra v") + 
+		::Asc::DataType::String(CRAFTERRA_LIBRARY_VERSION_NAME);
 	::DxLib::SetMainWindowText(title_name.c_str());
 	// フルスクリーンではなくウィンドウで表示
 	if (!init_read.getBool("Fullscreen")) {

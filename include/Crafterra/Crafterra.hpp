@@ -29,14 +29,16 @@
 //##########################################################################################
 // Data Type
 // プリミティブ型定義 ( 完成 )
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
+// テンプレート型 ( ほぼ完成 )
+#include <AsLib2C/DataType/StringDataType.hpp>
+#include <AsLib2C/DataType/ArrayDataType.hpp>
+#include <AsLib2C/DataType/VectorDataType.hpp>
+//##########################################################################################
+
+
 // Crafterra 固有のプリミティブ型定義 ( 骨組みは完成 )
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
-// テンプレート型 ( ほぼ完成 )
-#include <Crafterra/DataType/StringDataType.hpp>
-#include <Crafterra/DataType/ArrayDataType.hpp>
-#include <Crafterra/DataType/VectorDataType.hpp>
-//##########################################################################################
 
 #include <Crafterra/Enum/CrafterraEnum.hpp>
 
@@ -55,18 +57,18 @@ namespace Crafterra {
 }
 #endif // CRAFTERRA_MAIN_FUNCTION
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 namespace Crafterra {
 	namespace System {
 		// 初期のウィンドウの幅
-		constexpr ::Crafterra::DataType::IndexUint init_window_width = 1280;
+		constexpr ::Asc::DataType::IndexUint init_window_width = 1280;
 		// 初期のウィンドウの高さ
-		constexpr ::Crafterra::DataType::IndexUint init_window_height = 720;
+		constexpr ::Asc::DataType::IndexUint init_window_height = 720;
 	}
 	// マップサイズ
-	constexpr ::Crafterra::DataType::IndexUint init_field_map_width = 512;
-	constexpr ::Crafterra::DataType::IndexUint init_field_map_height = 512;
+	constexpr ::Asc::DataType::IndexUint init_field_map_width = 512;
+	constexpr ::Asc::DataType::IndexUint init_field_map_height = 512;
 }
 
 // 初回読み込み

@@ -19,7 +19,7 @@
 #ifndef INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_DATA_TYPE_HPP
 #define INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_DATA_TYPE_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 namespace AsLib2 {
 
@@ -33,13 +33,13 @@ namespace AsLib2 {
 		DxGraphInt get () const { return this->graph; }
 	};
 
-	template<::Crafterra::IndexUint Index_>
+	template<::Asc::DataType::IndexUint Index_>
 	class DxGraphArray {
 	private:
 		DxGraphInt graph[Index_]{};
 	public:
-		void set(const ::Crafterra::DataType::IndexUint index_, const DxGraphInt graph_) { this->graph[index_] = graph_; }
-		int get (const ::Crafterra::DataType::IndexUint index_) const { return this->graph[index_]; }
+		void set(const ::Asc::DataType::IndexUint index_, const DxGraphInt graph_) { this->graph[index_] = graph_; }
+		int get (const ::Asc::DataType::IndexUint index_) const { return this->graph[index_]; }
 		DxGraphInt* getPtr () { return this->graph; }
 	};
 

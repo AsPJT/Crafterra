@@ -19,7 +19,7 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_RESOURCE_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_RESOURCE_HPP
 
-#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <AsLib2C/DataType/PrimitiveDataType.hpp>
 
 namespace AsLib2 {
 	class Font;
@@ -50,14 +50,14 @@ namespace Crafterra {
 		::AsLib2::CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
-		IndexUint window_width = 0;
-		IndexUint window_height = 0;
+		Asc::DataType::IndexUint window_width = 0;
+		Asc::DataType::IndexUint window_height = 0;
 
 	public:
-		void setWindowWidth(const ::Crafterra::DataType::IndexUint window_width_) { this->window_width = window_width_; }
-		void setWindowHeight(const ::Crafterra::DataType::IndexUint window_height_) { this->window_height = window_height_; }
-		::Crafterra::DataType::IndexUint getWindowWidth() const { return this->window_width; }
-		::Crafterra::DataType::IndexUint getWindowHeight() const { return this->window_height; }
+		void setWindowWidth(const ::Asc::DataType::IndexUint window_width_) { this->window_width = window_width_; }
+		void setWindowHeight(const ::Asc::DataType::IndexUint window_height_) { this->window_height = window_height_; }
+		::Asc::DataType::IndexUint getWindowWidth() const { return this->window_width; }
+		::Asc::DataType::IndexUint getWindowHeight() const { return this->window_height; }
 	};
 
 }

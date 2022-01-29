@@ -39,4 +39,4 @@
 #include <AsLib2/Basic/Rect.hpp>
 #include <AsLib2/Graphic/DrawRect.hpp>
 
-#endif //Included Crafterra Library
+#endif //Included AsLib2
