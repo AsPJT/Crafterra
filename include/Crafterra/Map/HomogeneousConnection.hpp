@@ -56,23 +56,23 @@ namespace Crafterra {
 		}
 	}
 
-	::As::DataType::Uint32 getAutoTileIndex(const AutoTileConnection ahc_, const ::As::DataType::Uint32 animation_number_, const ::As::DataType::Uint32 animation_max_number_) {
-		const ::As::DataType::Uint32 an2 = animation_number_ * 2; // アニメーション数の 2 倍
-		const ::As::DataType::Uint32 amn2 = animation_max_number_ * 2; // 最大アニメーション数の 2 倍
-		const ::As::DataType::Uint32 ahc = ::As::DataType::Uint32(ahc_);
-		const ::As::DataType::Uint32 ahcp2 = ::As::DataType::Uint32(ahc_) / 2;
-		const ::As::DataType::Uint32 right = ((ahc % 2 == 0) ? 0 : 1);
+	::As::Uint32 getAutoTileIndex(const AutoTileConnection ahc_, const ::As::Uint32 animation_number_, const ::As::Uint32 animation_max_number_) {
+		const ::As::Uint32 an2 = animation_number_ * 2; // アニメーション数の 2 倍
+		const ::As::Uint32 amn2 = animation_max_number_ * 2; // 最大アニメーション数の 2 倍
+		const ::As::Uint32 ahc = ::As::Uint32(ahc_);
+		const ::As::Uint32 ahcp2 = ::As::Uint32(ahc_) / 2;
+		const ::As::Uint32 right = ((ahc % 2 == 0) ? 0 : 1);
 		return amn2 * ahcp2 + an2 + right;
 	}
 
 	// 今後、別の hpp を作成して管理
 	struct AutoTileIndex {
-		::As::DataType::Uint32 auto_tile_upper_left{};
-		::As::DataType::Uint32 auto_tile_upper_right{};
-		::As::DataType::Uint32 auto_tile_lower_left{};
-		::As::DataType::Uint32 auto_tile_lower_right{};
+		::As::Uint32 auto_tile_upper_left{};
+		::As::Uint32 auto_tile_upper_right{};
+		::As::Uint32 auto_tile_lower_left{};
+		::As::Uint32 auto_tile_lower_right{};
 
-		AutoTileIndex(const AutoTile& auto_tile_, const ::As::DataType::Uint32 animation_number_, const ::As::DataType::Uint32 animation_max_number_) :
+		AutoTileIndex(const AutoTile& auto_tile_, const ::As::Uint32 animation_number_, const ::As::Uint32 animation_max_number_) :
 			auto_tile_upper_left(getAutoTileIndex(auto_tile_.auto_tile_upper_left, animation_number_, animation_max_number_))
 			, auto_tile_upper_right(getAutoTileIndex(auto_tile_.auto_tile_upper_right, animation_number_, animation_max_number_))
 			, auto_tile_lower_left(getAutoTileIndex(auto_tile_.auto_tile_lower_left, animation_number_, animation_max_number_))

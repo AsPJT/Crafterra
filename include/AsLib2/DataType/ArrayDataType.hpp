@@ -50,10 +50,10 @@ class TestArray{};
 // using 型定義
 namespace As {
 	inline namespace DataType {
-		template <class Type_, ::As::DataType::IndexUint Number_>
+		template <class Type_, ::As::IndexUint Number_>
 		using Array = ASLIB2_ARRAY_T<Type_, Number_>;
 
-		template <class Type_, ::As::DataType::IndexUint NumberX_, ::As::DataType::IndexUint NumberY_>
+		template <class Type_, ::As::IndexUint NumberX_, ::As::IndexUint NumberY_>
 		using Matrix = ASLIB2_ARRAY_T<ASLIB2_ARRAY_T<Type_, NumberX_>, NumberY_>;
 	}
 }

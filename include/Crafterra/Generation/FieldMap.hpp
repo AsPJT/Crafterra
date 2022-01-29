@@ -43,7 +43,7 @@ namespace Crafterra {
 	template<typename Matrix_>
 	void perlinNoise(
 		const Matrix_& matrix_,
-		const ::As::DataType::Uint32 chunk_index_x_, const ::As::DataType::Uint32 chunk_index_y_, const As::DataType::IndexUint one_chunk_width_, const As::DataType::IndexUint one_chunk_height_,
+		const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_, const As::DataType::IndexUint one_chunk_width_, const As::DataType::IndexUint one_chunk_height_,
 		const As::DataType::IndexUint start_x_, const As::DataType::IndexUint start_y_, const As::DataType::IndexUint end_x_, const As::DataType::IndexUint end_y_,
 		::dtl::utility::PerlinNoise<double>& perlin, const double frequency_, const As::DataType::IndexUint octaves_,
 		const ElevationUint max_height_, const ElevationUint min_height_ = 0) {
@@ -54,17 +54,17 @@ namespace Crafterra {
 				min_height_ + static_cast<ElevationUint>(
 				(max_height_ - min_height_) *
 					perlin.octaveNoise(octaves_,
-					(::As::DataType::Uint64(chunk_index_x_) * ::As::DataType::Uint64(one_chunk_width_) + ::As::DataType::Uint64(col)) / frequency_,
-						((::As::DataType::Uint64(chunk_index_y_) * ::As::DataType::Uint64(one_chunk_height_) + ::As::DataType::Uint64(row)) / frequency_)
+					(::As::Uint64(chunk_index_x_) * ::As::Uint64(one_chunk_width_) + ::As::Uint64(col)) / frequency_,
+						((::As::Uint64(chunk_index_y_) * ::As::Uint64(one_chunk_height_) + ::As::Uint64(row)) / frequency_)
 					)
 					));
 	}
 
 	class XorShift32 {
 	private:
-		::As::DataType::Uint32 seed;
+		::As::Uint32 seed;
 	public:
-		::As::DataType::Uint32 getRand() {
+		::As::Uint32 getRand() {
 			seed ^= seed << 13;
 			seed ^= seed >> 17;
 			seed ^= seed << 5;
@@ -78,24 +78,24 @@ namespace Crafterra {
 		}
 		As::DataType::Int32 getProbabilityDivision(const double probability_, const As::DataType::Int32 division_) {
 			if (probability_ <= getRand2() || division_ <= 0) return -1;
-			return (getRand2() / probability_ * double(division_));
+			return As::DataType::Int32(getRand2() / probability_ * double(division_));
 		}
-		void setSeed(const ::As::DataType::Uint32 seed_) {
+		void setSeed(const ::As::Uint32 seed_) {
 			seed = seed_;
 		}
-		XorShift32(const ::As::DataType::Uint32 seed_) : seed(seed_) {}
+		XorShift32(const ::As::Uint32 seed_) : seed(seed_) {}
 	};
 
 
 	class Terrain {
 
 		// 暫定的なマップデータ
-		using MapMat = ::As::DataType::Matrix<MapChip, init_field_map_width, init_field_map_height>;
+		using MapMat = ::As::Matrix<MapChip, init_field_map_width, init_field_map_height>;
 		using shape_t = ElevationUint;
 
-		::As::DataType::Uint32 temperature_seed;
-		::As::DataType::Uint32 amount_of_rainfall_seed;
-		::As::DataType::Uint32 elevation_seed;
+		::As::Uint32 temperature_seed;
+		::As::Uint32 amount_of_rainfall_seed;
+		::As::Uint32 elevation_seed;
 
 		::dtl::utility::PerlinNoise<double> perlin_temperature_seed;
 		::dtl::utility::PerlinNoise<double> perlin_amount_of_rainfall_seed;
@@ -103,7 +103,7 @@ namespace Crafterra {
 
 	public:
 
-		Terrain(const ::As::DataType::Uint32 temperature_seed_, const ::As::DataType::Uint32 amount_of_rainfall_seed_, const ::As::DataType::Uint32 elevation_seed_)
+		Terrain(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_)
 			:
 			  temperature_seed(temperature_seed_)
 			, amount_of_rainfall_seed(amount_of_rainfall_seed_)
@@ -119,13 +119,13 @@ namespace Crafterra {
 			//std::mt19937 engine(seed_gen());
 			//std::bernoulli_distribution uid(0.01);
 
-			for (::As::DataType::IndexUint row{}; row < init_field_map_height; ++row)
-				for (::As::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
+			for (::As::IndexUint row{}; row < init_field_map_height; ++row)
+				for (::As::IndexUint col{}; col < init_field_map_width; ++col) {
 					MapChip& field_map = field_map_matrix[row][col];
 					field_map.setElevation3(0); // 初期化
 
 					ElevationUint elevation3 = 0;
-					for (::As::DataType::IndexUint row3{ row }, block_index{}; elevation3 <= field_map.getBlockElevation() && block_index < 128; --row3, ++elevation3, ++block_index) {
+					for (::As::IndexUint row3{ row }, block_index{}; elevation3 <= field_map.getBlockElevation() && block_index < 128; --row3, ++elevation3, ++block_index) {
 						if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
 						field_map_matrix[row3][col].setIsCliff(field_map_matrix[row][col].getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
 						if (field_map_matrix[row][col].getBlock(block_index)!=Block::empty) {
@@ -186,13 +186,13 @@ namespace Crafterra {
 
 				}
 			// どこが崖になっているか調べる
-			//for (::As::DataType::IndexUint col{}; col < init_field_map_width; ++col)
-			//	for (::As::DataType::IndexUint row{ 1 }; row < init_field_map_height; ++row) {
+			//for (::As::IndexUint col{}; col < init_field_map_width; ++col)
+			//	for (::As::IndexUint row{ 1 }; row < init_field_map_height; ++row) {
 			//			field_map_matrix[row][col].setIsCliff(field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()); // 崖
 			//	}
 			// 崖のオートタイルを計算
-			for (::As::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
-				for (::As::DataType::IndexUint row{}; row < init_field_map_height - 1; ++row) {
+			for (::As::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
+				for (::As::IndexUint row{}; row < init_field_map_height - 1; ++row) {
 					field_map_matrix[row][col].setCliff(
 						getHomogeneousConnectionCliff(
 							field_map_matrix[row][col - 1].getIsCliff() || ((!field_map_matrix[row][col - 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col - 1].getElevation3())
@@ -202,8 +202,8 @@ namespace Crafterra {
 					);
 				}
 
-			for (::As::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
-				for (::As::DataType::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
+			for (::As::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
+				for (::As::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
 					if (field_map_matrix[row][col].getIsCliff()) continue;
 					// 崖上のオートタイルを計算 ( 一部バグがあり、未完成 )
 					field_map_matrix[row][col].setCliffTop(
@@ -247,7 +247,7 @@ namespace Crafterra {
 				}
 		}
 
-		void perlinNoiseGeneration(MapMat& field_map_matrix, const ::As::DataType::Uint32 chunk_index_x_, const ::As::DataType::Uint32 chunk_index_y_, const ::As::DataType::Uint32 start_x_, const ::As::DataType::Uint32 start_y_, const ::As::DataType::Uint32 end_x_, const ::As::DataType::Uint32 end_y_) {
+		void perlinNoiseGeneration(MapMat& field_map_matrix, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_, const ::As::Uint32 start_x_, const ::As::Uint32 start_y_, const ::As::Uint32 end_x_, const ::As::Uint32 end_y_) {
 			//温度
 			perlinNoise(
 				[&field_map_matrix](const As::DataType::IndexUint x_, const As::DataType::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },
@@ -277,36 +277,36 @@ namespace Crafterra {
 		}
 
 		// フィールドマップの下半分の地形が上半分へ移動する
-		void moveUpTerrain(MapMat& field_map_matrix, const ::As::DataType::Uint32 field_height_half_) const {
-			for (::As::DataType::IndexUint row{}; row < field_height_half_; ++row)
-				for (::As::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
+		void moveUpTerrain(MapMat& field_map_matrix, const ::As::Uint32 field_height_half_) const {
+			for (::As::IndexUint row{}; row < field_height_half_; ++row)
+				for (::As::IndexUint col{}; col < init_field_map_width; ++col) {
 					MapChip& field_map_after = field_map_matrix[row][col];
 					const MapChip& field_map_before = field_map_matrix[row + field_height_half_][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの上半分の地形が下半分へ移動する
-		void moveDownTerrain(MapMat& field_map_matrix, const ::As::DataType::Uint32 field_height_half_) const {
-			for (::As::DataType::IndexUint row{}; row < field_height_half_; ++row)
-				for (::As::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
+		void moveDownTerrain(MapMat& field_map_matrix, const ::As::Uint32 field_height_half_) const {
+			for (::As::IndexUint row{}; row < field_height_half_; ++row)
+				for (::As::IndexUint col{}; col < init_field_map_width; ++col) {
 					MapChip& field_map_after = field_map_matrix[row + field_height_half_][col];
 					const MapChip& field_map_before = field_map_matrix[row][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの右半分の地形が左半分へ移動する
-		void moveLeftTerrain(MapMat& field_map_matrix, const ::As::DataType::Uint32 field_width_half_) const {
-			for (::As::DataType::IndexUint row{}; row < init_field_map_height; ++row)
-				for (::As::DataType::IndexUint col{}; col < field_width_half_; ++col) {
+		void moveLeftTerrain(MapMat& field_map_matrix, const ::As::Uint32 field_width_half_) const {
+			for (::As::IndexUint row{}; row < init_field_map_height; ++row)
+				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
 					MapChip& field_map_after = field_map_matrix[row][col];
 					const MapChip& field_map_before = field_map_matrix[row][col + field_width_half_];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの左半分の地形が右半分へ移動する
-		void moveRightTerrain(MapMat& field_map_matrix, const ::As::DataType::Uint32 field_width_half_) const {
-			for (::As::DataType::IndexUint row{}; row < init_field_map_height; ++row)
-				for (::As::DataType::IndexUint col{}; col < field_width_half_; ++col) {
+		void moveRightTerrain(MapMat& field_map_matrix, const ::As::Uint32 field_width_half_) const {
+			for (::As::IndexUint row{}; row < init_field_map_height; ++row)
+				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
 					MapChip& field_map_after = field_map_matrix[row][col + field_width_half_];
 					const MapChip& field_map_before = field_map_matrix[row][col];
 					field_map_after = field_map_before;
@@ -314,7 +314,7 @@ namespace Crafterra {
 		}
 
 		// フィールドマップを生成
-		void generation(MapMat& field_map_matrix, const ::As::DataType::Uint32 chunk_index_x_, const ::As::DataType::Uint32 chunk_index_y_, const ::As::DataType::Uint32 start_x_, const ::As::DataType::Uint32 start_y_, const ::As::DataType::Uint32 end_x_, const ::As::DataType::Uint32 end_y_) {
+		void generation(MapMat& field_map_matrix, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_, const ::As::Uint32 start_x_, const ::As::Uint32 start_y_, const ::As::Uint32 end_x_, const ::As::Uint32 end_y_) {
 
 			const ElevationUint sea_elevation = 110;
 
@@ -323,8 +323,8 @@ namespace Crafterra {
 			XorShift32 xs32(elevation_seed);
 
 			//バイオームの分類分け
-			for (::As::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
-				for (::As::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
+			for (::As::IndexUint row{ start_y_ }; row < end_y_; ++row)
+				for (::As::IndexUint col{ start_x_ }; col < end_x_; ++col) {
 					MapChip& field_map = field_map_matrix[row][col];
 
 					field_map.setTemperature(field_map.getTemperature() - field_map.getElevation() / 2);
@@ -406,7 +406,7 @@ namespace Crafterra {
 		void initialGeneration(MapMat& field_map_matrix_) {
 			generation(field_map_matrix_, 0, 0, 0, 0, init_field_map_width, init_field_map_height);
 		}
-		void initialGeneration(MapMat& field_map_matrix_, const ::As::DataType::Uint32 chunk_index_x_, const ::As::DataType::Uint32 chunk_index_y_) {
+		void initialGeneration(MapMat& field_map_matrix_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) {
 			generation(field_map_matrix_, chunk_index_x_, chunk_index_y_, 0, 0, init_field_map_width, init_field_map_height);
 		}
 

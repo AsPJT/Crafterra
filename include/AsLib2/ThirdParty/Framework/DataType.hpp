@@ -23,25 +23,10 @@
 
 namespace As {
 
+	constexpr int dx_false = 0;
+	constexpr int dx_true = 1;
+
 	using DxGraphInt = int;
-
-	class DxGraph {
-	private:
-		DxGraphInt graph = -1;
-	public:
-		void set (const DxGraphInt graph_) { this->graph = graph_; }
-		DxGraphInt get () const { return this->graph; }
-	};
-
-	template<::As::DataType::IndexUint Index_>
-	class DxGraphArray {
-	private:
-		DxGraphInt graph[Index_]{};
-	public:
-		void set(const ::As::DataType::IndexUint index_, const DxGraphInt graph_) { this->graph[index_] = graph_; }
-		int get (const ::As::DataType::IndexUint index_) const { return this->graph[index_]; }
-		DxGraphInt* getPtr () { return this->graph; }
-	};
 
 
 }

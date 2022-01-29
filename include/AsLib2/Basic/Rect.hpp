@@ -21,12 +21,14 @@
 
 namespace As {
 
-	struct Rect {
 #ifdef __DXLIB
-		using Rect_ = int;
+	using RectDataType = int;
 #else
-		using Rect_ = double;
+	using RectDataType = double;
 #endif
+
+	struct Rect {
+		using Rect_ = RectDataType;
 		Rect_ start_x{};
 		Rect_ start_y{};
 		Rect_ width{};
@@ -62,10 +64,6 @@ namespace As {
 
 		void draw(const Rect& rect_) const {
 			handle.resized(rect_.width, rect_.height).draw(rect_.start_x, rect_.start_y);
-			//handle.draw(rect_.start_x, rect_.start_y);
-#ifdef __DXLIB
-			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle, TRUE);
-#endif // __DXLIB
 		}
 	};
 #endif // __DXLIB
@@ -109,12 +107,6 @@ namespace As {
 			handle2.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y);
 			handle3.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y + rect_.height / 2);
 			handle4.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2);
-#ifdef __DXLIB
-			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, this->handle1, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height / 2, this->handle2, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height, this->handle3, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle4, TRUE);
-#endif // __DXLIB
 		}
 	};
 #endif // __DXLIB

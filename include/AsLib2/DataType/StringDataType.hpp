@@ -33,7 +33,7 @@
 // STRING_T
 #ifndef ASLIB2_STRING_T
 #ifdef ASLIB2_USE_STRING
-#define ASLIB2_STRING_T ::std::basic_string<::As::DataType::Char>
+#define ASLIB2_STRING_T ::std::basic_string<::As::Char>
 #else
 // 今後、ここに string の独自実装を追加
 class TestString{};

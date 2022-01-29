@@ -25,7 +25,7 @@
 
 namespace As {
 
-	enum class Key : ::As::DataType::IndexUint {
+	enum class Key : ::As::IndexUint {
 		  key_0
 		, key_1
 		, key_2
@@ -69,7 +69,7 @@ namespace As {
 		, key_size
 	};
 #if defined(__DXLIB)
-	std::array<::As::DataType::IndexUint, ::As::DataType::IndexUint(Key::key_size)> dxKey{ {
+	std::array<::As::IndexUint, ::As::IndexUint(Key::key_size)> dxKey{ {
 			KEY_INPUT_0
 			,KEY_INPUT_1
 			,KEY_INPUT_2
@@ -150,7 +150,7 @@ namespace As {
 
 		bool isPressed(const Key key_num_) const {
 #if defined(__DXLIB)
-			return (this->key[::As::dxKey[::As::DataType::IndexUint(key_num_)]]);
+			return (this->key[::As::dxKey[::As::IndexUint(key_num_)]]);
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.pressed(); break;
@@ -199,7 +199,7 @@ namespace As {
 		}
 		bool isUp(const Key key_num_) const {
 #if defined(__DXLIB)
-			return this->up_key[::As::dxKey[::As::DataType::IndexUint(key_num_)]];
+			return this->up_key[::As::dxKey[::As::IndexUint(key_num_)]];
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.up(); break;
@@ -248,7 +248,7 @@ namespace As {
 		}
 		bool isDown(const Key key_num_) const {
 #if defined(__DXLIB)
-			return this->down_key[::As::dxKey[::As::DataType::IndexUint(key_num_)]];
+			return this->down_key[::As::dxKey[::As::IndexUint(key_num_)]];
 #elif defined(SIV3D_INCLUDED)
 			switch (key_num_) {
 			case Key::key_a: return ::s3d::KeyA.down(); break;

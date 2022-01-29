@@ -37,7 +37,7 @@ namespace Crafterra {
 		::As::Font* font = nullptr;
 		::As::Music* music = nullptr;
 		::As::MapChipImage* map_chip = nullptr;
-		::As::CharacterChipImage* character_chip = nullptr;
+		::As::MapChipImage* character_chip = nullptr;
 
 	public:
 		void setFont(::As::Font& font_) { this->font = &font_; }
@@ -46,18 +46,18 @@ namespace Crafterra {
 		::As::Music& getMusic() { return *(this->music); }
 		void setMapChip(::As::MapChipImage& map_chip_) { this->map_chip = &map_chip_; }
 		::As::MapChipImage& getMapChip() { return *(this->map_chip); }
-		void setCharacterChip(::As::CharacterChipImage& character_chip_) { this->character_chip = &character_chip_; }
-		::As::CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
+		void setCharacterChip(::As::MapChipImage& character_chip_) { this->character_chip = &character_chip_; }
+		::As::MapChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
 		As::DataType::IndexUint window_width = 0;
 		As::DataType::IndexUint window_height = 0;
 
 	public:
-		void setWindowWidth(const ::As::DataType::IndexUint window_width_) { this->window_width = window_width_; }
-		void setWindowHeight(const ::As::DataType::IndexUint window_height_) { this->window_height = window_height_; }
-		::As::DataType::IndexUint getWindowWidth() const { return this->window_width; }
-		::As::DataType::IndexUint getWindowHeight() const { return this->window_height; }
+		void setWindowWidth(const ::As::IndexUint window_width_) { this->window_width = window_width_; }
+		void setWindowHeight(const ::As::IndexUint window_height_) { this->window_height = window_height_; }
+		::As::IndexUint getWindowWidth() const { return this->window_width; }
+		::As::IndexUint getWindowHeight() const { return this->window_height; }
 	};
 
 }

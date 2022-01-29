@@ -66,8 +66,8 @@ namespace As {
 
 		}
 
-		int getCharacterChip(const ::As::DataType::IndexUint character_id_, const ::As::DataType::IndexUint index_) const {
-			return this->character_chip[::As::DataType::IndexUint(this->character_start_index_chip[character_id_]) + index_];
+		int getCharacterChip(const ::As::IndexUint character_id_, const ::As::IndexUint index_) const {
+			return this->character_chip[::As::IndexUint(this->character_start_index_chip[character_id_]) + index_];
 		}
 
 	};

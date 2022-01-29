@@ -48,18 +48,18 @@ namespace Crafterra {
 	};
 
 
-	::As::DataType::Array<::As::DataType::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
+	::As::Array<::As::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
 		MapChipTypeBiomeString{ {
 				"Empty","Sea","Lake","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
 	} };
 
 //#if (__cplusplus < 202002L)
-//	::Crafterra::DataType::Array<::As::DataType::String, MapChipTypeBiome::size>
+//	::Crafterra::DataType::Array<::As::String, MapChipTypeBiome::size>
 //		MapChipTypeBiomeString{ {
 //				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
 //	} };
 //#else
-	//::Crafterra::DataType::Array<::As::DataType::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
+	//::Crafterra::DataType::Array<::As::String, As::DataType::IndexUint(MapChipTypeBiome::size)>
 	//	MapChipTypeBiomeString{ {
 	//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
 	//} };
@@ -107,7 +107,7 @@ namespace Crafterra {
 		ElevationUint elevation{}; // 元の標高値
 		ElevationUint temperature{}; // 気温
 		ElevationUint amount_of_rainfall{}; // 降水量
-		::As::DataType::Uint32 seed{}; // 乱数シード
+		::As::Uint32 seed{}; // 乱数シード
 
 		// ---------- 描画座標系 ----------
 
@@ -225,10 +225,10 @@ namespace Crafterra {
 		void setBlockElevation(const ElevationUint& elevation_) {
 			this->block_elevation = elevation_;
 		}
-		::As::DataType::Uint32 getSeed() const {
+		::As::Uint32 getSeed() const {
 			return this->seed;
 		}
-		void setSeed(const ::As::DataType::Uint32 seed_) {
+		void setSeed(const ::As::Uint32 seed_) {
 			this->seed = seed_;
 		}
 		// 暫定

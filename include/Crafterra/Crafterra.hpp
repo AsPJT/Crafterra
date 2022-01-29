@@ -47,28 +47,18 @@
 
 #include <Crafterra/Basic/Resource.hpp>
 
-// Crafterra のメイン関数を宣言
-#ifndef CRAFTERRA_MAIN_FUNCTION
-#define CRAFTERRA_MAIN_FUNCTION
-namespace Crafterra {
-	namespace System {
-		void crafterraMain(::Crafterra::Resource&);
-	}
-}
-#endif // CRAFTERRA_MAIN_FUNCTION
-
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
 
 namespace Crafterra {
 	namespace System {
 		// 初期のウィンドウの幅
-		constexpr ::As::DataType::IndexUint init_window_width = 1280;
+		constexpr ::As::IndexUint init_window_width = 1280;
 		// 初期のウィンドウの高さ
-		constexpr ::As::DataType::IndexUint init_window_height = 720;
+		constexpr ::As::IndexUint init_window_height = 720;
 	}
 	// マップサイズ
-	constexpr ::As::DataType::IndexUint init_field_map_width = 512;
-	constexpr ::As::DataType::IndexUint init_field_map_height = 512;
+	constexpr ::As::IndexUint init_field_map_width = 512;
+	constexpr ::As::IndexUint init_field_map_height = 512;
 }
 
 // 初回読み込み
