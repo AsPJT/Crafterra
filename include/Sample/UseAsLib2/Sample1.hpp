@@ -28,6 +28,10 @@
 #include <memory>
 #include <chrono>
 
+#include <Sample/Basic/Key.hpp>
+#include <Sample/Basic/Terrain.hpp>
+#include <Sample/Basic/Camera.hpp>
+
 namespace Crafterra {
 
 	// Crafterra を再生
@@ -65,7 +69,7 @@ namespace Crafterra {
 		FieldMapMatrix& field_map_matrix = (*field_map_matrix_ptr); // フィールドマップ
 
 		// 地形生成 ----------
-		Chunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
+		TerrainChunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
 		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
 		Terrain terrain;
 		terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
@@ -133,206 +137,17 @@ namespace Crafterra {
 				key_displacement = 2.f;
 				break;
 			}
-			//#ifndef __APPLE__
-							// キー関連
-			{
-				key.setKey();
-				if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-					cs.camera_size.moveX(-key_displacement);
-					player.setDirection(::Crafterra::Enum::ActorDirection::left);
-				}
-				if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-					cs.camera_size.moveX(key_displacement);
-					player.setDirection(::Crafterra::Enum::ActorDirection::right);
-				}
-				if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-					cs.camera_size.moveY(-key_displacement);
-					player.setDirection(::Crafterra::Enum::ActorDirection::up);
-				}
-				if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-					cs.camera_size.moveY(key_displacement);
-					player.setDirection(::Crafterra::Enum::ActorDirection::down);
-				}
-				if (key.isDown(::As::Key::key_g)) {
-					terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
-					terrain.setTerrain(field_map_matrix);
-				}
-				if (key.isPressed(::As::Key::key_j)) {
-					cs.expandMapChipSize(0.995f); // 画面縮小
-				}
-				if (key.isPressed(::As::Key::key_k)) {
-					cs.expandMapChipSize(1.005f); // 画面拡大
-				}
-				if (key.isDown(::As::Key::key_1)) {
-					cs.setMapChipSize(10.f);
-					operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::airship;
-				}
-				if (key.isDown(::As::Key::key_2)) {
-					cs.setMapChipSize(64.f);
-					operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::walking;
-				}
-				if (key.isDown(::As::Key::key_p)) {
-					is_debug_log = (!is_debug_log);
-#ifdef __DXLIB
-					::DxLib::clsDx();
-#endif // __DXLIB
-				}
-			}
-			//#endif // !__APPLE__
-							// 無限生成処理
-			{
-				// 右側に生成
-				if (cs.camera_size.getCenterX() > float(cs.field_map_size.getCenterX() + (cs.field_map_size.getWidthHalf() * 2 / 3))) {
-					cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
-					chunk.moveRight();
-					terrain.moveLeft(field_map_matrix, init_field_map_width / 2);
-					terrain.generation(field_map_matrix, terrain_noise, chunk.getX() + 1, chunk.getY(), init_field_map_width / 2, 0, init_field_map_width, init_field_map_height);
-					terrain.setTerrain(field_map_matrix);
-				}
-				// 左側に生成
-				else if (cs.camera_size.getCenterX() < float(cs.field_map_size.getCenterX() - (cs.field_map_size.getWidthHalf() * 2 / 3))) {
-					cs.camera_size.moveX(+float(cs.field_map_size.getWidthHalf()));
-					chunk.moveLeft();
-					terrain.moveRight(field_map_matrix, init_field_map_width / 2);
-					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width / 2, init_field_map_height);
-					terrain.setTerrain(field_map_matrix);
-				}
-				// 上側に生成
-				if (cs.camera_size.getCenterY() > float(cs.field_map_size.getCenterY() + (cs.field_map_size.getHeightHalf() * 2 / 3))) {
-					cs.camera_size.moveY(-float(cs.field_map_size.getHeightHalf()));
-					chunk.moveUp();
-					terrain.moveUp(field_map_matrix, init_field_map_height / 2);
-					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY() + 1, 0, init_field_map_height / 2, init_field_map_width, init_field_map_height);
-					terrain.setTerrain(field_map_matrix);
-				}
-				// 下側に生成
-				else if (cs.camera_size.getCenterY() < float(cs.field_map_size.getCenterY() - (cs.field_map_size.getHeightHalf() * 2 / 3))) {
-					cs.camera_size.moveY(+float(cs.field_map_size.getHeightHalf()));
-					chunk.moveDown();
-					terrain.moveDown(field_map_matrix, init_field_map_height / 2);
-					terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, init_field_map_width, init_field_map_height / 2);
-					terrain.setTerrain(field_map_matrix);
-				}
-			}
 
-			{
-				// 描画関数
-				cs.updateCamera(
-					[&field_map_matrix, &resource_, &cd_anime_sea](const float csx_, const float csy_, const float cw_, const float ch_, const ::As::IndexUint x_, const ::As::IndexUint y_) {
+			// キー関連
+			::Crafterra::updateKey(key, cs, player, terrain, operation_actor_state_in_field, is_debug_log, key_displacement, field_map_matrix, terrain_noise, chunk);
 
-						const MapChip& field_map = field_map_matrix[y_][x_];
+			// 無限生成処理
+			::Crafterra::updateTerrain(cs, chunk, terrain, field_map_matrix, terrain_noise);
 
-						const ::As::Rect map_chip_rect(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f) - int(csx_ + 0.5f), int(csy_ + ch_ + 0.5f) - int(csy_ + 0.5f));
+			// 描画関数
+			::Crafterra::updateCamera(cs, field_map_matrix, resource_, cd_anime_sea);
 
-						bool is_map_chip_type_homogeneous_connection_all = false;
-						bool is_auto_tile_desert_alpha = false;
-
-						// 描画するバイオーム
-						bool is_draw_biome = (field_map.getDrawBiome() != MapChipTypeBiome::empty
-							&& field_map.getDrawBiome() != MapChipTypeBiome::sea
-							&& field_map.getDrawBiome() != MapChipTypeBiome::lake
-							&& field_map.getDrawBiome() != MapChipTypeBiome::normal
-							&& field_map.getDrawBiome() != MapChipTypeBiome::hill
-							);
-
-						if (is_draw_biome) {
-							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), 0, 2);
-							if (resource_.getMapChip().getIsDesertAlpha(auto_tile_index)) is_auto_tile_desert_alpha = true;
-						}
-						else is_auto_tile_desert_alpha = true;
-
-						// 崖を先に描画
-						if (field_map.getDrawBlock() == Block::cliff) {
-							if (resource_.getMapChip().getMapChipCliffTopAlpha(As::IndexUint(field_map.getCliff())) == 0) {
-								::As::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
-							}
-							::As::Image(resource_.getMapChip().getMapChip("Cliff", As::IndexUint(field_map.getCliff()))).draw(map_chip_rect);
-						}
-						// 海を描画
-						else if (field_map.getDrawBlock() == Block::water_ground) {
-							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), cd_anime_sea, 8);
-
-							if (resource_.getMapChip().getIsSeaAlpha(auto_tile_index)) {
-								::As::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
-							}
-							::As::ImageQuadrant(
-								resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_upper_left),
-								resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_upper_right),
-								resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_lower_left),
-								resource_.getMapChip().getMapChip("Sea", auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
-						}
-						// 崖上を描画
-						else if (field_map.getCliffTop() != CliffConnection::size) {
-							if (is_auto_tile_desert_alpha) {
-								is_map_chip_type_homogeneous_connection_all = true;
-								if (resource_.getMapChip().getMapChipCliffTopAlpha(As::IndexUint(field_map.getCliffTop())) == 0) {
-									::As::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
-								}
-
-								::As::Image(resource_.getMapChip().getMapChip("Cliff", As::IndexUint(field_map.getCliffTop()))).draw(map_chip_rect);
-							}
-						}
-
-						// ------------------------------------------------------------------------------------------------------------------------------------
-						if (field_map.getIsCliff()) return;
-						if (is_draw_biome) {
-							const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(field_map.getDrawBiome())];
-							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), 0, 2);
-							::As::ImageQuadrant(
-								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
-								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
-								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
-								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
-						}
-
-						switch (field_map.getDrawBlock()) {
-						case Block::grass_1:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 0)).draw(map_chip_rect);
-							break;
-						case Block::grass_2:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 1)).draw(map_chip_rect);
-							break;
-						case Block::grass_3:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 2)).draw(map_chip_rect);
-							break;
-						case Block::grass_4:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 3)).draw(map_chip_rect);
-							break;
-						case Block::flower_1:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 4)).draw(map_chip_rect);
-							break;
-						case Block::flower_2:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 5)).draw(map_chip_rect);
-							break;
-						case Block::flower_3:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 6)).draw(map_chip_rect);
-							break;
-						case Block::flower_4:
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 7)).draw(map_chip_rect);
-							break;
-						case Block::house_wall_1_up:
-							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 46 + 7)).draw(map_chip_rect);
-							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
-							break;
-						case Block::house_wall_1_down:
-							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 47 + 7)).draw(map_chip_rect);
-							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
-							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 0)).draw(map_chip_rect);
-							break;
-						case Block::water_ground_2:
-							AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);
-							::As::ImageQuadrant(
-								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_upper_left),
-								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_upper_right),
-								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_lower_left),
-								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
-							break;
-						}
-
-					}
-				);
-			}
+			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
 			const int cd_anime2 = ((cd_anime == 3) ? 1 : cd_anime);

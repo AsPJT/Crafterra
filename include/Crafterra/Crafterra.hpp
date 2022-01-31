@@ -78,7 +78,7 @@ namespace Crafterra {
 
 #include <Crafterra/Actor/Actor.hpp>
 
-#include <Crafterra/Terrain/Chunk.hpp>
+#include <Crafterra/Terrain/TerrainChunk.hpp>
 
 //##########################################################################################
 #include <AsLib2/AsLib2.hpp>

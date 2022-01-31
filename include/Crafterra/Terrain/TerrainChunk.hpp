@@ -23,7 +23,7 @@
 
 namespace Crafterra {
 
-	class Chunk {
+	class TerrainChunk {
 	private:
 		::As::Uint32 chunk_min_x;
 		::As::Uint32 chunk_min_y;
@@ -37,7 +37,7 @@ namespace Crafterra {
 
 	public:
 		// コンストラクタ
-		Chunk(const ::As::Uint32 chunk_min_x_, const ::As::Uint32 chunk_min_y_, const ::As::Uint32 chunk_max_x_, const ::As::Uint32 chunk_max_y_)
+		TerrainChunk(const ::As::Uint32 chunk_min_x_, const ::As::Uint32 chunk_min_y_, const ::As::Uint32 chunk_max_x_, const ::As::Uint32 chunk_max_y_)
 			:chunk_min_x(chunk_min_x_), chunk_min_y(chunk_min_y_), chunk_max_x(chunk_max_x_), chunk_max_y(chunk_max_y_),
 			init_chunk_x((chunk_max_x_ - chunk_min_x_) / 2), init_chunk_y((chunk_max_y_ - chunk_min_y_) / 2),
 			chunk_x(init_chunk_x), chunk_y(init_chunk_y) {}
