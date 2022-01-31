@@ -44,7 +44,8 @@ namespace dtl {
 
 			DTL_VERSIONING_CPP17_NODISCARD
 			constexpr Double_ getFade(const Double_ t_) const noexcept {
-				return t_ * t_* t_* (t_ * (t_ * 6 - 15) + 10);
+				//return t_ * t_* t_* (t_ * (t_ * 6 - 15) + 10);
+				return t_;
 			}
 
 			DTL_VERSIONING_CPP17_NODISCARD

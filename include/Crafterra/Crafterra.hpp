@@ -84,6 +84,6 @@ namespace Crafterra {
 #include <AsLib2/AsLib2.hpp>
 //##########################################################################################
 
-#include <Crafterra/Generation/FieldMap.hpp>
+#include <Crafterra/Terrain/FieldMap.hpp>
 
 #endif //Included Crafterra Library

@@ -70,6 +70,7 @@ namespace Crafterra {
 		  empty     // 無し
 		, normal_ground        // 地面
 		, water_ground       // 水
+		, water_ground_2       // 水
 		, running_water // 流水
 		, waterfall    // 滝
 		, cliff    // 崖
@@ -82,6 +83,8 @@ namespace Crafterra {
 		, grass_2      // 草
 		, grass_3      // 草
 		, grass_4      // 草
+		, house_wall_1_up      // 家の壁
+		, house_wall_1_down      // 家の壁
 		, size   // ブロックの数
 	};
 
@@ -107,6 +110,8 @@ namespace Crafterra {
 		ElevationUint elevation{}; // 元の標高値
 		ElevationUint temperature{}; // 気温
 		ElevationUint amount_of_rainfall{}; // 降水量
+		ElevationUint flower{}; // 花
+		ElevationUint lake{}; // 花
 		::As::Uint32 seed{}; // 乱数シード
 
 		// ---------- 描画座標系 ----------
@@ -118,6 +123,7 @@ namespace Crafterra {
 		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
 		AutoTile auto_tile{}; // 描画用オートタイル
+		AutoTile biome_auto_tile{}; // 描画用オートタイル
 		int draw_chip = -1;
 
 	public:
@@ -207,6 +213,18 @@ namespace Crafterra {
 		void setElevation(const ElevationUint& elevation_) {
 			this->elevation = elevation_;
 		}
+		ElevationUint getFlower() const {
+			return this->flower;
+		}
+		void setFlower(const ElevationUint& flower_) {
+			this->flower = flower_;
+		}
+		ElevationUint getLake() const {
+			return this->lake;
+		}
+		void setLake(const ElevationUint& lake_) {
+			this->lake = lake_;
+		}
 		ElevationUint getTemperature() const {
 			return this->temperature;
 		}
@@ -266,6 +284,12 @@ namespace Crafterra {
 		}
 		void setAutoTile(const AutoTile& auto_tile_) {
 			this->auto_tile = auto_tile_;
+		}
+		AutoTile getBiomeAutoTile() const {
+			return this->biome_auto_tile;
+		}
+		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) {
+			this->biome_auto_tile = biome_auto_tile_;
 		}
 
 	};

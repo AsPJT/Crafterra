@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_FIELD_MAP_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_FIELD_MAP_HPP
 
 #include <AsLib2/DataType/ArrayDataType.hpp>
 #include <Crafterra/Terrain/MapChip.hpp>
@@ -32,7 +32,9 @@
 
 
 // 地形生成用 ( 後に削除予定 )
-#include <DTL/Utility/PerlinNoise.hpp>
+//#include <DTL/Utility/PerlinNoise.hpp>
+
+#include <Crafterra/Generation/PerlinNoise.hpp>
 
 namespace Crafterra {
 
@@ -45,7 +47,7 @@ namespace Crafterra {
 		const Matrix_& matrix_,
 		const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_, const As::IndexUint one_chunk_width_, const As::IndexUint one_chunk_height_,
 		const As::IndexUint start_x_, const As::IndexUint start_y_, const As::IndexUint end_x_, const As::IndexUint end_y_,
-		::dtl::utility::PerlinNoise<double>& perlin, const double frequency_, const As::IndexUint octaves_,
+		::Crafterra::PerlinNoise& perlin, const double frequency_, const As::IndexUint octaves_,
 		const ElevationUint max_height_, const ElevationUint min_height_ = 0) {
 
 		for (As::IndexUint row_index{ start_y_ }, row{}; row_index < end_y_; ++row_index, ++row)
@@ -94,21 +96,40 @@ namespace Crafterra {
 		::As::Uint32 temperature_seed;
 		::As::Uint32 amount_of_rainfall_seed;
 		::As::Uint32 elevation_seed;
+		::As::Uint32 flower_seed;
+		::As::Uint32 lake_seed;
 
-		::dtl::utility::PerlinNoise<double> perlin_temperature_seed;
-		::dtl::utility::PerlinNoise<double> perlin_amount_of_rainfall_seed;
-		::dtl::utility::PerlinNoise<double> perlin_elevation_seed;
+		::Crafterra::PerlinNoise perlin_temperature_seed;
+		::Crafterra::PerlinNoise perlin_amount_of_rainfall_seed;
+		::Crafterra::PerlinNoise perlin_elevation_seed;
+		::Crafterra::PerlinNoise perlin_flower_seed;
+		::Crafterra::PerlinNoise perlin_lake_seed;
 
 	public:
 		// コンストラクタ
-		TerrainNoise(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_)
+		TerrainNoise(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_, const ::As::Uint32 flower_seed_, const ::As::Uint32 lake_seed_)
 			:
 			temperature_seed(temperature_seed_)
 			, amount_of_rainfall_seed(amount_of_rainfall_seed_)
 			, elevation_seed(elevation_seed_)
-			, perlin_temperature_seed(temperature_seed_)
-			, perlin_amount_of_rainfall_seed(amount_of_rainfall_seed_)
-			, perlin_elevation_seed(elevation_seed_) {}
+			, flower_seed(flower_seed_)
+			, lake_seed(lake_seed_)
+			, perlin_temperature_seed(
+				[temperature_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+					::std::shuffle(begin_, end_, ::std::default_random_engine(temperature_seed_)); })
+			, perlin_amount_of_rainfall_seed(
+				[amount_of_rainfall_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+					::std::shuffle(begin_, end_, ::std::default_random_engine(amount_of_rainfall_seed_)); })
+						, perlin_elevation_seed(
+							[elevation_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+								::std::shuffle(begin_, end_, ::std::default_random_engine(elevation_seed_)); })
+						, perlin_flower_seed(
+							[flower_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+								::std::shuffle(begin_, end_, ::std::default_random_engine(flower_seed_)); })
+									, perlin_lake_seed(
+										[lake_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+											::std::shuffle(begin_, end_, ::std::default_random_engine(lake_seed_)); })
+		{}
 
 		::As::Uint32 getElevationSeed() const { return this->elevation_seed; }
 
@@ -118,7 +139,7 @@ namespace Crafterra {
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_temperature_seed, 200.0, 5,
+				perlin_temperature_seed, 400.1, 8,
 				240, 100
 			);
 
@@ -127,7 +148,7 @@ namespace Crafterra {
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setAmountOfRainfall(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_amount_of_rainfall_seed, 200.0, 5,
+				perlin_amount_of_rainfall_seed, 400.1, 8,
 				225, 0
 			);
 
@@ -136,8 +157,26 @@ namespace Crafterra {
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setElevation(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_elevation_seed, 300.0, 8,
+				perlin_elevation_seed, 600.1, 10,
 				195, 0
+			);
+
+			//花
+			perlinNoise(
+				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setFlower(value_); },
+				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
+				start_x_, start_y_, end_x_, end_y_,
+				perlin_flower_seed, 1.12345, 1,
+				200, 50
+			);
+
+			//湖
+			perlinNoise(
+				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setLake(value_); },
+				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
+				start_x_, start_y_, end_x_, end_y_,
+				perlin_lake_seed, 10.12345, 3,
+				200, 50
 			);
 		}
 	};
@@ -158,55 +197,21 @@ namespace Crafterra {
 					field_map.setElevation3(0); // 初期化
 
 					ElevationUint elevation3 = 0;
-					for (::As::IndexUint row3{ row }, block_index{}; elevation3 <= field_map.getBlockElevation() && block_index < 128; --row3, ++elevation3, ++block_index) {
-						if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
-						field_map_matrix[row3][col].setIsCliff(field_map_matrix[row][col].getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
-						if (field_map_matrix[row][col].getBlock(block_index)!=Block::empty) {
+					for (::As::IndexUint row3{ row }, block_index{}; block_index < 128; --row3, ++block_index) {
+						if (field_map_matrix[row][col].getBlock(block_index) != Block::empty) {
+
+							field_map_matrix[row3][col].setIsCliff(field_map_matrix[row][col].getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
 							field_map_matrix[row3][col].setDrawBlock(field_map_matrix[row][col].getBlock(block_index)); // ブロックを格納
 						}
 						if (row3 == 0) break;
 					}
-
-					switch (field_map.getBiome()) {
-					case MapChipTypeBiome::sea:
-						field_map.setColor(getDxColor(33, 97, 124));
-						break;
-					case MapChipTypeBiome::lake:
-						field_map.setColor(getDxColor(88, 124, 139));
-						break;
-					case MapChipTypeBiome::mountain:
-						field_map.setColor(getDxColor(101, 100, 60));
-						break;
-					case MapChipTypeBiome::desert:
-						field_map.setColor(getDxColor(217, 195, 143));
-						break;
-					case MapChipTypeBiome::forest:
-						field_map.setColor(getDxColor(110, 149, 59));
-						break;
-					case MapChipTypeBiome::rock:
-						field_map.setColor(getDxColor(120, 125, 108));
-						break;
-					case MapChipTypeBiome::hill:
-						field_map.setColor(getDxColor(145, 177, 113));
-						break;
-					case MapChipTypeBiome::savannah:
-						field_map.setColor(getDxColor(144, 140, 73));
-						break;
-					case MapChipTypeBiome::grass:
-						field_map.setColor(getDxColor(90, 128, 63));
-						break;
-					case MapChipTypeBiome::wall:
-						field_map.setColor(getDxColor(200, 200, 200));
-						break;
-					case MapChipTypeBiome::way:
-						field_map.setColor(getDxColor(90, 128, 63));
-						break;
-					case MapChipTypeBiome::room:
-						field_map.setColor(getDxColor(50, 160, 70));
-						break;
-					case MapChipTypeBiome::normal:
-						field_map.setColor(getDxColor(170, 160, 70));
-						break;
+					for (::As::IndexUint row3{ row }, block_index{}; elevation3 <= field_map.getBlockElevation(); --row3, ++elevation3, ++block_index) {
+						if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
+						//field_map_matrix[row3][col].setIsCliff(field_map_matrix[row][col].getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
+						//if (field_map_matrix[row][col].getBlock(block_index) != Block::empty) {
+						//	field_map_matrix[row3][col].setDrawBlock(field_map_matrix[row][col].getBlock(block_index)); // ブロックを格納
+						//}
+						if (row3 == 0) break;
 					}
 
 					const As::Int32 row2 = As::Int32(row) - As::Int32(field_map_matrix[row][col].getBlockElevation());
@@ -246,7 +251,7 @@ namespace Crafterra {
 						));
 					// ウディタ規格オートタイルの計算
 					// 同質接続の条件：同じバイオーム＆同じ標高＆崖ではない
-					field_map_matrix[row][col].setAutoTile(
+					field_map_matrix[row][col].setBiomeAutoTile(
 						getHomogeneousConnectionAutoTile(
 							field_map_matrix[row - 1][col].getDrawBiome() == field_map_matrix[row][col].getDrawBiome() && field_map_matrix[row - 1][col].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col].getIsCliff())
 							, field_map_matrix[row][col - 1].getDrawBiome() == field_map_matrix[row][col].getDrawBiome() && field_map_matrix[row][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row][col - 1].getIsCliff())
@@ -256,6 +261,20 @@ namespace Crafterra {
 							, field_map_matrix[row - 1][col + 1].getDrawBiome() == field_map_matrix[row][col].getDrawBiome() && field_map_matrix[row - 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col + 1].getIsCliff())
 							, field_map_matrix[row + 1][col - 1].getDrawBiome() == field_map_matrix[row][col].getDrawBiome() && field_map_matrix[row + 1][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col - 1].getIsCliff())
 							, field_map_matrix[row + 1][col + 1].getDrawBiome() == field_map_matrix[row][col].getDrawBiome() && field_map_matrix[row + 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col + 1].getIsCliff())
+						)
+					);
+					// ウディタ規格オートタイルの計算
+					// 同質接続の条件：同じバイオーム＆同じ標高＆崖ではない
+					field_map_matrix[row][col].setAutoTile(
+						getHomogeneousConnectionAutoTile(
+							field_map_matrix[row - 1][col].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row - 1][col].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col].getIsCliff())
+							, field_map_matrix[row][col - 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row][col - 1].getIsCliff())
+							, field_map_matrix[row][col + 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row][col + 1].getIsCliff())
+							, field_map_matrix[row + 1][col].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row + 1][col].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col].getIsCliff())
+							, field_map_matrix[row - 1][col - 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row - 1][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col - 1].getIsCliff())
+							, field_map_matrix[row - 1][col + 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row - 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col + 1].getIsCliff())
+							, field_map_matrix[row + 1][col - 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row + 1][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col - 1].getIsCliff())
+							, field_map_matrix[row + 1][col + 1].getDrawBlock() == field_map_matrix[row][col].getDrawBlock() && field_map_matrix[row + 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col + 1].getIsCliff())
 						)
 					);
 				}
@@ -354,32 +373,151 @@ namespace Crafterra {
 					else {
 						field_map.setBlockElevation(elevation / 2);
 
-						// 草花の生成テスト
-						switch (xs32.getProbabilityDivision(0.1, 4)) {
-						case 0:
-							field_map.setBlock(Block::grass_1, elevation / 2); // テスト
-							break;
-						case 1:
-							field_map.setBlock(Block::grass_2, elevation / 2); // テスト
-							break;
-						case 2:
-							field_map.setBlock(Block::grass_3, elevation / 2); // テスト
-							break;
-						case 3:
-							field_map.setBlock(Block::grass_4, elevation / 2); // テスト
-							break;
-						case 4:
-							field_map.setBlock(Block::flower_1, elevation / 2); // テスト
-							break;
-						case 5:
-							field_map.setBlock(Block::flower_2, elevation / 2); // テスト
-							break;
-						case 6:
-							field_map.setBlock(Block::flower_3, elevation / 2); // テスト
-							break;
-						case 7:
-							field_map.setBlock(Block::flower_4, elevation / 2); // テスト
-							break;
+						//// 草花の生成テスト
+						//switch (xs32.getProbabilityDivision(0.1, 4)) {
+						//case 0:
+						//	field_map.setBlock(Block::grass_1, elevation / 2); // テスト
+						//	break;
+						//case 1:
+						//	field_map.setBlock(Block::grass_2, elevation / 2); // テスト
+						//	break;
+						//case 2:
+						//	field_map.setBlock(Block::grass_3, elevation / 2); // テスト
+						//	break;
+						//case 3:
+						//	field_map.setBlock(Block::grass_4, elevation / 2); // テスト
+						//	break;
+						//case 4:
+						//	field_map.setBlock(Block::flower_1, elevation / 2); // テスト
+						//	break;
+						//case 5:
+						//	field_map.setBlock(Block::flower_2, elevation / 2); // テスト
+						//	break;
+						//case 6:
+						//	field_map.setBlock(Block::flower_3, elevation / 2); // テスト
+						//	break;
+						//case 7:
+						//	field_map.setBlock(Block::flower_4, elevation / 2); // テスト
+						//	break;
+						//}
+
+
+
+						if (amount_of_rainfall > 120 && elevation > sea_elevation) {
+							if ((field_map.getLake()) > 150) {
+								field_map.setBlock(Block::water_ground_2, elevation / 2); // テスト
+							}
+							else {
+								// 草花の生成テスト
+								switch (field_map.getFlower()) {
+								case 150:
+								case 160:
+									field_map.setBlock(Block::grass_1, elevation / 2); // テスト
+									break;
+								case 151:
+								case 161:
+									field_map.setBlock(Block::grass_2, elevation / 2); // テスト
+									break;
+								case 152:
+								case 162:
+									field_map.setBlock(Block::grass_3, elevation / 2); // テスト
+									break;
+								case 153:
+								case 163:
+									field_map.setBlock(Block::grass_4, elevation / 2); // テスト
+									break;
+								case 154:
+								case 164:
+									field_map.setBlock(Block::flower_1, elevation / 2); // テスト
+									break;
+								case 155:
+								case 165:
+									field_map.setBlock(Block::flower_2, elevation / 2); // テスト
+									break;
+								case 156:
+								case 166:
+									field_map.setBlock(Block::flower_3, elevation / 2); // テスト
+									break;
+								case 157:
+								case 167:
+									field_map.setBlock(Block::flower_4, elevation / 2); // テスト
+									break;
+								case 158:
+								case 168:
+									field_map.setBlock(Block::house_wall_1_up, elevation / 2 + 1); // テスト
+									field_map.setBlock(Block::house_wall_1_down, elevation / 2); // テスト
+									break;
+								}
+							}
+						}
+						else {
+
+							if (field_map.getBiome() == ::Crafterra::MapChipTypeBiome::forest) {
+								// 草花の生成テスト
+								switch (field_map.getFlower()) {
+								case 100:
+									field_map.setBlock(Block::grass_1, elevation / 2); // テスト
+									break;
+								case 101:
+									field_map.setBlock(Block::grass_2, elevation / 2); // テスト
+									break;
+								case 102:
+									field_map.setBlock(Block::grass_3, elevation / 2); // テスト
+									break;
+								case 103:
+									field_map.setBlock(Block::grass_4, elevation / 2); // テスト
+									break;
+								case 104:
+									field_map.setBlock(Block::flower_1, elevation / 2); // テスト
+									break;
+								case 105:
+									field_map.setBlock(Block::flower_2, elevation / 2); // テスト
+									break;
+								case 106:
+									field_map.setBlock(Block::flower_3, elevation / 2); // テスト
+									break;
+								case 107:
+									field_map.setBlock(Block::flower_4, elevation / 2); // テスト
+									break;
+								}
+								if (field_map.getFlower() > 130) {
+									field_map.setBlock(Block::house_wall_1_up, elevation / 2 + 1); // テスト
+									field_map.setBlock(Block::house_wall_1_down, elevation / 2); // テスト
+								}
+							}
+							else {
+								// 草花の生成テスト
+								switch (field_map.getFlower()) {
+								case 150:
+									field_map.setBlock(Block::grass_1, elevation / 2); // テスト
+									break;
+								case 151:
+									field_map.setBlock(Block::grass_2, elevation / 2); // テスト
+									break;
+								case 152:
+									field_map.setBlock(Block::grass_3, elevation / 2); // テスト
+									break;
+								case 153:
+									field_map.setBlock(Block::grass_4, elevation / 2); // テスト
+									break;
+								case 154:
+									field_map.setBlock(Block::flower_1, elevation / 2); // テスト
+									break;
+								case 155:
+									field_map.setBlock(Block::flower_2, elevation / 2); // テスト
+									break;
+								case 156:
+									field_map.setBlock(Block::flower_3, elevation / 2); // テスト
+									break;
+								case 157:
+									field_map.setBlock(Block::flower_4, elevation / 2); // テスト
+									break;
+								case 158:
+									field_map.setBlock(Block::house_wall_1_up, elevation / 2 + 1); // テスト
+									field_map.setBlock(Block::house_wall_1_down, elevation / 2); // テスト
+									break;
+								}
+							}
 						}
 					}
 

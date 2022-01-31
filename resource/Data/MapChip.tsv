@@ -2,6 +2,7 @@ width	height	x	y	tile	label	path
 32	32	8	133	MapChip	Base	Chip/Map/Base(pipoya).png
 32	32	4	10	Cliff	Cliff	Chip/AutoTile/Cliff(pipoya).png
 16	16	16	10	Wolf	Sea	Chip/AutoTile/Water1(pipoya).png
+16	16	16	10	Wolf	Lake	Chip/AutoTile/Water2(pipoya).png
 16	16	4	10	Wolf	Desert	Chip/AutoTile/Dirt3(pipoya).png
 16	16	4	10	Wolf	Rock	Chip/AutoTile/Dirt2(pipoya).png
 16	16	4	10	Wolf	Savannah	Chip/AutoTile/Dirt1(pipoya).png

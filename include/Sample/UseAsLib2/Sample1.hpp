@@ -49,6 +49,8 @@ namespace Crafterra {
 		const ::As::Uint32 temperature_seed = engine();
 		const ::As::Uint32 amount_of_rainfall_seed = engine();
 		const ::As::Uint32 elevation_seed = engine();
+		const ::As::Uint32 flower_seed = engine();
+		const ::As::Uint32 lake_seed = engine();
 
 		// 座標系 ----------
 		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
@@ -64,7 +66,7 @@ namespace Crafterra {
 
 		// 地形生成 ----------
 		Chunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
-		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed);
+		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
 		Terrain terrain;
 		terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
 		terrain.setTerrain(field_map_matrix);
@@ -234,7 +236,7 @@ namespace Crafterra {
 							);
 
 						if (is_draw_biome) {
-							AutoTileIndex auto_tile_index(field_map.getAutoTile(), 0, 2);
+							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), 0, 2);
 							if (resource_.getMapChip().getIsDesertAlpha(auto_tile_index)) is_auto_tile_desert_alpha = true;
 						}
 						else is_auto_tile_desert_alpha = true;
@@ -248,7 +250,7 @@ namespace Crafterra {
 						}
 						// 海を描画
 						else if (field_map.getDrawBlock() == Block::water_ground) {
-							AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);
+							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), cd_anime_sea, 8);
 
 							if (resource_.getMapChip().getIsSeaAlpha(auto_tile_index)) {
 								::As::Image(resource_.getMapChip().getMapChip("Base", 0)).draw(map_chip_rect);
@@ -275,7 +277,7 @@ namespace Crafterra {
 						if (field_map.getIsCliff()) return;
 						if (is_draw_biome) {
 							const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(field_map.getDrawBiome())];
-							AutoTileIndex auto_tile_index(field_map.getAutoTile(), 0, 2);
+							AutoTileIndex auto_tile_index(field_map.getBiomeAutoTile(), 0, 2);
 							::As::ImageQuadrant(
 								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
 								resource_.getMapChip().getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
@@ -307,6 +309,24 @@ namespace Crafterra {
 							break;
 						case Block::flower_4:
 							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 6 + 7)).draw(map_chip_rect);
+							break;
+						case Block::house_wall_1_up:
+							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 46 + 7)).draw(map_chip_rect);
+							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
+							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
+							break;
+						case Block::house_wall_1_down:
+							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 47 + 7)).draw(map_chip_rect);
+							//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
+							::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 0)).draw(map_chip_rect);
+							break;
+						case Block::water_ground_2:
+							AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);
+							::As::ImageQuadrant(
+								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_upper_left),
+								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_upper_right),
+								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_lower_left),
+								resource_.getMapChip().getMapChip("Lake", auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 							break;
 						}
 
