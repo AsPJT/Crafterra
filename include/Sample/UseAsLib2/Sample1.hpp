@@ -80,15 +80,14 @@ namespace Crafterra {
 		player.setX(cs.camera_size.getCenterX());
 		player.setY(float(field_map_matrix[As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getElevation3()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
+		player.setWalkingSpeed(2.f);
+		player.setMode(ActorMode::airship);
 
 		// キー入力
 		::As::InputKey key;
 
 		// 操作アクタの初期設定
-		OperationActorStateInFieldMap operation_actor_state_in_field = OperationActorStateInFieldMap::airship;
 		cs.setMapChipSize(10.f);
-		//OperationActorStateInFieldMap operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
-		//cs.setMapChipSize(64.f);
 
 		// 経過時間 ----------
 		ElapsedTime elapsed_time;
@@ -121,32 +120,15 @@ namespace Crafterra {
 					cd_anime_sea = 0;
 				}
 			}
-			float key_displacement = 0.f;
-			// フィールドマップにおける操作アクタの状態
-			switch (operation_actor_state_in_field) {
-
-				//----------------------------------------------------------------------------------------------------
-				// 🚶 人間 ( 陸を歩行する者 ) 🚶 
-			case ::Crafterra::Enum::OperationActorStateInFieldMap::walking:
-				key_displacement = 0.2f;
-				break;
-
-				//----------------------------------------------------------------------------------------------------
-				// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
-			case ::Crafterra::Enum::OperationActorStateInFieldMap::airship:
-				key_displacement = 2.f;
-				break;
-			}
 
 			// キー関連
-			::Crafterra::updateKey(key, cs, player, terrain, operation_actor_state_in_field, is_debug_log, key_displacement, field_map_matrix, terrain_noise, chunk);
+			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, field_map_matrix, terrain_noise, chunk);
 
 			// 無限生成処理
 			::Crafterra::updateTerrain(cs, chunk, terrain, field_map_matrix, terrain_noise);
 
 			// 描画関数
 			::Crafterra::updateCamera(cs, field_map_matrix, resource_, cd_anime_sea);
-
 			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
@@ -160,11 +142,11 @@ namespace Crafterra {
 
 			//----------------------------------------------------------------------------------------------------
 			// フィールドマップにおける操作アクタの状態
-			switch (operation_actor_state_in_field) {
+			switch (player.getMode()) {
 
 				//----------------------------------------------------------------------------------------------------
 				// 🚶 人間 ( 陸を歩行する者 ) 🚶 
-			case ::Crafterra::Enum::OperationActorStateInFieldMap::walking:
+			case ::Crafterra::Enum::ActorMode::humanoid:
 				::As::Image(resource_.getCharacterChip().getMapChip("Human", dir)).draw(::As::Rect(
 					::As::RectDataType(cs.window_size.getWidth() / 2 - cs.map_chip_size.getWidth() / 2),
 					::As::RectDataType(cs.window_size.getHeight() / 2 - cs.map_chip_size.getHeight() / 2),
@@ -175,12 +157,12 @@ namespace Crafterra {
 
 				//----------------------------------------------------------------------------------------------------
 				// 🚢 船 ( 海上に浮かんでいる者 ) 🚢 
-			case ::Crafterra::Enum::OperationActorStateInFieldMap::ship:
+			case ::Crafterra::Enum::ActorMode::ship:
 				break;
 
 				//----------------------------------------------------------------------------------------------------
 				// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
-			case ::Crafterra::Enum::OperationActorStateInFieldMap::airship:
+			case ::Crafterra::Enum::ActorMode::airship:
 				// 飛空艇の影を描画
 #ifdef __DXLIB
 				::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);

@@ -39,6 +39,12 @@ namespace Crafterra {
 		// あたり判定の大きさ
 		Pos_ hit_width{ 0.9f }, hit_height{ 0.9f }, hit_depth{ 0.9f };
 
+		// 歩行速度
+		float walking_speed = 0.2f;
+
+		// アクタの様式
+		ActorMode actor_mode = ActorMode::humanoid;
+
 	public:
 		::Crafterra::Enum::ActorDirection getDirection() const { return this->direction; }
 		void setDirection(const ::Crafterra::Enum::ActorDirection& direction_) { this->direction = direction_; }
@@ -69,6 +75,14 @@ namespace Crafterra {
 		void setHitWidth(const Pos_ width_) { this->hit_width = width_; }
 		void setHitHeight(const Pos_ height_) { this->hit_height = height_; }
 		void setHitDepth(const Pos_ depth_) { this->hit_depth = depth_; }
+
+		// 速度 ----------
+		float getWalkingSpeed() const { return this->walking_speed; }
+		void setWalkingSpeed(const float walking_speed_) { this->walking_speed = walking_speed_; }
+
+		// 様式 ----------
+		ActorMode getMode() const { return this->actor_mode; }
+		void setMode(const ActorMode actor_mode_) { this->actor_mode = actor_mode_; }
 
 	};
 

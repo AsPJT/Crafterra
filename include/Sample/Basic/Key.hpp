@@ -32,9 +32,7 @@ namespace Crafterra {
 		CoordinateSystem& cs, // 座標系管理クラス
 		Actor& player, // アクタクラス
 		const Terrain& terrain, // 地形整理クラス
-		OperationActorStateInFieldMap& operation_actor_state_in_field, // 操作アクタの状態
 		bool& is_debug_log, // デバッグログの表示をするかしないか
-		const float key_displacement, // 移動速度
 		::As::Matrix<MapChip, init_field_map_width, init_field_map_height>& field_map_matrix, // フィールドマップ
 		TerrainNoise& terrain_noise, // 地形生成
 		TerrainChunk& chunk // 地形チャンク管理
@@ -42,19 +40,19 @@ namespace Crafterra {
 
 		key.setKey();
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-			cs.camera_size.moveX(-key_displacement);
+			cs.camera_size.moveX(-player.getWalkingSpeed());
 			player.setDirection(::Crafterra::Enum::ActorDirection::left);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-			cs.camera_size.moveX(key_displacement);
+			cs.camera_size.moveX(player.getWalkingSpeed());
 			player.setDirection(::Crafterra::Enum::ActorDirection::right);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-			cs.camera_size.moveY(-key_displacement);
+			cs.camera_size.moveY(-player.getWalkingSpeed());
 			player.setDirection(::Crafterra::Enum::ActorDirection::up);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-			cs.camera_size.moveY(key_displacement);
+			cs.camera_size.moveY(player.getWalkingSpeed());
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
 		if (key.isDown(::As::Key::key_g)) {
@@ -69,11 +67,13 @@ namespace Crafterra {
 		}
 		if (key.isDown(::As::Key::key_1)) {
 			cs.setMapChipSize(10.f);
-			operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::airship;
+			player.setMode(::Crafterra::Enum::ActorMode::airship);
+			player.setWalkingSpeed(2.f);
 		}
 		if (key.isDown(::As::Key::key_2)) {
 			cs.setMapChipSize(64.f);
-			operation_actor_state_in_field = ::Crafterra::Enum::OperationActorStateInFieldMap::walking;
+			player.setMode(::Crafterra::Enum::ActorMode::humanoid);
+			player.setWalkingSpeed(0.2f);
 		}
 		if (key.isDown(::As::Key::key_p)) {
 			is_debug_log = (!is_debug_log);

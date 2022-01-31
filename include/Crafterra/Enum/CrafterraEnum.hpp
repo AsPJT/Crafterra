@@ -25,9 +25,9 @@ namespace Crafterra {
 	inline namespace Enum {
 
 		// フィールドマップにおける操作アクタの状態
-		enum class OperationActorStateInFieldMap : ::Crafterra::DataType::OperationActorStateInFieldMapUint {
+		enum class ActorMode : ::Crafterra::DataType::ActorModeUint {
 			  empty
-			, walking     // 陸路の歩行
+			, humanoid     // 陸路の歩行
 			, ratite_bird // 飛べない鳥 ( 地上の高速移動 )
 			, ship        // 船
 			, airship     // 飛空艇
