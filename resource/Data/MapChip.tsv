@@ -9,3 +9,4 @@ width	height	x	y	tile	label	path
 16	16	4	10	Wolf	Mountain	Chip/AutoTile/Grass2(pipoya).png
 16	16	4	10	Wolf	Forest	Chip/AutoTile/Grass4(pipoya).png
 16	16	4	10	Wolf	Grass	Chip/AutoTile/LongGrass(pipoya).png
+16	16	4	10	Wolf	Tundra	Chip/AutoTile/Snow(pipoya).png

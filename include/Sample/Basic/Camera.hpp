@@ -130,13 +130,53 @@ namespace Crafterra {
 					break;
 				case Block::house_wall_1_up:
 					//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 46 + 7)).draw(map_chip_rect);
-					//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
-					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
 					break;
 				case Block::house_wall_1_down:
 					//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 47 + 7)).draw(map_chip_rect);
-					//::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
+					break;
+				case Block::yellow_green_broadleaf_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
+					break;
+				case Block::yellow_green_broadleaf_tree_down:
 					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 0)).draw(map_chip_rect);
+					break;
+				case Block::green_broadleaf_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 1)).draw(map_chip_rect);
+					break;
+				case Block::green_broadleaf_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 1)).draw(map_chip_rect);
+					break;
+				case Block::yellow_broadleaf_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 2)).draw(map_chip_rect);
+					break;
+				case Block::yellow_broadleaf_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 2)).draw(map_chip_rect);
+					break;
+				case Block::red_broadleaf_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 3)).draw(map_chip_rect);
+					break;
+				case Block::red_broadleaf_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 3)).draw(map_chip_rect);
+					break;
+				case Block::deciduous_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 4)).draw(map_chip_rect);
+					break;
+				case Block::deciduous_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 4)).draw(map_chip_rect);
+					break;
+				case Block::yellow_green_coniferous_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 5)).draw(map_chip_rect);
+					break;
+				case Block::yellow_green_coniferous_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 5)).draw(map_chip_rect);
+					break;
+				case Block::green_coniferous_tree_up:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 9 + 6)).draw(map_chip_rect);
+					break;
+				case Block::green_coniferous_tree_down:
+					::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 6)).draw(map_chip_rect);
 					break;
 				case Block::water_ground_2:
 					AutoTileIndex auto_tile_index(field_map.getAutoTile(), cd_anime_sea, 8);

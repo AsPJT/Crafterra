@@ -33,6 +33,7 @@ namespace Crafterra {
 		empty     // 無し
 		, sea        // 海
 		, lake       // 湖
+		, tundra    // ツンドラ
 		, mountain // 山
 		, desert    // 砂漠
 		, forest    // 森林
@@ -50,7 +51,7 @@ namespace Crafterra {
 
 	::As::Array<::As::String, As::IndexUint(MapChipTypeBiome::size)>
 		MapChipTypeBiomeString{ {
-				"Empty","Sea","Lake","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
+				"Empty","Sea","Lake","Tundra","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
 	} };
 
 //#if (__cplusplus < 202002L)
@@ -85,6 +86,21 @@ namespace Crafterra {
 		, grass_4      // 草
 		, house_wall_1_up      // 家の壁
 		, house_wall_1_down      // 家の壁
+		, yellow_green_broadleaf_tree_up      // 黄緑色の広葉樹 上
+		, yellow_green_broadleaf_tree_down   // 黄緑色の広葉樹 下
+		, green_broadleaf_tree_up      // 緑色の広葉樹 上
+		, green_broadleaf_tree_down   // 緑色の広葉樹 下
+		, yellow_broadleaf_tree_up      // 黄色の広葉樹 上
+		, yellow_broadleaf_tree_down   // 黄色の広葉樹 下
+		, red_broadleaf_tree_up      // 赤色の広葉樹 上
+		, red_broadleaf_tree_down   // 赤色の広葉樹 下
+		, deciduous_tree_up      // 落葉樹 上
+		, deciduous_tree_down   // 落葉樹 下
+		, yellow_green_coniferous_tree_up      // 黄緑色の針葉樹 上
+		, yellow_green_coniferous_tree_down   // 黄緑色の針葉樹 下
+		, green_coniferous_tree_up      // 緑色の針葉樹 上
+		, green_coniferous_tree_down   // 緑色の針葉樹 下
+		, b      // 家の壁
 		, size   // ブロックの数
 	};
 
@@ -102,6 +118,8 @@ namespace Crafterra {
 	private:
 		// ---------- 元の座標系 ----------
 
+		using FlowerFloat = double;
+
 		Block block[128]{}; // ブロック
 		::Crafterra::Color::Color3 rgb{}; // マップチップの色 ( 廃止予定 )
 		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
@@ -110,7 +128,7 @@ namespace Crafterra {
 		ElevationUint elevation{}; // 元の標高値
 		ElevationUint temperature{}; // 気温
 		ElevationUint amount_of_rainfall{}; // 降水量
-		ElevationUint flower{}; // 花
+		FlowerFloat flower{}; // 花
 		ElevationUint lake{}; // 花
 		::As::Uint32 seed{}; // 乱数シード
 
@@ -213,10 +231,10 @@ namespace Crafterra {
 		void setElevation(const ElevationUint& elevation_) {
 			this->elevation = elevation_;
 		}
-		ElevationUint getFlower() const {
+		FlowerFloat getFlower() const {
 			return this->flower;
 		}
-		void setFlower(const ElevationUint& flower_) {
+		void setFlower(const FlowerFloat& flower_) {
 			this->flower = flower_;
 		}
 		ElevationUint getLake() const {

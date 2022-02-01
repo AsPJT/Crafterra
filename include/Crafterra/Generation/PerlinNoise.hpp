@@ -44,8 +44,8 @@ namespace Crafterra {
 
 
 		constexpr Double_ getFade(const Double_ t_) const noexcept {
-			//return t_ * t_* t_* (t_ * (t_ * 6 - 15) + 10);
-			return t_;
+			return t_ * t_* t_* (t_ * (t_ * 6 - 15) + 10);
+			//return t_;
 		}
 
 
