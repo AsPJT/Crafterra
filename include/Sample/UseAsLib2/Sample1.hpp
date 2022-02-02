@@ -50,11 +50,11 @@ namespace Crafterra {
 		// SEED 生成 ----------
 		::std::random_device seed_gen;
 		::std::mt19937 engine(seed_gen()); // 乱数生成器
-		const ::As::Uint32 temperature_seed = engine();
-		const ::As::Uint32 amount_of_rainfall_seed = engine();
-		const ::As::Uint32 elevation_seed = engine();
-		const ::As::Uint32 flower_seed = engine();
-		const ::As::Uint32 lake_seed = engine();
+		const ::As::Uint32 temperature_seed = seed_gen();
+		const ::As::Uint32 amount_of_rainfall_seed = seed_gen();
+		const ::As::Uint32 elevation_seed = seed_gen();
+		const ::As::Uint32 flower_seed = seed_gen();
+		const ::As::Uint32 lake_seed = seed_gen();
 
 		// 座標系 ----------
 		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
@@ -68,17 +68,26 @@ namespace Crafterra {
 
 		FieldMapMatrix& field_map_matrix = (*field_map_matrix_ptr); // フィールドマップ
 
+		// フィールドマップ ----------
+		using DrawFieldMapMatrix = ::As::Matrix<DrawMapChip, init_field_map_width, init_field_map_height>; // 世界
+		using DrawFieldMapMatrixPtr = ::std::unique_ptr<DrawFieldMapMatrix>; // 世界
+
+		DrawFieldMapMatrixPtr draw_map_matrix_ptr(CRAFTERRA_NEW DrawFieldMapMatrix); // フィールドマップのポインタ
+		if (!draw_map_matrix_ptr) return; // メモリ確保できなかった時は return
+
+		DrawFieldMapMatrix& draw_map_matrix = (*draw_map_matrix_ptr); // フィールドマップ
+
 		// 地形生成 ----------
 		TerrainChunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
 		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
 		Terrain terrain;
 		terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
-		terrain.setTerrain(field_map_matrix);
+		terrain.setTerrain(field_map_matrix, draw_map_matrix);
 
 		// プレイヤーの位置 ----------
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
-		player.setY(float(field_map_matrix[As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getElevation3()));
+		player.setY(float(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation3()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
 		player.setWalkingSpeed(2.f);
 		player.setMode(ActorMode::airship);
@@ -122,13 +131,13 @@ namespace Crafterra {
 			}
 
 			// キー関連
-			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, field_map_matrix, terrain_noise, chunk);
+			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, field_map_matrix, draw_map_matrix, terrain_noise, chunk);
 
 			// 無限生成処理
-			::Crafterra::updateTerrain(cs, chunk, terrain, field_map_matrix, terrain_noise);
+			::Crafterra::updateTerrain(cs, chunk, terrain, field_map_matrix, draw_map_matrix, terrain_noise);
 
 			// 描画関数
-			::Crafterra::updateCamera(cs, field_map_matrix, resource_, cd_anime_sea);
+			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea);
 			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
@@ -197,9 +206,9 @@ namespace Crafterra {
 					//#endif
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-					, MapChipTypeBiomeString[As::IndexUint(field_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getDrawBiome())].c_str()
+					, MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())].c_str()
 					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
-					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
+					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
 					, player.getX(), player.getY(), player.getZ()
 					//, field_map_matrix[100][100].getCliffTop()
 				);

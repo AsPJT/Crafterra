@@ -54,21 +54,21 @@ namespace Crafterra {
 				"Empty","Sea","Lake","Tundra","Mountain","Desert","Forest","Rock","Hill","Savannah","Grass","Wall","Way","Room","Normal"
 	} };
 
-//#if (__cplusplus < 202002L)
-//	::Crafterra::DataType::Array<::As::String, MapChipTypeBiome::size>
-//		MapChipTypeBiomeString{ {
-//				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
-//	} };
-//#else
-	//::Crafterra::DataType::Array<::As::String, As::IndexUint(MapChipTypeBiome::size)>
-	//	MapChipTypeBiomeString{ {
-	//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
-	//} };
-//#endif
+	//#if (__cplusplus < 202002L)
+	//	::Crafterra::DataType::Array<::As::String, MapChipTypeBiome::size>
+	//		MapChipTypeBiomeString{ {
+	//				u8"無し",u8"海",u8"湖",u8"山",u8"砂漠",u8"森林",u8"岩山",u8"丘",u8"サバンナ",u8"草原",u8"壁",u8"道",u8"部屋",u8"通常"
+	//	} };
+	//#else
+		//::Crafterra::DataType::Array<::As::String, As::IndexUint(MapChipTypeBiome::size)>
+		//	MapChipTypeBiomeString{ {
+		//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
+		//} };
+	//#endif
 
-	// 未完成
+		// 未完成
 	enum class Block : BlockType {
-		  empty     // 無し
+		empty     // 無し
 		, normal_ground        // 地面
 		, water_ground       // 水
 		, water_ground_2       // 水
@@ -113,6 +113,184 @@ namespace Crafterra {
 	// 234,226,135
 	// 176,186,163
 
+	// 描画用マップチップ
+	class DrawMapChipUnit {
+	private:
+		// ---------- 描画座標系 ----------
+
+		::As::IndexUint field_map_x{};
+		::As::IndexUint field_map_y{};
+		::As::IndexUint field_map_z{};
+
+		CliffConnection cliff_top{ CliffConnection::size }; // 崖上タイルの種類
+		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
+		bool is_cliff = false;
+		bool is_cliff_top = false;
+		Block draw_block{}; // 後に配列になる予定
+		ElevationUint elevation{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
+		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
+		AutoTile auto_tile{}; // 描画用オートタイル
+		AutoTile biome_auto_tile{}; // 描画用オートタイル
+
+	public:
+
+		::As::IndexUint getX() const { this->field_map_x; }
+		::As::IndexUint getY() const { this->field_map_y; }
+		::As::IndexUint getZ() const { this->field_map_z; }
+		void setX(const ::As::IndexUint x_) { this->field_map_x = x_; }
+		void setY(const ::As::IndexUint y_) { this->field_map_x = y_; }
+		void setZ(const ::As::IndexUint z_) { this->field_map_x = z_; }
+
+		MapChipTypeBiome getDrawBiome() const {
+			return this->draw_biome;
+		}
+		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
+			this->draw_biome = draw_biome_;
+		}
+		Block getDrawBlock() const {
+			return this->draw_block;
+		}
+		void setDrawBlock(const Block& block_) {
+			this->draw_block = block_;
+		}
+		// 暫定
+		ElevationUint getElevation3() const {
+			return this->elevation;
+		}
+		void setElevation3(const ElevationUint& elevation_) {
+			this->elevation = elevation_;
+		}
+		// 暫定
+		CliffConnection getCliffTop() const {
+			return this->cliff_top;
+		}
+		void setCliffTop(const CliffConnection& cliff_top_) {
+			this->cliff_top = cliff_top_;
+		}
+		CliffConnection getCliff() const {
+			return this->cliff;
+		}
+		void setCliff(const CliffConnection& cliff_) {
+			this->cliff = cliff_;
+		}
+		// 崖であるかどうか？
+		bool getIsCliff() const {
+			return this->is_cliff;
+		}
+		void setIsCliff(const bool is_cliff_) {
+			this->is_cliff = is_cliff_;
+		}
+		// 崖上であるかどうか？
+		bool getIsCliffTop() const {
+			return this->is_cliff_top;
+		}
+		void setIsCliffTop(const bool is_cliff_top_) {
+			this->is_cliff_top = is_cliff_top_;
+		}
+		// オートタイル
+		AutoTile getAutoTile() const {
+			return this->auto_tile;
+		}
+		void setAutoTile(const AutoTile& auto_tile_) {
+			this->auto_tile = auto_tile_;
+		}
+		AutoTile getBiomeAutoTile() const {
+			return this->biome_auto_tile;
+		}
+		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) {
+			this->biome_auto_tile = biome_auto_tile_;
+		}
+	};
+
+	constexpr ::As::IndexUint draw_map_layer_max = 3;
+
+	// 描画用マップチップ
+	class DrawMapChip {
+	private:
+		// ---------- 描画座標系 ----------
+
+		DrawMapChipUnit tile[draw_map_layer_max]{};
+		::As::IndexUint tile_num = draw_map_layer_max;
+
+	public:
+
+		void setX(const ::As::IndexUint x_) { this->tile[this->tile_num].setX(x_); }
+		void setY(const ::As::IndexUint y_) { this->tile[this->tile_num].setY(y_); }
+		void setZ(const ::As::IndexUint z_) { this->tile[this->tile_num].setZ(z_); }
+
+		void clearTile() {
+			for (::As::IndexUint i = 0; i < draw_map_layer_max; ++i) {
+				tile[i] = DrawMapChipUnit{};
+			}
+		}
+
+		void setNextTile() {
+			if (tile_num >= draw_map_layer_max) {
+				tile_num = 0;
+				return;
+			}
+			if (tile_num < draw_map_layer_max - 1) {
+				++tile_num;
+				return;
+			}
+			for (::As::IndexUint i = 0; i < draw_map_layer_max - 1; ++i) {
+				tile[i] = tile[i + 1];
+			}
+			tile[draw_map_layer_max - 1] = DrawMapChipUnit{};
+		}
+
+		::As::IndexUint getTileNum() const {
+			return this->tile_num;
+		}
+		void setTileNum(const ::As::IndexUint tile_num_) {
+			this->tile_num = tile_num_;
+		}
+		DrawMapChipUnit& getTile() {
+			return this->tile[this->tile_num];
+		}
+		DrawMapChipUnit& getMaxTile() {
+			return this->tile[draw_map_layer_max - 1];
+		}
+		DrawMapChipUnit& getTile(const ::As::IndexUint tile_num_) {
+			return this->tile[tile_num_];
+		}
+		const DrawMapChipUnit& cgetTile() const {
+			return this->tile[this->tile_num];
+		}
+		const DrawMapChipUnit& cgetTile(const ::As::IndexUint tile_num_) const {
+			return this->tile[tile_num_];
+		}
+
+		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
+			this->tile[this->tile_num].setDrawBiome(draw_biome_);
+		}
+		void setDrawBlock(const Block& block_) {
+			this->tile[this->tile_num].setDrawBlock(block_);
+		}
+		void setElevation3(const ElevationUint& elevation_) {
+			this->tile[this->tile_num].setElevation3(elevation_);
+		}
+		void setCliffTop(const CliffConnection& cliff_top_) {
+			this->tile[this->tile_num].setCliffTop(cliff_top_);
+		}
+		void setCliff(const CliffConnection& cliff_) {
+			this->tile[this->tile_num].setCliff(cliff_);
+		}
+		void setIsCliff(const bool is_cliff_) {
+			this->tile[this->tile_num].setIsCliff(is_cliff_);
+		}
+		void setIsCliffTop(const bool is_cliff_top_) {
+			this->tile[this->tile_num].setIsCliffTop(is_cliff_top_);
+		}
+		// オートタイル
+		void setAutoTile(const AutoTile& auto_tile_) {
+			this->tile[this->tile_num].setAutoTile(auto_tile_);
+		}
+		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) {
+			this->tile[this->tile_num].setBiomeAutoTile(biome_auto_tile_);
+		}
+	};
+
 	// マップチップ情報を管理
 	class MapChip {
 	private:
@@ -121,7 +299,6 @@ namespace Crafterra {
 		using FlowerFloat = double;
 
 		Block block[128]{}; // ブロック
-		::Crafterra::Color::Color3 rgb{}; // マップチップの色 ( 廃止予定 )
 		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
@@ -132,98 +309,19 @@ namespace Crafterra {
 		ElevationUint lake{}; // 花
 		::As::Uint32 seed{}; // 乱数シード
 
-		// ---------- 描画座標系 ----------
-
-		CliffConnection cliff_top{ CliffConnection::size }; // 崖上タイルの種類
-		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
-		bool is_cliff = false;
-		Block draw_block{}; // 後に配列になる予定
-		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
-		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
-		AutoTile auto_tile{}; // 描画用オートタイル
-		AutoTile biome_auto_tile{}; // 描画用オートタイル
-		int draw_chip = -1;
-
 	public:
 
-		void clearDrawValue() {
-			cliff_top = CliffConnection::size;
-			cliff = CliffConnection::size;
-			is_cliff = false;
-
-			// elevation = {}; // 元の標高値
-			// block_elevation = {}; // ブロックの高さに合わせた標高値
-			elevation3 = {}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
-			auto_tile = {};
-			draw_chip = -1;
-		}
-
-
-		void setDrawChip(const int draw_chip_) {
-			this->draw_chip = draw_chip_;
-		}
-		void setDrawChip() {
-			//if (block == 0) {
-				if (biome == MapChipTypeBiome::empty) {
-					draw_chip = -1;
-				}
-				switch (biome)
-				{
-				case MapChipTypeBiome::empty:
-					draw_chip = -1;
-					break;
-				case MapChipTypeBiome::normal:
-					draw_chip = 0;
-					break;
-				case MapChipTypeBiome::forest:
-					draw_chip = 1;
-					break;
-				case MapChipTypeBiome::rock:
-					draw_chip = 7;
-					break;
-				case MapChipTypeBiome::mountain:
-					draw_chip = 5;
-					break;
-				case MapChipTypeBiome::desert:
-					draw_chip = 6;
-					break;
-				}
-
-			//}
-		}
-		int getDrawChip() const {
-			return this->draw_chip;
-		}
-
-		::Crafterra::Color::Color3 getColor() const {
-			return this->rgb;
-		}
-		void setColor(const ::Crafterra::Color::Color3& rgb_) {
-			this->rgb = rgb_;
-		}
 		MapChipTypeBiome getBiome() const {
 			return this->biome;
 		}
 		void setBiome(const MapChipTypeBiome& biome_) {
 			this->biome = biome_;
 		}
-		MapChipTypeBiome getDrawBiome() const {
-			return this->draw_biome;
-		}
-		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
-			this->draw_biome = draw_biome_;
-		}
 		Block getBlock(const As::IndexUint index_) const {
 			return this->block[index_];
 		}
 		void setBlock(const Block& block_, const As::IndexUint index_) {
 			this->block[index_] = block_;
-		}
-		Block getDrawBlock() const {
-			return this->draw_block;
-		}
-		void setDrawBlock(const Block& block_) {
-			this->draw_block = block_;
 		}
 		ElevationUint getElevation() const {
 			return this->elevation;
@@ -266,48 +364,6 @@ namespace Crafterra {
 		}
 		void setSeed(const ::As::Uint32 seed_) {
 			this->seed = seed_;
-		}
-		// 暫定
-		ElevationUint getElevation3() const {
-			return this->elevation3;
-		}
-		void setElevation3(const ElevationUint& elevation_) {
-			this->elevation3 = elevation_;
-		}
-
-
-		// 暫定
-		CliffConnection getCliffTop() const {
-			return this->cliff_top;
-		}
-		void setCliffTop(const CliffConnection& cliff_top_) {
-			this->cliff_top = cliff_top_;
-		}
-		CliffConnection getCliff() const {
-			return this->cliff;
-		}
-		void setCliff(const CliffConnection& cliff_) {
-			this->cliff = cliff_;
-		}
-		// 崖であるかどうか？
-		bool getIsCliff() const {
-			return this->is_cliff;
-		}
-		void setIsCliff(const bool is_cliff_) {
-			this->is_cliff = is_cliff_;
-		}
-		// オートタイル
-		AutoTile getAutoTile() const {
-			return this->auto_tile;
-		}
-		void setAutoTile(const AutoTile& auto_tile_) {
-			this->auto_tile = auto_tile_;
-		}
-		AutoTile getBiomeAutoTile() const {
-			return this->biome_auto_tile;
-		}
-		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) {
-			this->biome_auto_tile = biome_auto_tile_;
 		}
 
 	};

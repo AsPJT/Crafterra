@@ -21,7 +21,7 @@
 
 // 正式バージョン数値
 #ifndef CRAFTERRA_LIBRARY_VERSION
-#define CRAFTERRA_LIBRARY_VERSION (20220120L)
+#define CRAFTERRA_LIBRARY_VERSION (20220202L)
 #endif
 
 // Crafterra 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
@@ -36,19 +36,20 @@
 
 // Crafterra 微修正バージョン
 #ifndef CRAFTERRA_LIBRARY_PATCHLEVEL
-#define CRAFTERRA_LIBRARY_PATCHLEVEL (5)
+#define CRAFTERRA_LIBRARY_PATCHLEVEL (6)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/Crafterra )
 #ifndef CRAFTERRA_LIBRARY_VERSION_NAME
-#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.5"
+#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.6"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン |     更新日    |           概要
 	5.0.0.1.X  | 2022/0X/XX | コピペ用
-	5.0.0.1.X  | 2022/01/20 | 広大な地形生成（ 1000 億マス × 1000 億マス ）機能を実装
+	5.0.0.1.6  | 2022/02/02 | 描画する地形タイルのレイヤー機能を実装
+	5.0.0.1.5  | 2022/01/20 | 広大な地形生成（ 1000 億マス × 1000 億マス ）機能を実装
 	5.0.0.1.4  | 2022/01/18 | 崖上＆崖自動タイル独自規格とウディタオートタイル規格に対応
 	5.0.0.1.3  | 2022/01/16 | Crafterra 独自のデータ型実装を追加
 	5.0.0.1.2  | 2022/01/14 | GitHub での一般公開
@@ -85,12 +86,12 @@ namespace Crafterra {
 
 	namespace Version {
 		// using 定義
-		constexpr long crafterra_library_version = (CRAFTERRA_LIBRARY_VERSION);
-		constexpr int  crafterra_library_generation = (CRAFTERRA_LIBRARY_GENERATION);
+		constexpr long crafterra_library_version                = (CRAFTERRA_LIBRARY_VERSION);
+		constexpr int  crafterra_library_generation             = (CRAFTERRA_LIBRARY_GENERATION);
 		constexpr int  crafterra_library_generation_patchlevel = (CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL);
-		constexpr int  crafterra_library_major = (CRAFTERRA_LIBRARY_MAJOR);
-		constexpr int  crafterra_library_minor = (CRAFTERRA_LIBRARY_MINOR);
-		constexpr int  crafterra_library_patchlevel = (CRAFTERRA_LIBRARY_PATCHLEVEL);
+		constexpr int  crafterra_library_major                  = (CRAFTERRA_LIBRARY_MAJOR);
+		constexpr int  crafterra_library_minor                  = (CRAFTERRA_LIBRARY_MINOR);
+		constexpr int  crafterra_library_patchlevel             = (CRAFTERRA_LIBRARY_PATCHLEVEL);
 
 	}
 
