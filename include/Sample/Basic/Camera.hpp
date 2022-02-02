@@ -184,6 +184,12 @@ namespace Crafterra {
 					case Block::green_coniferous_tree_down:
 						::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 10 + 6)).draw(map_chip_rect);
 						break;
+					case Block::cultivated_land:
+						::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 21 + 3)).draw(map_chip_rect);
+						break;
+					case Block::planted_carrot:
+						::As::Image(resource_.getMapChip().getMapChip("Base", 8 * 19 + 6)).draw(map_chip_rect);
+						break;
 					case Block::water_ground_2:
 					{
 						AutoTileIndex auto_tile_index(draw_map.getAutoTile(), cd_anime_sea, 8);

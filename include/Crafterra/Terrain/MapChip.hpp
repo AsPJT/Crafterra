@@ -101,6 +101,8 @@ namespace Crafterra {
 		, green_coniferous_tree_up      // 緑色の針葉樹 上
 		, green_coniferous_tree_down   // 緑色の針葉樹 下
 		, b      // 家の壁
+		, cultivated_land      // 畑
+		, planted_carrot      // ニンジン
 		, size   // ブロックの数
 	};
 
@@ -291,6 +293,21 @@ namespace Crafterra {
 		}
 	};
 
+	constexpr ::As::IndexUint block_layer_max = 3;
+
+	// ブロックのレイヤー
+	class BlockLayer {
+	private:
+		Block block[block_layer_max]{};
+	public:
+		Block getBlock(const ::As::IndexUint index_) const {
+			return this->block[index_];
+		}
+		void setBlock(const Block block_, const ::As::IndexUint index_) {
+			this->block[index_] = block_;
+		}
+	};
+
 	// マップチップ情報を管理
 	class MapChip {
 	private:
@@ -298,7 +315,7 @@ namespace Crafterra {
 
 		using FlowerFloat = double;
 
-		Block block[128]{}; // ブロック
+		BlockLayer block[128]{}; // ブロック
 		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
@@ -317,11 +334,20 @@ namespace Crafterra {
 		void setBiome(const MapChipTypeBiome& biome_) {
 			this->biome = biome_;
 		}
-		Block getBlock(const As::IndexUint index_) const {
+		const BlockLayer& cgetBlockLayer(const As::IndexUint index_) const {
 			return this->block[index_];
 		}
-		void setBlock(const Block& block_, const As::IndexUint index_) {
+		BlockLayer& getBlockLayer(const As::IndexUint index_) {
+			return this->block[index_];
+		}
+		void setBlockLayer(const BlockLayer& block_, const As::IndexUint index_) {
 			this->block[index_] = block_;
+		}
+		Block getBlock(const As::IndexUint index_, const As::IndexUint layer_index_) const {
+			return this->block[index_].getBlock(layer_index_);
+		}
+		void setBlock(const Block& block_, const As::IndexUint index_, const As::IndexUint layer_index_) {
+			this->block[index_].setBlock(block_, layer_index_);
 		}
 		ElevationUint getElevation() const {
 			return this->elevation;

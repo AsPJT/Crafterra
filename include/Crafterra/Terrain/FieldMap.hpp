@@ -355,18 +355,21 @@ namespace Crafterra {
 					}
 
 					for (::As::IndexUint row3{ row }, block_index{}; block_index < 128; --row3, ++block_index) {
-						if (field_map.getBlock(block_index) != Block::empty) {
-							DrawMapChip& draw_map_2 = draw_map_matrix[row3][col];
-							draw_map_2.setNextTile();
-							draw_map_2.setIsCliff(field_map.getBlock(block_index) == Block::cliff); // どこが崖になっているか調べる
-							draw_map_2.setIsCliffTop(block_index == ::As::IndexUint(field_map.getBlockElevation())); // どこが崖上になっているか調べる
-							draw_map_2.setDrawBlock(field_map.getBlock(block_index)); // ブロックを格納
-							draw_map_2.setX(col);
-							draw_map_2.setY(block_index);
-							draw_map_2.setZ(row);
+						for (::As::IndexUint block_layer_index = 0; block_layer_index < block_layer_max; ++block_layer_index) {
+							const Block block = field_map.getBlock(block_index, block_layer_index);
+							if (block != Block::empty) {
+								DrawMapChip& draw_map_2 = draw_map_matrix[row3][col];
+								draw_map_2.setNextTile();
+								draw_map_2.setIsCliff(block == Block::cliff); // どこが崖になっているか調べる
+								draw_map_2.setIsCliffTop(block_index == ::As::IndexUint(field_map.getBlockElevation())); // どこが崖上になっているか調べる
+								draw_map_2.setDrawBlock(block); // ブロックを格納
+								draw_map_2.setX(col);
+								draw_map_2.setY(block_index);
+								draw_map_2.setZ(row);
 
-							if (ElevationUint(block_index) <= field_map.getBlockElevation()) {
-								if (draw_map_2.getTile().getElevation3() < ElevationUint(block_index)) draw_map_2.setElevation3(ElevationUint(block_index));
+								if (ElevationUint(block_index) <= field_map.getBlockElevation()) {
+									if (draw_map_2.getTile().getElevation3() < ElevationUint(block_index)) draw_map_2.setElevation3(ElevationUint(block_index));
+								}
 							}
 						}
 						if (row3 == 0) break;
@@ -428,7 +431,7 @@ namespace Crafterra {
 			const ElevationUint block_elevation = elevation / 2;
 			const ElevationUint amount_of_rainfall = field_map.getAmountOfRainfall();
 
-			const ::As::Uint32 flower_num = 8;
+			const ::As::Uint32 flower_num = 9;
 			const double flower_probability = 0.02;
 			const double default_max = (flower_probability * flower_num);
 			double coniferous_tree_generation_probability = 0.0; // 針葉樹の生成確率
@@ -476,55 +479,62 @@ namespace Crafterra {
 			if (probability < probability_of_no_generation) return;
 			probability -= probability_of_no_generation;
 
+			const ::As::IndexUint block_layer_index = 0;
+
 			// 草花の生成テスト
 			if (probability < flower_probability) {
-				field_map.setBlock(Block::grass_1, block_elevation); // テスト
+				field_map.setBlock(Block::grass_1, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 2)) {
-				field_map.setBlock(Block::grass_2, block_elevation); // テスト
+				field_map.setBlock(Block::grass_2, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 3)) {
-				field_map.setBlock(Block::grass_3, block_elevation); // テスト
+				field_map.setBlock(Block::grass_3, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 4)) {
-				field_map.setBlock(Block::grass_4, block_elevation); // テスト
+				field_map.setBlock(Block::grass_4, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 5)) {
-				field_map.setBlock(Block::flower_1, block_elevation); // テスト
+				field_map.setBlock(Block::flower_1, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 6)) {
-				field_map.setBlock(Block::flower_2, block_elevation); // テスト
+				field_map.setBlock(Block::flower_2, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < (flower_probability * 7)) {
-				field_map.setBlock(Block::flower_3, block_elevation); // テスト
+				field_map.setBlock(Block::flower_3, block_elevation, block_layer_index); // テスト
+				return;
+			}
+			else if (probability < (flower_probability * 8)) {
+				field_map.setBlock(Block::flower_4, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability < default_max) {
-				field_map.setBlock(Block::flower_4, block_elevation); // テスト
+				field_map.setBlock(Block::cultivated_land, block_elevation, block_layer_index); // テスト
+				field_map.setBlock(Block::planted_carrot, block_elevation, block_layer_index + 1); // テスト
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability)) {
-				field_map.setBlock(Block::green_coniferous_tree_up, block_elevation + 1); // テスト
-				field_map.setBlock(Block::green_coniferous_tree_down, block_elevation); // テスト
+				field_map.setBlock(Block::green_coniferous_tree_up, block_elevation + 1, block_layer_index); // テスト
+				field_map.setBlock(Block::green_coniferous_tree_down, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability + green_broadleaf_tree_generation_probability)) {
-				field_map.setBlock(Block::green_broadleaf_tree_up, block_elevation + 1); // テスト
-				field_map.setBlock(Block::green_broadleaf_tree_down, block_elevation); // テスト
+				field_map.setBlock(Block::green_broadleaf_tree_up, block_elevation + 1, block_layer_index); // テスト
+				field_map.setBlock(Block::green_broadleaf_tree_down, block_elevation, block_layer_index); // テスト
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability + green_broadleaf_tree_generation_probability + yellow_green_broadleaf_tree_generation_probability)) {
-				field_map.setBlock(Block::yellow_green_broadleaf_tree_up, block_elevation + 1); // テスト
-				field_map.setBlock(Block::yellow_green_broadleaf_tree_down, block_elevation); // テスト
+				field_map.setBlock(Block::yellow_green_broadleaf_tree_up, block_elevation + 1, block_layer_index); // テスト
+				field_map.setBlock(Block::yellow_green_broadleaf_tree_down, block_elevation, block_layer_index); // テスト
 				return;
 			}
 		}
@@ -567,13 +577,15 @@ namespace Crafterra {
 					else if (temperature < 132) field_map.setBiome(MapChipTypeBiome::mountain);
 					else field_map.setBiome(MapChipTypeBiome::mountain);
 
+					const ::As::IndexUint block_layer_index = 0;
+
 					for (As::IndexUint i = 0; i < block_elevation; ++i) {
-						field_map.setBlock(Block::cliff, i);
+						field_map.setBlock(Block::cliff, i, block_layer_index);
 					}
 					for (As::IndexUint i = block_elevation + 1; i < 128; ++i) {
-						field_map.setBlock(Block::empty, i); // からの場合 ( 崖上を除く )
+						field_map.setBlock(Block::empty, i, block_layer_index); // からの場合 ( 崖上を除く )
 					}
-					field_map.setBlock(Block::cliff_top, block_elevation); // からだけど崖上の場合
+					field_map.setBlock(Block::cliff_top, block_elevation, block_layer_index); // からだけど崖上の場合
 
 					// 海
 					if (field_map.getBiome() == MapChipTypeBiome::sea) {
@@ -581,7 +593,7 @@ namespace Crafterra {
 						field_map.setBlockElevation(sea_elevation / 2);
 
 						for (As::IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
-							field_map.setBlock(Block::water_ground, i);
+							field_map.setBlock(Block::water_ground, i, block_layer_index);
 						}
 					}
 					// 陸
