@@ -80,9 +80,9 @@ namespace Crafterra {
 			this->expandMapChipHeight(height_);
 		}
 
-		CoordinateSystem(const cs_uint ww_, const cs_uint wh_) :
+		CoordinateSystem(const cs_uint ww_, const cs_uint wh_, const cs_uint fmw_, const cs_uint fmh_) :
 			window_size(ww_, wh_)
-			, field_map_size(init_field_map_width, init_field_map_height)
+			, field_map_size(fmw_, fmh_)
 			, map_chip_size(4.f, 4.f)
 			, camera_size(
 				field_map_size.getCenterX() - (cs_f32(window_size.getWidth()) / map_chip_size.getWidth()) / 2, // StartX

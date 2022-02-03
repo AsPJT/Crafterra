@@ -16,11 +16,10 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_PERLIN_NOISE_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_PERLIN_NOISE_HPP
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_PERLIN_NOISE_2D_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_PERLIN_NOISE_2D_HPP
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp> // int
-#include <algorithm>
 #include <random>
 
 namespace Crafterra {

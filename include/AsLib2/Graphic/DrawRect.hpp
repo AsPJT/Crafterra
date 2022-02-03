@@ -42,6 +42,15 @@ namespace As {
 #endif // ASLIB2_USE_DXLIB
 		}
 
+		void drawLine() {
+			if (rect.width == 0 || rect.height == 0) return;
+#ifdef ASLIB2_USE_DXLIB
+			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, color.getAlpha());
+			::DxLib::DrawBox(rect.start_x, rect.start_y, rect.start_x + rect.width, rect.start_y + rect.height, color.getColor(), FALSE);
+			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+#endif // ASLIB2_USE_DXLIB
+		}
+
 	};
 
 }

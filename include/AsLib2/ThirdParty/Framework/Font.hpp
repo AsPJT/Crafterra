@@ -40,7 +40,7 @@ namespace As {
 			is_font = (AddFontResourceEx(font_path, FR_PRIVATE, nullptr) != 0);
 #endif // __WINDOWS__
 #if defined(__DXLIB)
-			if (is_font) m_font = ::DxLib::CreateFontToHandle(nullptr, 10, -1, -1, DX_CHARSET_SHFTJIS);
+			if (is_font) m_font = ::DxLib::CreateFontToHandle(nullptr, 16, -1, -1, DX_CHARSET_SHFTJIS);
 #endif // __DXLIB
 		}
 
@@ -54,6 +54,12 @@ namespace As {
 		}
 
 		int getFont() const { return this->m_font; }
+
+		void draw(const int x_, const int y_, const ::std::string& str_) {
+#if defined(__DXLIB)
+			::DxLib::DrawStringToHandle(x_, y_, str_.c_str(), 0xffffffff, m_font);
+#endif // __DXLIB
+		}
 
 	};
 }

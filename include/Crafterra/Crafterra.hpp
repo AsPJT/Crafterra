@@ -58,8 +58,8 @@ namespace Crafterra {
 		constexpr ::As::IndexUint init_window_height = 720;
 	}
 	// マップサイズ
-	constexpr ::As::IndexUint init_field_map_width = 512;
-	constexpr ::As::IndexUint init_field_map_height = 512;
+	constexpr ::As::IndexUint default_field_map_width = 512;
+	constexpr ::As::IndexUint default_field_map_height = 512;
 }
 
 // 初回読み込み

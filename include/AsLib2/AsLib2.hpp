@@ -34,5 +34,6 @@
 #include <AsLib2/Basic/Color.hpp>
 #include <AsLib2/Basic/Rect.hpp>
 #include <AsLib2/Graphic/DrawRect.hpp>
+#include <AsLib2/DataType/Matrix.hpp> // テスト
 
 #endif //Included AsLib2

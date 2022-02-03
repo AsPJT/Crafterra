@@ -33,9 +33,9 @@ namespace Crafterra {
 		Actor& player, // アクタクラス
 		const Terrain& terrain, // 地形整理クラス
 		bool& is_debug_log, // デバッグログの表示をするかしないか
-		::As::Matrix<MapChip, init_field_map_width, init_field_map_height>& field_map_matrix, // フィールドマップ
-		::As::Matrix<DrawMapChip, init_field_map_width, init_field_map_height>& draw_map_matrix, // 描画用フィールドマップ
-		TerrainNoise& terrain_noise, // 地形生成
+		::As::UniquePtrMatrix<MapChip>& field_map_matrix, // フィールドマップ
+		::As::UniquePtrMatrix<DrawMapChip>& draw_map_matrix, // 描画用フィールドマップ
+		PerlinNoiseOnFieldMap& terrain_noise, // 地形生成
 		TerrainChunk& chunk // 地形チャンク管理
 	) {
 

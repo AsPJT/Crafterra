@@ -56,30 +56,30 @@ namespace Crafterra {
 		const ::As::Uint32 flower_seed = seed_gen();
 		const ::As::Uint32 lake_seed = seed_gen();
 
-		// 座標系 ----------
-		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
-
 		// フィールドマップ ----------
-		using FieldMapMatrix = ::As::Matrix<MapChip, init_field_map_width, init_field_map_height>; // 世界
+		using FieldMapMatrix = ::As::UniquePtrMatrix<MapChip>; // 世界
 		using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
-		FieldMapMatrixPtr field_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix); // フィールドマップのポインタ
+		FieldMapMatrixPtr field_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix(default_field_map_width, default_field_map_height)); // フィールドマップのポインタ
 		if (!field_map_matrix_ptr) return; // メモリ確保できなかった時は return
 
 		FieldMapMatrix& field_map_matrix = (*field_map_matrix_ptr); // フィールドマップ
 
 		// フィールドマップ ----------
-		using DrawFieldMapMatrix = ::As::Matrix<DrawMapChip, init_field_map_width, init_field_map_height>; // 世界
+		using DrawFieldMapMatrix = ::As::UniquePtrMatrix<DrawMapChip>;//::As::Matrix<DrawMapChip, init_field_map_width, init_field_map_height>; // 世界
 		using DrawFieldMapMatrixPtr = ::std::unique_ptr<DrawFieldMapMatrix>; // 世界
 
-		DrawFieldMapMatrixPtr draw_map_matrix_ptr(CRAFTERRA_NEW DrawFieldMapMatrix); // フィールドマップのポインタ
+		DrawFieldMapMatrixPtr draw_map_matrix_ptr(CRAFTERRA_NEW DrawFieldMapMatrix(default_field_map_width, default_field_map_height)); // フィールドマップのポインタ
 		if (!draw_map_matrix_ptr) return; // メモリ確保できなかった時は return
 
 		DrawFieldMapMatrix& draw_map_matrix = (*draw_map_matrix_ptr); // フィールドマップ
 
+		// 座標系 ----------
+		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), field_map_matrix.getWidth(), field_map_matrix.getHeight());
+
 		// 地形生成 ----------
 		TerrainChunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
-		TerrainNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
+		PerlinNoiseOnFieldMap terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
 		Terrain terrain;
 		terrain.initialGeneration(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
 		terrain.setTerrain(field_map_matrix, draw_map_matrix);
@@ -87,7 +87,7 @@ namespace Crafterra {
 		// プレイヤーの位置 ----------
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
-		player.setY(float(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation3()));
+		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation3()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
 		player.setWalkingSpeed(2.f);
 		player.setMode(ActorMode::airship);
@@ -137,7 +137,7 @@ namespace Crafterra {
 			::Crafterra::updateTerrain(cs, chunk, terrain, field_map_matrix, draw_map_matrix, terrain_noise);
 
 			// 描画関数
-			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea);
+			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea, player.getMode(), is_debug_log);
 			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
