@@ -25,7 +25,13 @@ namespace As {
 	private:
 
 		using ColorType_ = int;
+#ifdef ASLIB2_USE_DXLIB
 		using ColorTypeGet_ = unsigned int;
+#elif defined(SIV3D_INCLUDED)
+		using ColorTypeGet_ = ::s3d::Color;
+#else
+		using ColorTypeGet_ = unsigned int;
+#endif // ASLIB2_USE_DXLIB
 
 		ColorType_ r{}, g{}, b{}, a{};
 	public:
@@ -43,6 +49,8 @@ namespace As {
 		ColorTypeGet_ getColor() {
 #ifdef ASLIB2_USE_DXLIB
 			return ::DxLib::GetColor(this->r, this->g, this->b);
+#elif defined(SIV3D_INCLUDED)
+			return ::s3d::Color(::As::Uint8(this->r), ::As::Uint8(this->g), ::As::Uint8(this->b), ::As::Uint8(255 - this->a));
 #else
 			return 0;
 #endif // ASLIB2_USE_DXLIB

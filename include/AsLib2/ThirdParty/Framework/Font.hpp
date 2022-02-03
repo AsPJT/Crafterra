@@ -20,6 +20,9 @@
 #define INCLUDED_ASLIB2_ASLIB2_THIRD_PARTY_FRAMEWORK_FONT_HPP
 
 // #include <Windows.h>
+#if defined(SIV3D_INCLUDED)
+#include <AsLib2/Basic/Unicode.hpp>
+#endif // SIV3D_INCLUDED
 
 namespace As {
 
@@ -32,6 +35,10 @@ namespace As {
 #endif // __WINDOWS__
 		int m_font = -1;
 
+#if defined(SIV3D_INCLUDED)
+		::s3d::Font font;
+#endif // __DXLIB
+
 	public:
 
 		Font() {
@@ -40,7 +47,9 @@ namespace As {
 			is_font = (AddFontResourceEx(font_path, FR_PRIVATE, nullptr) != 0);
 #endif // __WINDOWS__
 #if defined(__DXLIB)
-			if (is_font) m_font = ::DxLib::CreateFontToHandle(nullptr, 16, -1, -1, DX_CHARSET_SHFTJIS);
+			if (is_font) m_font = ::DxLib::CreateFontToHandle(nullptr, 10, -1, -1, DX_CHARSET_SHFTJIS);
+#elif defined(SIV3D_INCLUDED)
+			font = ::s3d::Font(8);
 #endif // __DXLIB
 		}
 
@@ -58,6 +67,8 @@ namespace As {
 		void draw(const int x_, const int y_, const ::std::string& str_) {
 #if defined(__DXLIB)
 			::DxLib::DrawStringToHandle(x_, y_, str_.c_str(), 0xffffffff, m_font);
+#elif defined(SIV3D_INCLUDED)
+			font(::As::utf32(str_)).draw(x_, y_);
 #endif // __DXLIB
 		}
 

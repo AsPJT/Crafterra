@@ -95,7 +95,7 @@ namespace Crafterra {
 
 		::As::Uint32 getElevationSeed() const { return this->elevation_seed; }
 
-		void generation(MapMat& field_map_matrix, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) {
+		void generation(MapMat& field_map_matrix, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) {
 			//温度
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },

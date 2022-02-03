@@ -39,6 +39,8 @@ namespace As {
 			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, color.getAlpha());
 			::DxLib::DrawBox(rect.start_x, rect.start_y, rect.start_x + rect.width, rect.start_y + rect.height, color.getColor(), TRUE);
 			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+#elif defined(SIV3D_INCLUDED)
+			::s3d::Rect(int(rect.start_x), int(rect.start_y), int(rect.width), int(rect.height)).draw(color.getColor());
 #endif // ASLIB2_USE_DXLIB
 		}
 
@@ -48,6 +50,8 @@ namespace As {
 			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, color.getAlpha());
 			::DxLib::DrawBox(rect.start_x, rect.start_y, rect.start_x + rect.width, rect.start_y + rect.height, color.getColor(), FALSE);
 			if (color.isAlpha()) ::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+#elif defined(SIV3D_INCLUDED)
+			::s3d::Rect(int(rect.start_x), int(rect.start_y), int(rect.width), int(rect.height)).drawFrame(1, color.getColor());
 #endif // ASLIB2_USE_DXLIB
 		}
 

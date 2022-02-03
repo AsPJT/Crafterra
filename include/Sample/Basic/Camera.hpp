@@ -225,7 +225,7 @@ namespace Crafterra {
 				// 人間の場合はデバッグ表示
 				if (is_debug_log && mode == ::Crafterra::Enum::ActorMode::humanoid) {
 					::As::DrawRect(map_chip_rect, ::As::Color(255, 255, 255)).drawLine();
-					resource_.getFont().draw(map_chip_rect.start_x, map_chip_rect.start_y, ss.str());
+					resource_.getFont().draw(int(map_chip_rect.start_x), int(map_chip_rect.start_y), ss.str());
 				}
 
 			}

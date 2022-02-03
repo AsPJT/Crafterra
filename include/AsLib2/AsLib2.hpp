@@ -27,7 +27,6 @@
 #include <AsLib2/ThirdParty/Framework/Font.hpp>
 #include <AsLib2/ThirdParty/Framework/Music.hpp>
 #include <AsLib2/ThirdParty/Framework/MapChipImage.hpp>
-#include <AsLib2/ThirdParty/Framework/CharacterChip.hpp>
 //##########################################################################################
 
 #include <AsLib2/Macro/ThirdParty.hpp>

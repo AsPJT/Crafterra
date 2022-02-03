@@ -102,7 +102,7 @@ namespace Crafterra {
 		ElapsedTime elapsed_time;
 
 		// ログ関連 ----------
-		::As::DrawRect log_background(::As::Rect(0, 0, 250, 220), ::As::Color(40));
+		::As::DrawRect log_background(::As::Rect(0, 0, 250, 300), ::As::Color(40));
 		bool is_debug_log = true;
 
 		// メインループ ----------
@@ -114,6 +114,8 @@ namespace Crafterra {
 				::DxLib::clsDx();
 				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
 			}
+#elif defined(SIV3D_INCLUDED)
+			::s3d::ClearPrint();
 #endif // __DXLIB
 
 			++time_count;
@@ -193,10 +195,10 @@ namespace Crafterra {
 				break;
 			}
 			//----------------------------------------------------------------------------------------------------
-
-#ifdef __DXLIB
 			if (is_debug_log) {
 				log_background.draw();
+#ifdef __DXLIB
+
 				::DxLib::printfDx(
 					//#if (__cplusplus >= 202002L)
 					//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
@@ -212,8 +214,23 @@ namespace Crafterra {
 					, player.getX(), player.getY(), player.getZ()
 					//, field_map_matrix[100][100].getCliffTop()
 				);
-			}
+
+#elif defined(SIV3D_INCLUDED)
+			::s3d::ClearPrint();
+			::s3d::Print
+				<< U"Camera CenterX: " << cs.camera_size.getCenterX()
+				<< U"\nCamera CenterY: " << cs.camera_size.getCenterY()
+				<< U"\nCamera StartX: " << cs.camera_size.getStartX()
+				<< U"\nCamera StartY: " << cs.camera_size.getStartY()
+				<< U"\n1:Airship View\n2:Human View\nJ:camera\nK:camera\nP:Debug Log" //  \n%d\nX:%.2f Y:%.2f Z:%.2f
+				<< U"\nbiome:" 
+				<< ::As::utf32(MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())])
+				//<< resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
+				<< player.getX()
+				<< player.getY()
+				<< player.getZ();
 #endif // __DXLIB
+						}
 
 		} // メインループ
 

@@ -430,7 +430,7 @@ namespace Crafterra {
 
 			const ElevationUint sea_elevation = 110;
 
-			terrain_noise_.generation(field_map_matrix, terrain_noise_, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
+			terrain_noise_.generation(field_map_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
 
 			XorShift32 xs32(terrain_noise_.getElevationSeed());
 
