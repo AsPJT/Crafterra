@@ -194,8 +194,8 @@ namespace As {
 			case Key::key_up: return ::s3d::KeyUp.pressed(); break;
 			case Key::key_down: return ::s3d::KeyDown.pressed(); break;
 			}
-			return false;
 #endif
+			return false;
 		}
 		bool isUp(const Key key_num_) const {
 #if defined(__DXLIB)
@@ -243,8 +243,8 @@ namespace As {
 			case Key::key_up: return ::s3d::KeyUp.up(); break;
 			case Key::key_down: return ::s3d::KeyDown.up(); break;
 			}
-			return false;
 #endif
+			return false;
 		}
 		bool isDown(const Key key_num_) const {
 #if defined(__DXLIB)
