@@ -57,7 +57,7 @@ namespace Crafterra {
 					if (layer != 0) ss << '\n';
 					ss << 'L' << layer << '|';
 					ss << 'X' << x_ << '|';
-					ss << 'Y' << draw_map.getElevation3() << '|';
+					ss << 'Y' << draw_map.getElevation() << '|';
 					ss << 'Z' << y_ << '|';
 					ss << 'B' << ::As::IndexUint(draw_map.getDrawBlock()) << '|';
 
@@ -65,11 +65,11 @@ namespace Crafterra {
 					bool is_auto_tile_desert_alpha = false;
 
 					// 描画するバイオーム
-					bool is_draw_biome = (draw_map.getDrawBiome() != MapChipTypeBiome::empty
-						&& draw_map.getDrawBiome() != MapChipTypeBiome::sea
-						&& draw_map.getDrawBiome() != MapChipTypeBiome::lake
-						&& draw_map.getDrawBiome() != MapChipTypeBiome::normal
-						&& draw_map.getDrawBiome() != MapChipTypeBiome::hill
+					bool is_draw_biome = (draw_map.getDrawBiome() != TerrainBiome::empty
+						&& draw_map.getDrawBiome() != TerrainBiome::sea
+						&& draw_map.getDrawBiome() != TerrainBiome::lake
+						&& draw_map.getDrawBiome() != TerrainBiome::normal
+						&& draw_map.getDrawBiome() != TerrainBiome::hill
 						);
 
 					if (is_draw_biome) {

@@ -25,9 +25,6 @@
 // 各描画ライブラリをまとめたもの
 #include <AsLib2/ThirdParty/Framework/Framework.hpp>
 
-#include <memory>
-#include <chrono>
-
 #include <Sample/Basic/Key.hpp>
 #include <Sample/Basic/Terrain.hpp>
 #include <Sample/Basic/Camera.hpp>
@@ -37,17 +34,17 @@ namespace Crafterra {
 	// Crafterra を再生
 	void playCrafterra(::Crafterra::Resource& resource_) {
 
-		// カウンタ ----------
+		// カウンタ
 		int cd_anime = 0; // アニメーション
 		int cd_anime_sea = 0; // アニメーション
 
 		int time_count = 0;
 		const int time_count_max = 5;
 
-		// 曲を再生 ----------
+		// 曲を再生
 		resource_.getMusic().playLoop();
 
-		// SEED 生成 ----------
+		// SEED 生成
 		::std::random_device seed_gen;
 		::std::mt19937 engine(seed_gen()); // 乱数生成器
 		const ::As::Uint32 temperature_seed = seed_gen();
@@ -56,32 +53,32 @@ namespace Crafterra {
 		const ::As::Uint32 flower_seed = seed_gen();
 		const ::As::Uint32 lake_seed = seed_gen();
 
-		// フィールド上の地形物
-		using TerrainObjectMatrix = ::As::UniquePtrMatrix4D<TerrainObject>; // 世界
-		TerrainObjectMatrix terrain_object_matrix(default_field_map_width, 128, default_field_map_depth, 3); // 地形物
+		// 地形オブジェクト
+		using TerrainObjectMatrix = ::As::UniquePtrMatrix4D<TerrainObject>;
+		TerrainObjectMatrix terrain_object_matrix(default_field_map);
 
-		// フィールドマップ ----------
-		using FieldMapMatrix = ::As::UniquePtrMatrix<MapChip>; // 世界
-		FieldMapMatrix field_map_matrix(default_field_map_width, default_field_map_depth); // フィールドマップ
+		// 地形情報
+		using TerrainInformationMatrix = ::As::UniquePtrMatrix<TerrainInformation>;
+		TerrainInformationMatrix terrain_information_matrix(default_field_map_width, default_field_map_depth);
 
-		// フィールドマップ ----------
+		// 描画マップ
 		using DrawFieldMapMatrix = ::As::UniquePtrMatrix<DrawMapChip>;
-		DrawFieldMapMatrix draw_map_matrix(default_field_map_width, default_field_map_depth); // フィールドマップ
+		DrawFieldMapMatrix draw_map_matrix(default_field_map_width, default_field_map_depth);
 
-		// 座標系 ----------
-		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), field_map_matrix.getWidth(), field_map_matrix.getDepth());
+		// 座標系
+		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth());
 
-		// 地形生成 ----------
+		// 地形生成
 		TerrainChunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
-		PerlinNoiseOnFieldMap terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
+		TerrainPerlinNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
 		Terrain terrain;
-		terrain.initialGeneration(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
-		terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
+		terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ());
+		terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
 
-		// プレイヤーの位置 ----------
+		// プレイヤ
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
-		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation3()));
+		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
 		player.setWalkingSpeed(2.f);
 		player.setMode(ActorMode::airship);
@@ -127,10 +124,10 @@ namespace Crafterra {
 			}
 
 			// キー関連
-			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_object_matrix, field_map_matrix, draw_map_matrix, terrain_noise, chunk);
+			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_object_matrix, terrain_information_matrix, draw_map_matrix, terrain_noise, chunk);
 
 			// 無限生成処理
-			::Crafterra::updateTerrain(cs, chunk, terrain, terrain_object_matrix, field_map_matrix, draw_map_matrix, terrain_noise);
+			::Crafterra::updateTerrain(cs, chunk, terrain, terrain_object_matrix, terrain_information_matrix, draw_map_matrix, terrain_noise);
 
 			// 描画関数
 			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea, player.getMode(), is_debug_log);
@@ -203,10 +200,10 @@ namespace Crafterra {
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
 					, MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())].c_str()
-					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
+					//, int(getAutoTileIndex(terrain_information_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
 					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
 					, player.getX(), player.getY(), player.getZ()
-					//, field_map_matrix[100][100].getCliffTop()
+					//, terrain_information_matrix[100][100].getCliffTop()
 				);
 
 #elif defined(SIV3D_INCLUDED)

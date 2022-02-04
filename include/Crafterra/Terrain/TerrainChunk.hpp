@@ -23,45 +23,46 @@
 
 namespace Crafterra {
 
+	// 地形チャンク
 	class TerrainChunk {
 	private:
 		::As::Uint32 chunk_min_x;
-		::As::Uint32 chunk_min_y;
+		::As::Uint32 chunk_min_z;
 		::As::Uint32 chunk_max_x;
-		::As::Uint32 chunk_max_y;
+		::As::Uint32 chunk_max_z;
 		::As::Uint32 init_chunk_x;
-		::As::Uint32 init_chunk_y;
+		::As::Uint32 init_chunk_z;
 
 		::As::Uint32 chunk_x;
-		::As::Uint32 chunk_y;
+		::As::Uint32 chunk_z;
 
 	public:
 		// コンストラクタ
-		TerrainChunk(const ::As::Uint32 chunk_min_x_, const ::As::Uint32 chunk_min_y_, const ::As::Uint32 chunk_max_x_, const ::As::Uint32 chunk_max_y_)
-			:chunk_min_x(chunk_min_x_), chunk_min_y(chunk_min_y_), chunk_max_x(chunk_max_x_), chunk_max_y(chunk_max_y_),
-			init_chunk_x((chunk_max_x_ - chunk_min_x_) / 2), init_chunk_y((chunk_max_y_ - chunk_min_y_) / 2),
-			chunk_x(init_chunk_x), chunk_y(init_chunk_y) {}
+		TerrainChunk(const ::As::Uint32 chunk_min_x_, const ::As::Uint32 chunk_min_z_, const ::As::Uint32 chunk_max_x_, const ::As::Uint32 chunk_max_z_)
+			:chunk_min_x(chunk_min_x_), chunk_min_z(chunk_min_z_), chunk_max_x(chunk_max_x_), chunk_max_z(chunk_max_z_),
+			init_chunk_x((chunk_max_x_ - chunk_min_x_) / 2), init_chunk_z((chunk_max_z_ - chunk_min_z_) / 2),
+			chunk_x(init_chunk_x), chunk_z(init_chunk_z) {}
 
 		::As::Uint32 getX() const { return this->chunk_x; }
-		::As::Uint32 getY() const { return this->chunk_y; }
+		::As::Uint32 getZ() const { return this->chunk_z; }
 		void setX(const ::As::Uint32 chunk_x_) { this->chunk_x = chunk_x_; }
-		void setY(const ::As::Uint32 chunk_y_) { this->chunk_y = chunk_y_; }
+		void setZ(const ::As::Uint32 chunk_z_) { this->chunk_z = chunk_z_; }
 
 		void moveLeft() {
-			if (chunk_x <= chunk_min_x) chunk_x = chunk_max_x - 1;
-			else --chunk_x;
+			if (this->chunk_x <= this->chunk_min_x) this->chunk_x = this->chunk_max_x - 1;
+			else --this->chunk_x;
 		}
 		void moveRight() {
-			if (chunk_x >= chunk_max_x - 1) chunk_x = chunk_min_x;
-			else ++chunk_x;
+			if (this->chunk_x >= this->chunk_max_x - 1) this->chunk_x = this->chunk_min_x;
+			else ++this->chunk_x;
 		}
 		void moveUp() {
-			if (chunk_y >= chunk_max_y - 1) chunk_y = chunk_min_y;
-			else ++chunk_y;
+			if (this->chunk_z >= this->chunk_max_z - 1) this->chunk_z = this->chunk_min_z;
+			else ++this->chunk_z;
 		}
 		void moveDown() {
-			if (chunk_y <= chunk_min_y) chunk_y = chunk_max_y - 1;
-			else --chunk_y;
+			if (this->chunk_z <= this->chunk_min_z) this->chunk_z = this->chunk_max_z - 1;
+			else --this->chunk_z;
 		}
 	};
 

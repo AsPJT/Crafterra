@@ -19,6 +19,9 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_FIELD_MAP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_FIELD_MAP_HPP
 
+
+#include <Crafterra/Terrain/TerrainInformation.hpp>
+
 #include <AsLib2/DataType/ArrayDataType.hpp>
 #include <Crafterra/Terrain/MapChip.hpp>
 
@@ -33,7 +36,7 @@
 // パーリンノイズ
 #include <Crafterra/TerrainGeneration/PerlinNoise2D.hpp>
 // パーリンノイズをフィールドマップ上に生成
-#include <Crafterra/TerrainGeneration/PerlinNoiseOnFieldMap.hpp>
+#include <Crafterra/TerrainGeneration/TerrainPerlinNoise.hpp>
 
 namespace Crafterra {
 
@@ -70,7 +73,7 @@ namespace Crafterra {
 	class Terrain {
 
 		// 暫定的なマップデータ
-		using MapMat = ::As::UniquePtrMatrix<MapChip>;
+		using MapMat = ::As::UniquePtrMatrix<::Crafterra::TerrainInformation>;
 		using ObjectMapMat = ::As::UniquePtrMatrix4D<TerrainObject>;
 		using DrawMapMat = ::As::UniquePtrMatrix<DrawMapChip>;
 		using shape_t = ElevationUint;
@@ -94,10 +97,10 @@ namespace Crafterra {
 
 							if (is_left) 
 								is_left = (left_tile.getIsCliff() ||
-								((!left_tile.getIsCliff()) && draw_map_tile.getElevation3() < left_tile.getElevation3()));
+								((!left_tile.getIsCliff()) && draw_map_tile.getElevation() < left_tile.getElevation()));
 							if (is_right) 
 								is_right = (right_tile.getIsCliff() ||
-								((!right_tile.getIsCliff()) && draw_map_tile.getElevation3() < right_tile.getElevation3()));
+								((!right_tile.getIsCliff()) && draw_map_tile.getElevation() < right_tile.getElevation()));
 							if (is_down) 
 								is_down = (down_tile.getIsCliff());
 						}
@@ -143,17 +146,17 @@ namespace Crafterra {
 						bool is_auto_tile_lower_left = false;
 						bool is_auto_tile_lower_right = false;
 
-						const ElevationUint center_elevation = draw_map_matrix[row][col].getTile(layer).getElevation3();
+						const ElevationUint center_elevation = draw_map_matrix[row][col].getTile(layer).getElevation();
 						for (::As::IndexUint layer2 = 0; layer2 < draw_map_layer_max; ++layer2) {
 
-							const ElevationUint up_elevation = draw_map_matrix[row - 1][col].getTile(layer2).getElevation3();
-							const ElevationUint left_elevation = draw_map_matrix[row][col - 1].getTile(layer2).getElevation3();
-							const ElevationUint right_elevation = draw_map_matrix[row][col + 1].getTile(layer2).getElevation3();
-							const ElevationUint down_elevation = draw_map_matrix[row + 1][col].getTile(layer2).getElevation3();
-							const ElevationUint upper_left_elevation = draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation3();
-							const ElevationUint upper_right_elevation = draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation3();
-							const ElevationUint lower_left_elevation = draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation3();
-							const ElevationUint lower_right_elevation = draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation3();
+							const ElevationUint up_elevation = draw_map_matrix[row - 1][col].getTile(layer2).getElevation();
+							const ElevationUint left_elevation = draw_map_matrix[row][col - 1].getTile(layer2).getElevation();
+							const ElevationUint right_elevation = draw_map_matrix[row][col + 1].getTile(layer2).getElevation();
+							const ElevationUint down_elevation = draw_map_matrix[row + 1][col].getTile(layer2).getElevation();
+							const ElevationUint upper_left_elevation = draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation();
+							const ElevationUint upper_right_elevation = draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation();
+							const ElevationUint lower_left_elevation = draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation();
+							const ElevationUint lower_right_elevation = draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation();
 
 							if (!is_cliff_top_up) is_cliff_top_up = (center_elevation == up_elevation);
 							if (!is_cliff_top_left) is_cliff_top_left = (center_elevation == left_elevation);
@@ -165,23 +168,23 @@ namespace Crafterra {
 							if (!is_cliff_top_lower_right) is_cliff_top_lower_right = (center_elevation == lower_right_elevation);
 
 
-							if (!is_biome_auto_tile_up) is_biome_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_left) is_biome_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_right) is_biome_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_down) is_biome_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_upper_left) is_biome_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_upper_right) is_biome_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_lower_left) is_biome_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_biome_auto_tile_lower_right) is_biome_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_up) is_biome_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_left) is_biome_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_right) is_biome_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_down) is_biome_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_upper_left) is_biome_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_upper_right) is_biome_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_lower_left) is_biome_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_biome_auto_tile_lower_right) is_biome_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
 
-							if (!is_auto_tile_up) is_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_left) is_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_right) is_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_down) is_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_upper_left) is_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_upper_right) is_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_lower_left) is_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_lower_right) is_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation3() == draw_map_tile.getElevation3() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_up) is_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_left) is_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_right) is_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_down) is_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_upper_left) is_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_upper_right) is_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_lower_left) is_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_lower_right) is_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
 						}
 
 						// 崖上のオートタイルを計算 ( 一部バグがあり、未完成 )
@@ -207,7 +210,7 @@ namespace Crafterra {
 								, is_biome_auto_tile_down
 								, is_biome_auto_tile_upper_left
 								, is_biome_auto_tile_upper_right
-								, is_cliff_top_lower_left
+								, is_biome_auto_tile_lower_left
 								, is_biome_auto_tile_lower_right
 							)
 						);
@@ -229,16 +232,16 @@ namespace Crafterra {
 				}
 		}
 
-		void setTerrain(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, DrawMapMat& draw_map_matrix) const {
+		void setTerrain(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix) const {
 
 			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col, ++mat_index) {
-					MapChip& field_map = field_map_matrix[row][col];
+					TerrainInformation& field_map = terrain_information_matrix[row][col];
 					DrawMapChip& draw_map = draw_map_matrix[row][col];
 					draw_map.setTileNum(0);
 					draw_map.clearTile();
 					for (::As::IndexUint layer{}; layer < draw_map_layer_max; ++layer) {
-						draw_map.getTile(layer).setElevation3(0); // 初期化
+						draw_map.getTile(layer).setElevation(0); // 初期化
 					}
 
 					for (::As::IndexUint row3{ row }, block_index{}; block_index < terrain_object_matrix.getHeight(); --row3, ++block_index) {
@@ -255,7 +258,7 @@ namespace Crafterra {
 								draw_map_2.setZ(row);
 
 								if (ElevationUint(block_index) <= field_map.getBlockElevation()) {
-									if (draw_map_2.getTile().getElevation3() < ElevationUint(block_index)) draw_map_2.setElevation3(ElevationUint(block_index));
+									if (draw_map_2.getTile().getElevation() < ElevationUint(block_index)) draw_map_2.setElevation(ElevationUint(block_index));
 								}
 							}
 						}
@@ -274,9 +277,9 @@ namespace Crafterra {
 		}
 
 		// フィールドマップの下半分の地形が上半分へ移動する
-		void moveUp(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
+		void moveUp(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_height_half_) const {
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
-				for (::As::IndexUint col{}; col < field_map_matrix.getWidth(); ++col) {
+				for (::As::IndexUint col{}; col < terrain_information_matrix.getWidth(); ++col) {
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
@@ -286,15 +289,15 @@ namespace Crafterra {
 							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
 						}
 
-					MapChip& field_map_after = field_map_matrix[row][col];
-					const MapChip& field_map_before = field_map_matrix[row + field_height_half_][col];
+					TerrainInformation& field_map_after = terrain_information_matrix[row][col];
+					const TerrainInformation& field_map_before = terrain_information_matrix[row + field_height_half_][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの上半分の地形が下半分へ移動する
-		void moveDown(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
+		void moveDown(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_height_half_) const {
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
-				for (::As::IndexUint col{}; col < field_map_matrix.getWidth(); ++col) {
+				for (::As::IndexUint col{}; col < terrain_information_matrix.getWidth(); ++col) {
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
@@ -304,14 +307,14 @@ namespace Crafterra {
 							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
 						}
 
-					MapChip& field_map_after = field_map_matrix[row + field_height_half_][col];
-					const MapChip& field_map_before = field_map_matrix[row][col];
+					TerrainInformation& field_map_after = terrain_information_matrix[row + field_height_half_][col];
+					const TerrainInformation& field_map_before = terrain_information_matrix[row][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの右半分の地形が左半分へ移動する
-		void moveLeft(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
-			for (::As::IndexUint row{}; row < field_map_matrix.getDepth(); ++row)
+		void moveLeft(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_width_half_) const {
+			for (::As::IndexUint row{}; row < terrain_information_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col + field_width_half_);
@@ -322,14 +325,14 @@ namespace Crafterra {
 							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
 						}
 
-					MapChip& field_map_after = field_map_matrix[row][col];
-					const MapChip& field_map_before = field_map_matrix[row][col + field_width_half_];
+					TerrainInformation& field_map_after = terrain_information_matrix[row][col];
+					const TerrainInformation& field_map_before = terrain_information_matrix[row][col + field_width_half_];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの左半分の地形が右半分へ移動する
-		void moveRight(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
-			for (::As::IndexUint row{}; row < field_map_matrix.getDepth(); ++row)
+		void moveRight(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_width_half_) const {
+			for (::As::IndexUint row{}; row < terrain_information_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
@@ -340,14 +343,14 @@ namespace Crafterra {
 							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
 						}
 
-					MapChip& field_map_after = field_map_matrix[row][col + field_width_half_];
-					const MapChip& field_map_before = field_map_matrix[row][col];
+					TerrainInformation& field_map_after = terrain_information_matrix[row][col + field_width_half_];
+					const TerrainInformation& field_map_before = terrain_information_matrix[row][col];
 					field_map_after = field_map_before;
 				}
 		}
 
 		// 木の生成
-		void generationTree(ObjectMapMat& terrain_object_matrix, const ::As::IndexUint bo_index_2d, MapChip& field_map) const {
+		void generationTree(ObjectMapMat& terrain_object_matrix, const ::As::IndexUint bo_index_2d, TerrainInformation& field_map) const {
 
 			const ElevationUint temperature = field_map.getTemperature();
 			const ElevationUint elevation = field_map.getElevation();
@@ -463,11 +466,11 @@ namespace Crafterra {
 		}
 
 		// フィールドマップを生成
-		void generation(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) const {
+		void generation(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, TerrainPerlinNoise& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) const {
 
 			const ElevationUint sea_elevation = 110;
 
-			terrain_noise_.generation(field_map_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
+			terrain_noise_.generation(terrain_information_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
 
 			XorShift32 xs32(terrain_noise_.getElevationSeed());
 
@@ -475,7 +478,7 @@ namespace Crafterra {
 			for (::As::IndexUint row{ start_y_ }; row < end_y_; ++row)
 				for (::As::IndexUint col{ start_x_ }; col < end_x_; ++col) {
 					const ::As::IndexUint bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
-					MapChip& field_map = field_map_matrix[row][col];
+					TerrainInformation& field_map = terrain_information_matrix[row][col];
 
 					const ElevationUint elevation = field_map.getElevation();
 					const ElevationUint block_elevation = elevation / 2;
@@ -484,22 +487,22 @@ namespace Crafterra {
 					field_map.setTemperature(temperature);
 
 					// 標高がある定数値よりも少ない場合は海になる
-					if (elevation < sea_elevation) field_map.setBiome(MapChipTypeBiome::sea);
+					if (elevation < sea_elevation) field_map.setBiome(TerrainBiome::sea);
 					// 気温が低い場合はツンドラになる
-					else if (temperature < 24) field_map.setBiome(MapChipTypeBiome::tundra);
+					else if (temperature < 24) field_map.setBiome(TerrainBiome::tundra);
 					// 降水量が少ない場合は砂漠になる
-					else if (amount_of_rainfall < 24) field_map.setBiome(MapChipTypeBiome::desert);
+					else if (amount_of_rainfall < 24) field_map.setBiome(TerrainBiome::desert);
 
 					else if (amount_of_rainfall < 72) {
-						if (temperature < 128) field_map.setBiome(MapChipTypeBiome::rock); // ステップ？
-						else field_map.setBiome(MapChipTypeBiome::savannah);
+						if (temperature < 128) field_map.setBiome(TerrainBiome::rock); // ステップ？
+						else field_map.setBiome(TerrainBiome::savannah);
 					}
-					else if (temperature < 69) field_map.setBiome(MapChipTypeBiome::forest); // grass
-					else if (temperature < 96) field_map.setBiome(MapChipTypeBiome::normal);
-					else if (temperature < 120) field_map.setBiome(MapChipTypeBiome::forest);
-					else if (amount_of_rainfall < 125) field_map.setBiome(MapChipTypeBiome::mountain);
-					else if (temperature < 132) field_map.setBiome(MapChipTypeBiome::mountain);
-					else field_map.setBiome(MapChipTypeBiome::mountain);
+					else if (temperature < 69) field_map.setBiome(TerrainBiome::forest); // grass
+					else if (temperature < 96) field_map.setBiome(TerrainBiome::normal);
+					else if (temperature < 120) field_map.setBiome(TerrainBiome::forest);
+					else if (amount_of_rainfall < 125) field_map.setBiome(TerrainBiome::mountain);
+					else if (temperature < 132) field_map.setBiome(TerrainBiome::mountain);
+					else field_map.setBiome(TerrainBiome::mountain);
 
 					const ::As::IndexUint block_layer_index = 0;
 
@@ -519,7 +522,7 @@ namespace Crafterra {
 					terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, block_elevation, block_layer_index); // からだけど崖上の場合
 
 					// 海
-					if (field_map.getBiome() == MapChipTypeBiome::sea) {
+					if (field_map.getBiome() == TerrainBiome::sea) {
 						field_map.setElevation(sea_elevation);
 						field_map.setBlockElevation(sea_elevation / 2);
 
@@ -535,7 +538,7 @@ namespace Crafterra {
 					}
 				}
 		}
-		void initialGeneration(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix_, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) const {
+		void initialGeneration(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix_, TerrainPerlinNoise& terrain_noise_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) const {
 			generation(terrain_object_matrix, field_map_matrix_, terrain_noise_, chunk_index_x_, chunk_index_y_, 0, 0, field_map_matrix_.getWidth(), field_map_matrix_.getDepth());
 		}
 

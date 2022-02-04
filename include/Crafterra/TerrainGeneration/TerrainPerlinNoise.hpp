@@ -19,9 +19,11 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_PERLIN_NOISE_ON_FIELD_MAP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_PERLIN_NOISE_ON_FIELD_MAP_HPP
 
+#include <Crafterra/Terrain/TerrainInformation.hpp>
 #include <AsLib2/DataType/PrimitiveDataType.hpp> // int
 #include <algorithm>
 #include <random>
+
 
 namespace Crafterra {
 
@@ -48,9 +50,9 @@ namespace Crafterra {
 
 
 
-	class PerlinNoiseOnFieldMap {
+	class TerrainPerlinNoise {
 		// 暫定的なマップデータ
-		using MapMat = ::As::UniquePtrMatrix<MapChip>;
+		using MapMat = ::As::UniquePtrMatrix<::Crafterra::TerrainInformation>;
 		using shape_t = ElevationUint;
 
 		::As::Uint32 temperature_seed;
@@ -67,7 +69,7 @@ namespace Crafterra {
 
 	public:
 		// コンストラクタ
-		PerlinNoiseOnFieldMap(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_, const ::As::Uint32 flower_seed_, const ::As::Uint32 lake_seed_)
+		TerrainPerlinNoise(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_, const ::As::Uint32 flower_seed_, const ::As::Uint32 lake_seed_)
 			:
 			temperature_seed(temperature_seed_)
 			, amount_of_rainfall_seed(amount_of_rainfall_seed_)
@@ -95,29 +97,29 @@ namespace Crafterra {
 
 		::As::Uint32 getElevationSeed() const { return this->elevation_seed; }
 
-		void generation(MapMat& field_map_matrix, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) {
+		void generation(MapMat& terrain_information_matrix, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) {
 			//温度
 			generatePerlinNoiseOnFieldMap(
-				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
+				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setTemperature(value_); },
+				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_temperature_seed, 400.1, 8,
+				perlin_temperature_seed, 40.1, 8,
 				240, 0
 			);
 
 			//降水量
 			generatePerlinNoiseOnFieldMap(
-				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setAmountOfRainfall(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
+				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setAmountOfRainfall(value_); },
+				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_amount_of_rainfall_seed, 400.1, 8,
+				perlin_amount_of_rainfall_seed, 40.1, 8,
 				240, 0
 			);
 
 			//標高
 			generatePerlinNoiseOnFieldMap(
-				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setElevation(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
+				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setElevation(value_); },
+				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_elevation_seed, 600.1, 10,
 				240, 0
@@ -125,8 +127,8 @@ namespace Crafterra {
 
 			//花
 			generatePerlinNoiseOnFieldMap(
-				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const double value_) { field_map_matrix[y_][x_].setFlower(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
+				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const double value_) { terrain_information_matrix[y_][x_].setFlower(value_); },
+				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_flower_seed, 1.12345, 1,
 				1.0, 0.0
@@ -134,8 +136,8 @@ namespace Crafterra {
 
 			//湖
 			generatePerlinNoiseOnFieldMap(
-				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setLake(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
+				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setLake(value_); },
+				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_lake_seed, 10.12345, 3,
 				200, 50

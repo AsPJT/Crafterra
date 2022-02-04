@@ -44,48 +44,22 @@ namespace As {
 	public:
 		// コンストラクタ
 		MapChipFormat() = default;
-		MapChipFormat(::As::Uint16 width_, ::As::Uint16 height_, ::As::Uint16 x_, ::As::Uint16 y_, ::As::IndexUint start_index_, const ::std::string& str_)
+		MapChipFormat(const ::As::Uint16 width_, const ::As::Uint16 height_, const ::As::Uint16 x_, const ::As::Uint16 y_, const ::As::IndexUint start_index_, const ::std::string& str_)
 			:width(width_), height(height_), x(x_), y(y_), start_index(start_index_), str(str_) {}
 
-		::As::Uint16 getX() const {
-			return this->x;
-		}
-		::As::Uint16 getY() const {
-			return this->y;
-		}
-		::As::Uint16 getNum() const {
-			return (this->x * this->y);
-		}
-		::As::Uint16 getWidth() const {
-			return this->width;
-		}
-		::As::Uint16 getHeight() const {
-			return this->height;
-		}
-		::As::IndexUint getStartIndex() const {
-			return this->start_index;
-		}
-		const ::std::string& getString() const {
-			return this->str;
-		}
-		void setX(const ::As::Uint16 x_) {
-			this->x = x_;
-		}
-		void setY(const ::As::Uint16 y_) {
-			this->y = y_;
-		}
-		void setWidth(const ::As::Uint16 width_) {
-			this->width = width_;
-		}
-		void setHeight(const ::As::Uint16 height_) {
-			this->height = height_;
-		}
-		void setStartIndex(const ::As::IndexUint start_index_) {
-			this->start_index = start_index_;
-		}
-		void setString(const ::std::string& str_) {
-			this->str = str_;
-		}
+		::As::Uint16 getX() const { return this->x; }
+		::As::Uint16 getY() const { return this->y; }
+		::As::Uint16 getNum() const { return (this->x * this->y); }
+		::As::Uint16 getWidth() const { return this->width; }
+		::As::Uint16 getHeight() const { return this->height; }
+		::As::IndexUint getStartIndex() const { return this->start_index; }
+		const ::std::string& getString() const { return this->str; }
+		void setX(const ::As::Uint16 x_) { this->x = x_; }
+		void setY(const ::As::Uint16 y_) { this->y = y_; }
+		void setWidth(const ::As::Uint16 width_) { this->width = width_; }
+		void setHeight(const ::As::Uint16 height_) { this->height = height_; }
+		void setStartIndex(const ::As::IndexUint start_index_) { this->start_index = start_index_; }
+		void setString(const ::std::string& str_) { this->str = str_; }
 	};
 
 	class MapChipImage {

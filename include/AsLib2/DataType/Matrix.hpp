@@ -65,6 +65,14 @@ namespace As {
 				, height(num_y_)
 				, layer(num_l_)
 			{}
+			template<typename Struct_>
+			UniquePtrMatrix4D(const Struct_& struct_) :
+				matrix(new(::std::nothrow) Type_[struct_.depth * struct_.width * struct_.height * struct_.layer])
+				, depth(struct_.depth)
+				, width(struct_.width)
+				, height(struct_.height)
+				, layer(struct_.layer)
+			{}
 
 			// 配列の添え字を取得
 			::As::IndexUint getIndexZX(const ::As::IndexUint z_, const ::As::IndexUint x_) const {

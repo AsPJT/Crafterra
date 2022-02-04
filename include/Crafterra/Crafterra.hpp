@@ -57,10 +57,9 @@ namespace Crafterra {
 		// 初期のウィンドウの高さ
 		constexpr ::As::IndexUint init_window_height = 720;
 	}
-	// マップサイズ
-	constexpr ::As::IndexUint default_field_map_width = 512;
-	constexpr ::As::IndexUint default_field_map_depth = 512;
 }
+
+#include <Crafterra/DataType/FieldMapSize.hpp>
 
 // 初回読み込み
 #include <Crafterra/Basic/InitRead.hpp>
@@ -72,17 +71,18 @@ namespace Crafterra {
 	}
 }
 
+#include <Crafterra/Terrain/TerrainInformation.hpp>
+
 #include <Crafterra/Basic/CoordinateSystem.hpp>
 
+// 今後名称が変わる可能性あり
 #include <Crafterra/Terrain/MapChip.hpp>
 
 #include <Crafterra/Actor/Actor.hpp>
 
 #include <Crafterra/Terrain/TerrainChunk.hpp>
 
-//##########################################################################################
 #include <AsLib2/AsLib2.hpp>
-//##########################################################################################
 
 #include <Crafterra/Terrain/FieldMap.hpp>
 

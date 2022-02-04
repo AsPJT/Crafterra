@@ -34,9 +34,9 @@ namespace Crafterra {
 		const Terrain& terrain, // 地形整理クラス
 		bool& is_debug_log, // デバッグログの表示をするかしないか
 		::As::UniquePtrMatrix4D<TerrainObject>& terrain_object_matrix, // フィールドマップ
-		::As::UniquePtrMatrix<MapChip>& field_map_matrix, // フィールドマップ
+		::As::UniquePtrMatrix<TerrainInformation>& terrain_information_matrix, // フィールドマップ
 		::As::UniquePtrMatrix<DrawMapChip>& draw_map_matrix, // 描画用フィールドマップ
-		PerlinNoiseOnFieldMap& terrain_noise, // 地形生成
+		TerrainPerlinNoise& terrain_noise, // 地形生成
 		TerrainChunk& chunk // 地形チャンク管理
 	) {
 
@@ -58,8 +58,8 @@ namespace Crafterra {
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
 		if (key.isDown(::As::Key::key_g)) {
-			terrain.initialGeneration(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX(), chunk.getY());
-			terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
+			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ());
+			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
 		}
 		if (key.isPressed(::As::Key::key_j)) {
 			cs.expandMapChipSize(0.995f); // 画面縮小
