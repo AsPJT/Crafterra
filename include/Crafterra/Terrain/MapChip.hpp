@@ -136,9 +136,9 @@ namespace Crafterra {
 
 	public:
 
-		::As::IndexUint getX() const { this->field_map_x; }
-		::As::IndexUint getY() const { this->field_map_y; }
-		::As::IndexUint getZ() const { this->field_map_z; }
+		::As::IndexUint getX() const { return this->field_map_x; }
+		::As::IndexUint getY() const { return this->field_map_y; }
+		::As::IndexUint getZ() const { return this->field_map_z; }
 		void setX(const ::As::IndexUint x_) { this->field_map_x = x_; }
 		void setY(const ::As::IndexUint y_) { this->field_map_x = y_; }
 		void setZ(const ::As::IndexUint z_) { this->field_map_x = z_; }

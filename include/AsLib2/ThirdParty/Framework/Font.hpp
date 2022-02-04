@@ -54,12 +54,14 @@ namespace As {
 		}
 
 		~Font() {
+#if defined(__DXLIB)
 #ifdef __WINDOWS__
 			// フォントのアンロード
 			if (is_font) {
 				(RemoveFontResourceEx(font_path, FR_PRIVATE, nullptr));
 			}
 #endif // __WINDOWS__
+#endif
 		}
 
 		int getFont() const { return this->m_font; }
