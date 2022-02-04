@@ -32,6 +32,7 @@ namespace Crafterra {
 		CoordinateSystem& cs // 座標系管理クラス
 		, TerrainChunk& chunk // 地形チャンク管理
 		, const Terrain& terrain // 地形整理クラス
+		, ::As::UniquePtrMatrix4D<TerrainObject>& terrain_object_matrix // フィールドマップ
 		, ::As::UniquePtrMatrix<MapChip>& field_map_matrix // フィールドマップ
 		, ::As::UniquePtrMatrix<DrawMapChip>& draw_map_matrix // 描画用フィールドマップ
 		, PerlinNoiseOnFieldMap& terrain_noise // 地形生成
@@ -40,33 +41,33 @@ namespace Crafterra {
 		if (cs.camera_size.getCenterX() > float(cs.field_map_size.getCenterX() + (cs.field_map_size.getWidthHalf() * 2 / 3))) {
 			cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
 			chunk.moveRight();
-			terrain.moveLeft(field_map_matrix, field_map_matrix.getWidth() / 2);
-			terrain.generation(field_map_matrix, terrain_noise, chunk.getX() + 1, chunk.getY(), field_map_matrix.getWidth() / 2, 0, field_map_matrix.getWidth(), field_map_matrix.getHeight());
-			terrain.setTerrain(field_map_matrix, draw_map_matrix);
+			terrain.moveLeft(terrain_object_matrix, field_map_matrix, field_map_matrix.getWidth() / 2);
+			terrain.generation(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX() + 1, chunk.getY(), field_map_matrix.getWidth() / 2, 0, field_map_matrix.getWidth(), field_map_matrix.getDepth());
+			terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
 		}
 		// 左側に生成
 		else if (cs.camera_size.getCenterX() < float(cs.field_map_size.getCenterX() - (cs.field_map_size.getWidthHalf() * 2 / 3))) {
 			cs.camera_size.moveX(+float(cs.field_map_size.getWidthHalf()));
 			chunk.moveLeft();
-			terrain.moveRight(field_map_matrix, field_map_matrix.getWidth() / 2);
-			terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight());
-			terrain.setTerrain(field_map_matrix, draw_map_matrix);
+			terrain.moveRight(terrain_object_matrix, field_map_matrix, field_map_matrix.getWidth() / 2);
+			terrain.generation(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth());
+			terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
 		}
 		// 上側に生成
 		if (cs.camera_size.getCenterY() > float(cs.field_map_size.getCenterY() + (cs.field_map_size.getHeightHalf() * 2 / 3))) {
 			cs.camera_size.moveY(-float(cs.field_map_size.getHeightHalf()));
 			chunk.moveUp();
-			terrain.moveUp(field_map_matrix, field_map_matrix.getHeight() / 2);
-			terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY() + 1, 0, field_map_matrix.getHeight() / 2, field_map_matrix.getWidth(), field_map_matrix.getHeight());
-			terrain.setTerrain(field_map_matrix, draw_map_matrix);
+			terrain.moveUp(terrain_object_matrix, field_map_matrix, field_map_matrix.getDepth() / 2);
+			terrain.generation(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX(), chunk.getY() + 1, 0, field_map_matrix.getDepth() / 2, field_map_matrix.getWidth(), field_map_matrix.getDepth());
+			terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
 		}
 		// 下側に生成
 		else if (cs.camera_size.getCenterY() < float(cs.field_map_size.getCenterY() - (cs.field_map_size.getHeightHalf() * 2 / 3))) {
 			cs.camera_size.moveY(+float(cs.field_map_size.getHeightHalf()));
 			chunk.moveDown();
-			terrain.moveDown(field_map_matrix, field_map_matrix.getHeight() / 2);
-			terrain.generation(field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, field_map_matrix.getWidth(), field_map_matrix.getHeight() / 2);
-			terrain.setTerrain(field_map_matrix, draw_map_matrix);
+			terrain.moveDown(terrain_object_matrix, field_map_matrix, field_map_matrix.getDepth() / 2);
+			terrain.generation(terrain_object_matrix, field_map_matrix, terrain_noise, chunk.getX(), chunk.getY(), 0, 0, field_map_matrix.getWidth(), field_map_matrix.getDepth() / 2);
+			terrain.setTerrain(terrain_object_matrix, field_map_matrix, draw_map_matrix);
 		}
 	}
 

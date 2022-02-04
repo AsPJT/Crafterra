@@ -99,7 +99,7 @@ namespace Crafterra {
 			//温度
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight() / 2,
+				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_temperature_seed, 400.1, 8,
 				240, 0
@@ -108,7 +108,7 @@ namespace Crafterra {
 			//降水量
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setAmountOfRainfall(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight() / 2,
+				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_amount_of_rainfall_seed, 400.1, 8,
 				240, 0
@@ -117,7 +117,7 @@ namespace Crafterra {
 			//標高
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setElevation(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight() / 2,
+				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_elevation_seed, 600.1, 10,
 				240, 0
@@ -126,7 +126,7 @@ namespace Crafterra {
 			//花
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const double value_) { field_map_matrix[y_][x_].setFlower(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight() / 2,
+				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_flower_seed, 1.12345, 1,
 				1.0, 0.0
@@ -135,7 +135,7 @@ namespace Crafterra {
 			//湖
 			generatePerlinNoiseOnFieldMap(
 				[&field_map_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setLake(value_); },
-				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getHeight() / 2,
+				chunk_index_x_, chunk_index_y_, field_map_matrix.getWidth() / 2, field_map_matrix.getDepth() / 2,
 				start_x_, start_y_, end_x_, end_y_,
 				perlin_lake_seed, 10.12345, 3,
 				200, 50

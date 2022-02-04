@@ -79,7 +79,7 @@ namespace Crafterra {
 					else is_auto_tile_desert_alpha = true;
 
 					// 崖を先に描画
-					if (draw_map.getDrawBlock() == Block::cliff) {
+					if (draw_map.getDrawBlock() == TerrainObject::cliff) {
 						if (!is_floor && tile.getMapChipCliffTopAlpha(As::IndexUint(draw_map.getCliff())) == 0) {
 							::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
 							is_floor = true;
@@ -101,7 +101,7 @@ namespace Crafterra {
 
 					// ------------------------------------------------------------------------------------------------------------------------------------
 					if (draw_map.getIsCliff()) continue;
-					//if (draw_map.getDrawBlock() == Block::cliff) return;
+					//if (draw_map.getDrawBlock() == TerrainObject::cliff) return;
 					if (is_draw_biome) {
 						const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
 						AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
@@ -113,7 +113,7 @@ namespace Crafterra {
 					}
 
 					switch (draw_map.getDrawBlock()) {
-					case Block::water_ground:
+					case TerrainObject::water_ground:
 					{
 						AutoTileIndex sea_auto_tile_index(draw_map.getBiomeAutoTile(), cd_anime_sea, 8);
 
@@ -128,87 +128,87 @@ namespace Crafterra {
 							tile.getMapChip("Sea", sea_auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 					}
 						break;
-					case Block::grass_1:
+					case TerrainObject::grass_1:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 0)).draw(map_chip_rect);
 						break;
-					case Block::grass_2:
+					case TerrainObject::grass_2:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 1)).draw(map_chip_rect);
 						break;
-					case Block::grass_3:
+					case TerrainObject::grass_3:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 2)).draw(map_chip_rect);
 						break;
-					case Block::grass_4:
+					case TerrainObject::grass_4:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 3)).draw(map_chip_rect);
 						break;
-					case Block::flower_1:
+					case TerrainObject::flower_1:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 4)).draw(map_chip_rect);
 						break;
-					case Block::flower_2:
+					case TerrainObject::flower_2:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 5)).draw(map_chip_rect);
 						break;
-					case Block::flower_3:
+					case TerrainObject::flower_3:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 6)).draw(map_chip_rect);
 						break;
-					case Block::flower_4:
+					case TerrainObject::flower_4:
 						::As::Image(tile.getMapChip("Base", 8 * 6 + 7)).draw(map_chip_rect);
 						break;
-					case Block::house_wall_1_up:
+					case TerrainObject::house_wall_1_up:
 						//::As::Image(tile.getMapChip("Base", 8 * 46 + 7)).draw(map_chip_rect);
 						::As::Image(tile.getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
 						break;
-					case Block::house_wall_1_down:
+					case TerrainObject::house_wall_1_down:
 						//::As::Image(tile.getMapChip("Base", 8 * 47 + 7)).draw(map_chip_rect);
 						::As::Image(tile.getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
 						break;
-					case Block::yellow_green_broadleaf_tree_up:
+					case TerrainObject::yellow_green_broadleaf_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
 						break;
-					case Block::yellow_green_broadleaf_tree_down:
+					case TerrainObject::yellow_green_broadleaf_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 0)).draw(map_chip_rect);
 						break;
-					case Block::green_broadleaf_tree_up:
+					case TerrainObject::green_broadleaf_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 1)).draw(map_chip_rect);
 						break;
-					case Block::green_broadleaf_tree_down:
+					case TerrainObject::green_broadleaf_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 1)).draw(map_chip_rect);
 						break;
-					case Block::yellow_broadleaf_tree_up:
+					case TerrainObject::yellow_broadleaf_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 2)).draw(map_chip_rect);
 						break;
-					case Block::yellow_broadleaf_tree_down:
+					case TerrainObject::yellow_broadleaf_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 2)).draw(map_chip_rect);
 						break;
-					case Block::red_broadleaf_tree_up:
+					case TerrainObject::red_broadleaf_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 3)).draw(map_chip_rect);
 						break;
-					case Block::red_broadleaf_tree_down:
+					case TerrainObject::red_broadleaf_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 3)).draw(map_chip_rect);
 						break;
-					case Block::deciduous_tree_up:
+					case TerrainObject::deciduous_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 4)).draw(map_chip_rect);
 						break;
-					case Block::deciduous_tree_down:
+					case TerrainObject::deciduous_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 4)).draw(map_chip_rect);
 						break;
-					case Block::yellow_green_coniferous_tree_up:
+					case TerrainObject::yellow_green_coniferous_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 5)).draw(map_chip_rect);
 						break;
-					case Block::yellow_green_coniferous_tree_down:
+					case TerrainObject::yellow_green_coniferous_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 5)).draw(map_chip_rect);
 						break;
-					case Block::green_coniferous_tree_up:
+					case TerrainObject::green_coniferous_tree_up:
 						::As::Image(tile.getMapChip("Base", 8 * 9 + 6)).draw(map_chip_rect);
 						break;
-					case Block::green_coniferous_tree_down:
+					case TerrainObject::green_coniferous_tree_down:
 						::As::Image(tile.getMapChip("Base", 8 * 10 + 6)).draw(map_chip_rect);
 						break;
-					case Block::cultivated_land:
+					case TerrainObject::cultivated_land:
 						::As::Image(tile.getMapChip("Base", 8 * 21 + 3)).draw(map_chip_rect);
 						break;
-					case Block::planted_carrot:
+					case TerrainObject::planted_carrot:
 						::As::Image(tile.getMapChip("Base", 8 * 19 + 6)).draw(map_chip_rect);
 						break;
-					case Block::water_ground_2:
+					case TerrainObject::water_ground_2:
 					{
 						AutoTileIndex auto_tile_index(draw_map.getAutoTile(), cd_anime_sea, 8);
 						::As::ImageQuadrant(

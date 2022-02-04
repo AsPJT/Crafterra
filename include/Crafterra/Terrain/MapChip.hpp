@@ -67,7 +67,7 @@ namespace Crafterra {
 	//#endif
 
 		// 未完成
-	enum class Block : BlockType {
+	enum class TerrainObject : TerrainObjectType {
 		empty     // 無し
 		, normal_ground        // 地面
 		, water_ground       // 水
@@ -128,7 +128,7 @@ namespace Crafterra {
 		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
 		bool is_cliff = false;
 		bool is_cliff_top = false;
-		Block draw_block{}; // 後に配列になる予定
+		TerrainObject draw_block{}; // 後に配列になる予定
 		ElevationUint elevation{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 		MapChipTypeBiome draw_biome{ MapChipTypeBiome::empty }; // 描画用バイオーム
 		AutoTile auto_tile{}; // 描画用オートタイル
@@ -149,10 +149,10 @@ namespace Crafterra {
 		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->draw_biome = draw_biome_;
 		}
-		Block getDrawBlock() const {
+		TerrainObject getDrawBlock() const {
 			return this->draw_block;
 		}
-		void setDrawBlock(const Block& block_) {
+		void setDrawBlock(const TerrainObject& block_) {
 			this->draw_block = block_;
 		}
 		// 暫定
@@ -266,7 +266,7 @@ namespace Crafterra {
 		void setDrawBiome(const MapChipTypeBiome& draw_biome_) {
 			this->tile[this->tile_num].setDrawBiome(draw_biome_);
 		}
-		void setDrawBlock(const Block& block_) {
+		void setDrawBlock(const TerrainObject& block_) {
 			this->tile[this->tile_num].setDrawBlock(block_);
 		}
 		void setElevation3(const ElevationUint& elevation_) {
@@ -293,20 +293,7 @@ namespace Crafterra {
 		}
 	};
 
-	constexpr ::As::IndexUint block_layer_max = 3;
-
-	// ブロックのレイヤー
-	class BlockLayer {
-	private:
-		Block block[block_layer_max]{};
-	public:
-		Block getBlock(const ::As::IndexUint index_) const {
-			return this->block[index_];
-		}
-		void setBlock(const Block block_, const ::As::IndexUint index_) {
-			this->block[index_] = block_;
-		}
-	};
+	// TerrainObject
 
 	// マップチップ情報を管理
 	class MapChip {
@@ -315,7 +302,7 @@ namespace Crafterra {
 
 		using FlowerFloat = double;
 
-		BlockLayer block[128]{}; // ブロック
+
 		MapChipTypeBiome biome{ MapChipTypeBiome::empty }; // バイオーム
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
@@ -333,21 +320,6 @@ namespace Crafterra {
 		}
 		void setBiome(const MapChipTypeBiome& biome_) {
 			this->biome = biome_;
-		}
-		const BlockLayer& cgetBlockLayer(const As::IndexUint index_) const {
-			return this->block[index_];
-		}
-		BlockLayer& getBlockLayer(const As::IndexUint index_) {
-			return this->block[index_];
-		}
-		void setBlockLayer(const BlockLayer& block_, const As::IndexUint index_) {
-			this->block[index_] = block_;
-		}
-		Block getBlock(const As::IndexUint index_, const As::IndexUint layer_index_) const {
-			return this->block[index_].getBlock(layer_index_);
-		}
-		void setBlock(const Block& block_, const As::IndexUint index_, const As::IndexUint layer_index_) {
-			this->block[index_].setBlock(block_, layer_index_);
 		}
 		ElevationUint getElevation() const {
 			return this->elevation;

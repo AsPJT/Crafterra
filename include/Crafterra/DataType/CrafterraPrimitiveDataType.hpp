@@ -61,7 +61,7 @@
 namespace Crafterra {
 	inline namespace DataType {
 		using BiomeType = CRAFTERRA_BIOME_T;
-		using BlockType = CRAFTERRA_BLOCK_T;
+		using TerrainObjectType = CRAFTERRA_BLOCK_T;
 		// 標高値
 		using ElevationUint = CRAFTERRA_ELEVATION_T;
 		using ActorDirectionUint = CRAFTERRA_ACTOR_DIRECTION_T;

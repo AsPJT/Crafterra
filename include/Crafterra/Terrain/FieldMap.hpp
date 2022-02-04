@@ -71,6 +71,7 @@ namespace Crafterra {
 
 		// 暫定的なマップデータ
 		using MapMat = ::As::UniquePtrMatrix<MapChip>;
+		using ObjectMapMat = ::As::UniquePtrMatrix4D<TerrainObject>;
 		using DrawMapMat = ::As::UniquePtrMatrix<DrawMapChip>;
 		using shape_t = ElevationUint;
 
@@ -79,7 +80,7 @@ namespace Crafterra {
 		void setTile(DrawMapMat& draw_map_matrix) const {
 			// 崖のオートタイルを計算
 			for (::As::IndexUint col{ 1 }; col < draw_map_matrix.getWidth() - 1; ++col)
-				for (::As::IndexUint row{}; row < draw_map_matrix.getHeight() - 1; ++row)
+				for (::As::IndexUint row{}; row < draw_map_matrix.getDepth() - 1; ++row)
 					for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
 						DrawMapChipUnit& draw_map_tile = draw_map_matrix[row][col].getTile(layer);
 
@@ -110,7 +111,7 @@ namespace Crafterra {
 					}
 
 			for (::As::IndexUint col{ 1 }; col < draw_map_matrix.getWidth() - 1; ++col)
-				for (::As::IndexUint row{ 1 }; row < draw_map_matrix.getHeight() - 1; ++row) {
+				for (::As::IndexUint row{ 1 }; row < draw_map_matrix.getDepth() - 1; ++row) {
 					for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
 						DrawMapChipUnit& draw_map_tile = draw_map_matrix[row][col].getTile(layer);
 						if (draw_map_tile.getIsCliff()) continue;
@@ -228,10 +229,10 @@ namespace Crafterra {
 				}
 		}
 
-		void setTerrain(MapMat& field_map_matrix, DrawMapMat& draw_map_matrix) const {
+		void setTerrain(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, DrawMapMat& draw_map_matrix) const {
 
-			for (::As::IndexUint row{}; row < draw_map_matrix.getHeight(); ++row)
-				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col) {
+			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row)
+				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col, ++mat_index) {
 					MapChip& field_map = field_map_matrix[row][col];
 					DrawMapChip& draw_map = draw_map_matrix[row][col];
 					draw_map.setTileNum(0);
@@ -240,13 +241,13 @@ namespace Crafterra {
 						draw_map.getTile(layer).setElevation3(0); // 初期化
 					}
 
-					for (::As::IndexUint row3{ row }, block_index{}; block_index < 128; --row3, ++block_index) {
-						for (::As::IndexUint block_layer_index = 0; block_layer_index < block_layer_max; ++block_layer_index) {
-							const Block block = field_map.getBlock(block_index, block_layer_index);
-							if (block != Block::empty) {
+					for (::As::IndexUint row3{ row }, block_index{}; block_index < terrain_object_matrix.getHeight(); --row3, ++block_index) {
+						for (::As::IndexUint block_layer_index = 0; block_layer_index < terrain_object_matrix.getLayer(); ++block_layer_index) {
+							const TerrainObject block = terrain_object_matrix.getValueZXYL(mat_index, block_index, block_layer_index);
+							if (block != TerrainObject::empty) {
 								DrawMapChip& draw_map_2 = draw_map_matrix[row3][col];
 								draw_map_2.setNextTile();
-								draw_map_2.setIsCliff(block == Block::cliff); // どこが崖になっているか調べる
+								draw_map_2.setIsCliff(block == TerrainObject::cliff); // どこが崖になっているか調べる
 								draw_map_2.setIsCliffTop(block_index == ::As::IndexUint(field_map.getBlockElevation())); // どこが崖上になっているか調べる
 								draw_map_2.setDrawBlock(block); // ブロックを格納
 								draw_map_2.setX(col);
@@ -273,36 +274,72 @@ namespace Crafterra {
 		}
 
 		// フィールドマップの下半分の地形が上半分へ移動する
-		void moveUp(MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
+		void moveUp(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
 				for (::As::IndexUint col{}; col < field_map_matrix.getWidth(); ++col) {
+
+					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
+					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
+					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i)
+						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							const TerrainObject& obj = terrain_object_matrix.getValueMulZXYL(before_bo_index_2d, i, layer);
+							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
+						}
+
 					MapChip& field_map_after = field_map_matrix[row][col];
 					const MapChip& field_map_before = field_map_matrix[row + field_height_half_][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの上半分の地形が下半分へ移動する
-		void moveDown(MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
+		void moveDown(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_height_half_) const {
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
 				for (::As::IndexUint col{}; col < field_map_matrix.getWidth(); ++col) {
+
+					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
+					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
+					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i)
+						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							const TerrainObject& obj = terrain_object_matrix.getValueMulZXYL(before_bo_index_2d, i, layer);
+							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
+						}
+
 					MapChip& field_map_after = field_map_matrix[row + field_height_half_][col];
 					const MapChip& field_map_before = field_map_matrix[row][col];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの右半分の地形が左半分へ移動する
-		void moveLeft(MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
-			for (::As::IndexUint row{}; row < field_map_matrix.getHeight(); ++row)
+		void moveLeft(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
+			for (::As::IndexUint row{}; row < field_map_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
+
+					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col + field_width_half_);
+					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
+					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i)
+						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							const TerrainObject& obj = terrain_object_matrix.getValueMulZXYL(before_bo_index_2d, i, layer);
+							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
+						}
+
 					MapChip& field_map_after = field_map_matrix[row][col];
 					const MapChip& field_map_before = field_map_matrix[row][col + field_width_half_];
 					field_map_after = field_map_before;
 				}
 		}
 		// フィールドマップの左半分の地形が右半分へ移動する
-		void moveRight(MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
-			for (::As::IndexUint row{}; row < field_map_matrix.getHeight(); ++row)
+		void moveRight(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, const ::As::IndexUint field_width_half_) const {
+			for (::As::IndexUint row{}; row < field_map_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
+
+					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
+					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col + field_width_half_);
+					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i)
+						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							const TerrainObject& obj = terrain_object_matrix.getValueMulZXYL(before_bo_index_2d, i, layer);
+							terrain_object_matrix.setValueMulZXYL(obj, after_bo_index_2d, i, layer);
+						}
+
 					MapChip& field_map_after = field_map_matrix[row][col + field_width_half_];
 					const MapChip& field_map_before = field_map_matrix[row][col];
 					field_map_after = field_map_before;
@@ -310,7 +347,7 @@ namespace Crafterra {
 		}
 
 		// 木の生成
-		void generationTree(MapChip& field_map) const {
+		void generationTree(ObjectMapMat& terrain_object_matrix, const ::As::IndexUint bo_index_2d, MapChip& field_map) const {
 
 			const ElevationUint temperature = field_map.getTemperature();
 			const ElevationUint elevation = field_map.getElevation();
@@ -354,11 +391,11 @@ namespace Crafterra {
 			double probability = field_map.getFlower();
 
 			//if (probability == 0.0) {
-			//	field_map.setBlock(Block::red_broadleaf_tree_down, block_elevation); // テスト
+			//	field_map.setBlock(TerrainObject::red_broadleaf_tree_down, block_elevation); // テスト
 			//	return;
 			//}
 			//if (probability == 1.0) {
-			//	field_map.setBlock(Block::red_broadleaf_tree_up, block_elevation); // テスト
+			//	field_map.setBlock(TerrainObject::red_broadleaf_tree_up, block_elevation); // テスト
 			//	return;
 			//}
 
@@ -369,64 +406,64 @@ namespace Crafterra {
 
 			// 草花の生成テスト
 			if (probability < flower_probability) {
-				field_map.setBlock(Block::grass_1, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::grass_1, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 2)) {
-				field_map.setBlock(Block::grass_2, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::grass_2, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 3)) {
-				field_map.setBlock(Block::grass_3, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::grass_3, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 4)) {
-				field_map.setBlock(Block::grass_4, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::grass_4, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 5)) {
-				field_map.setBlock(Block::flower_1, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::flower_1, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 6)) {
-				field_map.setBlock(Block::flower_2, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::flower_2, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 7)) {
-				field_map.setBlock(Block::flower_3, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::flower_3, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < (flower_probability * 8)) {
-				field_map.setBlock(Block::flower_4, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::flower_4, bo_index_2d, block_elevation, block_layer_index);
 				return;
 			}
 			else if (probability < default_max) {
-				field_map.setBlock(Block::cultivated_land, block_elevation, block_layer_index); // テスト
-				field_map.setBlock(Block::planted_carrot, block_elevation, block_layer_index + 1); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::cultivated_land, bo_index_2d, block_elevation, block_layer_index);
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::planted_carrot, bo_index_2d, block_elevation, block_layer_index + 1);
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability)) {
-				field_map.setBlock(Block::green_coniferous_tree_up, block_elevation + 1, block_layer_index); // テスト
-				field_map.setBlock(Block::green_coniferous_tree_down, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::green_coniferous_tree_down, bo_index_2d, block_elevation, block_layer_index);
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::green_coniferous_tree_up, bo_index_2d, block_elevation + 1, block_layer_index);
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability + green_broadleaf_tree_generation_probability)) {
-				field_map.setBlock(Block::green_broadleaf_tree_up, block_elevation + 1, block_layer_index); // テスト
-				field_map.setBlock(Block::green_broadleaf_tree_down, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::green_broadleaf_tree_down, bo_index_2d, block_elevation, block_layer_index);
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::green_broadleaf_tree_up, bo_index_2d, block_elevation + 1, block_layer_index);
 				return;
 			}
 			else if (probability <
 				(default_max + coniferous_tree_generation_probability + green_broadleaf_tree_generation_probability + yellow_green_broadleaf_tree_generation_probability)) {
-				field_map.setBlock(Block::yellow_green_broadleaf_tree_up, block_elevation + 1, block_layer_index); // テスト
-				field_map.setBlock(Block::yellow_green_broadleaf_tree_down, block_elevation, block_layer_index); // テスト
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::yellow_green_broadleaf_tree_down, bo_index_2d, block_elevation, block_layer_index);
+				terrain_object_matrix.setValueMulZXYL(TerrainObject::yellow_green_broadleaf_tree_up, bo_index_2d, block_elevation + 1, block_layer_index);
 				return;
 			}
 		}
 
 		// フィールドマップを生成
-		void generation(MapMat& field_map_matrix, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) const {
+		void generation(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) const {
 
 			const ElevationUint sea_elevation = 110;
 
@@ -437,6 +474,7 @@ namespace Crafterra {
 			//バイオームの分類分け
 			for (::As::IndexUint row{ start_y_ }; row < end_y_; ++row)
 				for (::As::IndexUint col{ start_x_ }; col < end_x_; ++col) {
+					const ::As::IndexUint bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
 					MapChip& field_map = field_map_matrix[row][col];
 
 					const ElevationUint elevation = field_map.getElevation();
@@ -466,19 +504,19 @@ namespace Crafterra {
 					const ::As::IndexUint block_layer_index = 0;
 
 					// ブロックを初期化
-					for (As::IndexUint i = 0; i < 128; ++i) {
-						for (As::IndexUint layer = 0; layer < block_layer_max; ++layer) {
-							field_map.setBlock(Block::empty, i, layer);
+					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i) {
+						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, layer);
 						}
 					}
 
 					for (As::IndexUint i = 0; i < block_elevation; ++i) {
-						field_map.setBlock(Block::cliff, i, block_layer_index);
+						terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff, bo_index_2d, i, block_layer_index);
 					}
-					for (As::IndexUint i = block_elevation + 1; i < 128; ++i) {
-						field_map.setBlock(Block::empty, i, block_layer_index); // からの場合 ( 崖上を除く )
+					for (As::IndexUint i = block_elevation + 1; i < terrain_object_matrix.getHeight(); ++i) {
+						terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, block_layer_index); // からの場合 ( 崖上を除く )
 					}
-					field_map.setBlock(Block::cliff_top, block_elevation, block_layer_index); // からだけど崖上の場合
+					terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, block_elevation, block_layer_index); // からだけど崖上の場合
 
 					// 海
 					if (field_map.getBiome() == MapChipTypeBiome::sea) {
@@ -486,19 +524,19 @@ namespace Crafterra {
 						field_map.setBlockElevation(sea_elevation / 2);
 
 						for (As::IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
-							field_map.setBlock(Block::water_ground, i, block_layer_index);
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::water_ground, bo_index_2d, i, block_layer_index);
 						}
 					}
 					// 陸
 					else {
 						field_map.setBlockElevation(block_elevation);
 
-						this->generationTree(field_map); // 木の生成
+						this->generationTree(terrain_object_matrix, bo_index_2d, field_map); // 木の生成
 					}
 				}
 		}
-		void initialGeneration(MapMat& field_map_matrix_, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) const {
-			generation(field_map_matrix_, terrain_noise_, chunk_index_x_, chunk_index_y_, 0, 0, field_map_matrix_.getWidth(), field_map_matrix_.getHeight());
+		void initialGeneration(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix_, PerlinNoiseOnFieldMap& terrain_noise_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) const {
+			generation(terrain_object_matrix, field_map_matrix_, terrain_noise_, chunk_index_x_, chunk_index_y_, 0, 0, field_map_matrix_.getWidth(), field_map_matrix_.getDepth());
 		}
 
 	};
