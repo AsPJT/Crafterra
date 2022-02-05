@@ -28,6 +28,8 @@
 
 #include <AsLib2/ThirdParty/Framework/DataType.hpp>
 
+#include <AsLib2/Basic/Unicode.hpp>
+
 // Crafterra のメイン関数を宣言
 #ifndef CRAFTERRA_MAIN_FUNCTION
 #define CRAFTERRA_MAIN_FUNCTION
@@ -81,6 +83,7 @@ int ios_main()
 void Main()
 #endif // __DXLIB
 {
+
 	// 設定項目を読み込む
 #if defined(CRAFTERRA_USE_SAVE_SCREEN)
 	::Crafterra::InitRead init_read("SettingsSaveScreen.tsv");
@@ -129,13 +132,13 @@ void Main()
 #endif // CRAFTERRA_USE_SAVE_SCREEN
 	}
 #elif defined(SIV3D_INCLUDED)
-	::s3d::Scene::SetBackground(::s3d::Color{ 75, 145, 230 });
-	const ::s3d::ScopedRenderStates2D state(::s3d::SamplerState::ClampNearest);
-
-	::s3d::Window::Resize(
-		width,
-		height
-	);
+	::s3d::Window::SetTitle(::As::utf32(::As::String("Crafterra v") + ::As::String(CRAFTERRA_LIBRARY_VERSION_NAME))); // タイトル名を変更
+	::s3d::Window::Resize(width, height); // 画面サイズを変更
+	::s3d::Scene::SetBackground(::s3d::Color{ 75, 145, 230 }); // 背景色を変更
+	if (!::s3d::System::Update()) return; // 一旦、画面を更新
+	Texture(::As::utf32(::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png"))).draw(width / 2 - 320, height / 2 - 180); // ロゴ表示
+	if (!::s3d::System::Update()) return; // もう一度、画面を更新
+	const ::s3d::ScopedRenderStates2D state(::s3d::SamplerState::ClampNearest); // ドット絵を見栄え良くする
 #endif
 
 #if !defined(CRAFTERRA_USE_SAVE_SCREEN)
@@ -144,7 +147,7 @@ void Main()
 
 #if defined(__DXLIB)
 #if defined(CRAFTERRA_USE_SAVE_SCREEN)
-	int save_index = 26;
+	int save_index = 44;
 	const int save_count = 10;
 	const int save_max = save_index + save_count;
 	for (; save_index < save_max; ++save_index) {
