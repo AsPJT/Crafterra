@@ -2,6 +2,12 @@
 
 ---
 
+This library supports sandbox game development.
+
+Now under development.
+
+---
+
 # License
 
 These codes in the include directory are licensed under **CC0 (PUBLIC DOMAIN)**.
