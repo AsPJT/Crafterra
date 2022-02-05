@@ -86,7 +86,7 @@ namespace Crafterra {
 				for (::As::IndexUint row{}; row < draw_map_matrix.getDepth() - 1; ++row)
 					for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
 						DrawMapChipUnit& draw_map_tile = draw_map_matrix[row][col].getTile(layer);
-
+						if (draw_map_tile.getTerrainObject() != TerrainObject::cliff) continue; // 崖じゃなかったら返す
 						bool is_left = true;
 						bool is_right = true;
 						bool is_down = true;
@@ -95,13 +95,13 @@ namespace Crafterra {
 							const DrawMapChipUnit& right_tile = draw_map_matrix[row][col + 1].cgetTile(layer2);
 							const DrawMapChipUnit& down_tile = draw_map_matrix[row + 1][col].cgetTile(layer2);
 
-							if (is_left) 
+							if (is_left)
 								is_left = (left_tile.getIsCliff() ||
-								((!left_tile.getIsCliff()) && draw_map_tile.getElevation() < left_tile.getElevation()));
-							if (is_right) 
+									((!left_tile.getIsCliff()) && draw_map_tile.getElevation() < left_tile.getElevation()));
+							if (is_right)
 								is_right = (right_tile.getIsCliff() ||
-								((!right_tile.getIsCliff()) && draw_map_tile.getElevation() < right_tile.getElevation()));
-							if (is_down) 
+									((!right_tile.getIsCliff()) && draw_map_tile.getElevation() < right_tile.getElevation()));
+							if (is_down)
 								is_down = (down_tile.getIsCliff());
 						}
 						draw_map_tile.setCliff(
@@ -177,14 +177,14 @@ namespace Crafterra {
 							if (!is_biome_auto_tile_lower_left) is_biome_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
 							if (!is_biome_auto_tile_lower_right) is_biome_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBiome() == draw_map_tile.getDrawBiome() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
 
-							if (!is_auto_tile_up) is_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_left) is_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_right) is_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_down) is_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_upper_left) is_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_upper_right) is_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_lower_left) is_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
-							if (!is_auto_tile_lower_right) is_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getDrawBlock() == draw_map_tile.getDrawBlock() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_up) is_auto_tile_up = draw_map_matrix[row - 1][col].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row - 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_left) is_auto_tile_left = draw_map_matrix[row][col - 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_right) is_auto_tile_right = draw_map_matrix[row][col + 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_down) is_auto_tile_down = draw_map_matrix[row + 1][col].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row + 1][col].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_upper_left) is_auto_tile_upper_left = draw_map_matrix[row - 1][col - 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row - 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_upper_right) is_auto_tile_upper_right = draw_map_matrix[row - 1][col + 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row - 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row - 1][col + 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_lower_left) is_auto_tile_lower_left = draw_map_matrix[row + 1][col - 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row + 1][col - 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col - 1].getTile(layer2).getIsCliff());
+							if (!is_auto_tile_lower_right) is_auto_tile_lower_right = draw_map_matrix[row + 1][col + 1].getTile(layer2).getTerrainObject() == draw_map_tile.getTerrainObject() && draw_map_matrix[row + 1][col + 1].getTile(layer2).getElevation() == draw_map_tile.getElevation() && (!draw_map_matrix[row + 1][col + 1].getTile(layer2).getIsCliff());
 						}
 
 						// 崖上のオートタイルを計算 ( 一部バグがあり、未完成 )
@@ -252,7 +252,7 @@ namespace Crafterra {
 								draw_map_2.setNextTile();
 								draw_map_2.setIsCliff(block == TerrainObject::cliff); // どこが崖になっているか調べる
 								draw_map_2.setIsCliffTop(block_index == ::As::IndexUint(field_map.getBlockElevation())); // どこが崖上になっているか調べる
-								draw_map_2.setDrawBlock(block); // ブロックを格納
+								draw_map_2.setTerrainObject(block); // ブロックを格納
 								draw_map_2.setX(col);
 								draw_map_2.setY(block_index);
 								draw_map_2.setZ(row);
@@ -384,9 +384,9 @@ namespace Crafterra {
 			// 生成される確率
 			const double probability_of_generation
 				= (default_max
-				+ coniferous_tree_generation_probability
-				+ green_broadleaf_tree_generation_probability
-				+ yellow_green_broadleaf_tree_generation_probability);
+					+ coniferous_tree_generation_probability
+					+ green_broadleaf_tree_generation_probability
+					+ yellow_green_broadleaf_tree_generation_probability);
 
 			// 生成されない確率
 			const double probability_of_no_generation = (1.0 - probability_of_generation);
@@ -405,7 +405,13 @@ namespace Crafterra {
 			if (probability < probability_of_no_generation) return;
 			probability -= probability_of_no_generation;
 
-			const ::As::IndexUint block_layer_index = 0;
+			::As::IndexUint block_layer_index = 0;
+			for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+				if (TerrainObject::empty == terrain_object_matrix.getValueMulZXYL(bo_index_2d, block_elevation, layer)) {
+					block_layer_index = layer;
+					break;
+				}
+			}
 
 			// 草花の生成テスト
 			if (probability < flower_probability) {
@@ -527,7 +533,8 @@ namespace Crafterra {
 						field_map.setBlockElevation(sea_elevation / 2);
 
 						for (As::IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
-							terrain_object_matrix.setValueMulZXYL(TerrainObject::water_ground, bo_index_2d, i, block_layer_index);
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, i, block_layer_index);
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::water_ground, bo_index_2d, i, block_layer_index + 1);
 						}
 					}
 					// 陸

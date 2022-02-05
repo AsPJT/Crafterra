@@ -1,0 +1,5 @@
+bool	Fullscreen	no
+int	Window Width	7680
+int	Window Height	4320
+string	Picture Path	./../../../resource/Picture/
+string	Data Path	./../../../resource/Data/

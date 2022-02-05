@@ -96,6 +96,15 @@ namespace Crafterra {
 	// 234,226,135
 	// 176,186,163
 
+	enum class AutoTileType : ::As::Uint8 {
+		empty     // 無し
+		, normal
+		, wolf
+		, cliff
+		, cliff_top
+		, size
+	};
+
 	// 描画用マップチップ
 	class DrawMapChipUnit {
 	private:
@@ -109,10 +118,11 @@ namespace Crafterra {
 		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
 		bool is_cliff = false;
 		bool is_cliff_top = false;
-		TerrainObject draw_block{};
+		TerrainObject terrain_object{};
 		ElevationUint elevation{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 		TerrainBiome draw_biome{ TerrainBiome::empty }; // 描画用バイオーム
 		AutoTile auto_tile{}; // 描画用オートタイル
+		AutoTileType auto_tile_type{ AutoTileType::normal }; // オートタイルの種類
 		AutoTile biome_auto_tile{}; // 描画用オートタイル
 
 	public:
@@ -126,8 +136,8 @@ namespace Crafterra {
 
 		TerrainBiome getDrawBiome() const { return this->draw_biome; }
 		void setDrawBiome(const TerrainBiome& draw_biome_) { this->draw_biome = draw_biome_; }
-		TerrainObject getDrawBlock() const { return this->draw_block; }
-		void setDrawBlock(const TerrainObject& block_) { this->draw_block = block_; }
+		TerrainObject getTerrainObject() const { return this->terrain_object; }
+		void setTerrainObject(const TerrainObject& block_) { this->terrain_object = block_; }
 		ElevationUint getElevation() const { return this->elevation; }
 		void setElevation(const ElevationUint& elevation_) { this->elevation = elevation_; }
 		CliffConnection getCliffTop() const { return this->cliff_top; }
@@ -143,11 +153,13 @@ namespace Crafterra {
 		// オートタイル
 		AutoTile getAutoTile() const { return this->auto_tile; }
 		void setAutoTile(const AutoTile& auto_tile_) { this->auto_tile = auto_tile_; }
+		AutoTileType getAutoTileType() const { return this->auto_tile_type; }
+		void setAutoTileType(const AutoTileType& auto_tile_type_) { this->auto_tile_type = auto_tile_type_; }
 		AutoTile getBiomeAutoTile() const { return this->biome_auto_tile; }
 		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) { this->biome_auto_tile = biome_auto_tile_; }
 	};
 
-	constexpr ::As::IndexUint draw_map_layer_max = 3;
+	constexpr ::As::IndexUint draw_map_layer_max = 4;
 
 	// 描画用マップチップ
 	class DrawMapChip {
@@ -186,7 +198,7 @@ namespace Crafterra {
 		const DrawMapChipUnit& cgetTile() const { return this->tile[this->tile_num]; }
 		const DrawMapChipUnit& cgetTile(const ::As::IndexUint tile_num_) const { return this->tile[tile_num_]; }
 		void setDrawBiome(const TerrainBiome& draw_biome_) { this->tile[this->tile_num].setDrawBiome(draw_biome_); }
-		void setDrawBlock(const TerrainObject& block_) { this->tile[this->tile_num].setDrawBlock(block_); }
+		void setTerrainObject(const TerrainObject& block_) { this->tile[this->tile_num].setTerrainObject(block_); }
 		void setElevation(const ElevationUint& elevation_) { this->tile[this->tile_num].setElevation(elevation_); }
 		void setCliffTop(const CliffConnection& cliff_top_) { this->tile[this->tile_num].setCliffTop(cliff_top_); }
 		void setCliff(const CliffConnection& cliff_) { this->tile[this->tile_num].setCliff(cliff_); }

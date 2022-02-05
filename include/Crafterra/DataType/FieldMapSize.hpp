@@ -25,8 +25,8 @@ namespace Crafterra {
 	inline namespace DataType {
 
 		// フィールドマップの大きさ
-		constexpr ::As::IndexUint default_field_map_width = 512; // 幅
-		constexpr ::As::IndexUint default_field_map_depth = 512; // 奥行
+		constexpr ::As::IndexUint default_field_map_width = 1024; // 幅
+		constexpr ::As::IndexUint default_field_map_depth = 1024; // 奥行
 		constexpr ::As::IndexUint default_field_map_height = 128; // 高さ
 		constexpr ::As::IndexUint default_field_map_layer = 3; // 層
 

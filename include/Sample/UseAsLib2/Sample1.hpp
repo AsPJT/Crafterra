@@ -15,7 +15,7 @@
 	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
-
+//#define CRAFTERRA_USE_SAVE_SCREEN
 #ifndef INCLUDED_SAMPLE_SAMPLE_SAMPLE_1_HPP
 #define INCLUDED_SAMPLE_SAMPLE_SAMPLE_1_HPP
 
@@ -80,24 +80,32 @@ namespace Crafterra {
 		player.setX(cs.camera_size.getCenterX());
 		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
 		player.setZ(cs.camera_size.getCenterY() - player.getY());
-		player.setWalkingSpeed(2.f);
-		player.setMode(ActorMode::airship);
+		player.setWalkingSpeed(0.2f);
+		player.setMode(ActorMode::humanoid);
 
 		// キー入力
 		::As::InputKey key;
 
 		// 操作アクタの初期設定
-		cs.setMapChipSize(10.f);
+		cs.setMapChipSize(32.f);
 
 		// 経過時間 ----------
 		ElapsedTime elapsed_time;
 
 		// ログ関連 ----------
 		::As::DrawRect log_background(::As::Rect(0, 0, 250, 300), ::As::Color(40));
+		
+#if defined(CRAFTERRA_USE_SAVE_SCREEN)
+		bool is_debug_log = false;
+#else
 		bool is_debug_log = true;
+#endif // CRAFTERRA_USE_SAVE_SCREEN
 
 		// メインループ ----------
-		while (::Crafterra::System::update()) {
+#if !defined(CRAFTERRA_USE_SAVE_SCREEN)
+		while (::Crafterra::System::update())
+#endif // CRAFTERRA_USE_SAVE_SCREEN
+		{
 			elapsed_time.update();
 			const ::As::Int64 elapsed = elapsed_time.getMicroseconds();
 #ifdef __DXLIB
@@ -141,6 +149,10 @@ namespace Crafterra {
 			case ::Crafterra::Enum::ActorDirection::right:dir = 6 + cd_anime2; break;
 			case ::Crafterra::Enum::ActorDirection::up:   dir = 9 + cd_anime2; break;
 			}
+
+#if defined(CRAFTERRA_USE_SAVE_SCREEN)
+// なし
+#else
 
 			//----------------------------------------------------------------------------------------------------
 			// フィールドマップにおける操作アクタの状態
@@ -186,6 +198,8 @@ namespace Crafterra {
 				break;
 			}
 			//----------------------------------------------------------------------------------------------------
+
+
 			if (is_debug_log) {
 				log_background.draw();
 #ifdef __DXLIB
@@ -223,8 +237,9 @@ namespace Crafterra {
 #endif // __DXLIB
 						}
 
-		} // メインループ
+#endif // CRAFTERRA_USE_SAVE_SCREEN
 
+		} // メインループ
 	}
 
 }

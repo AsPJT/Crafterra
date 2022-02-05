@@ -25,6 +25,8 @@
 // 各描画ライブラリをまとめたもの
 #include <AsLib2/ThirdParty/Framework/Framework.hpp>
 
+#include <memory>
+#include <new>
 #include <sstream>
 
 namespace Crafterra {
@@ -38,6 +40,14 @@ namespace Crafterra {
 		, const ::Crafterra::Enum::ActorMode mode
 		, const bool is_debug_log
 	) {
+		// 透明か
+		::std::unique_ptr<bool[]> is_alpha(new(::std::nothrow) bool[draw_map_layer_max]);
+		if (!is_alpha) return;
+		// 描画するかしないか
+		::std::unique_ptr<bool[]> is_draw(new(::std::nothrow) bool[draw_map_layer_max]);
+		if (!is_draw) return;
+
+
 		// 描画関数
 		cs.updateCamera(
 			[&](const float csx_, const float csy_, const float cw_, const float ch_, const ::As::IndexUint x_, const ::As::IndexUint y_) {
@@ -46,20 +56,68 @@ namespace Crafterra {
 				
 				::As::MapChipImage& tile = resource_.getMapChip();
 
-				::std::stringstream ss;
+				//::std::stringstream ss;
 				
+				::As::IndexUint start_layer = 0;
+				::As::IndexUint end_layer = 0;
+				// 透明度を計算
 				for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
+					const DrawMapChipUnit& draw_map = draw_map_matrix[y_][x_].cgetTile(layer);
+
+					if (draw_map.getTerrainObject() == TerrainObject::empty) {
+						is_alpha[layer] = true; // 透明
+						is_draw[layer] = false; // 描画しない
+						if (layer == start_layer) ++start_layer; // からはスキップ
+						continue;
+					}
+					// 描画する
+					end_layer = layer + 1;
+					is_alpha[layer] = false; // 不透明
+					is_draw[layer] = true; // 描画する
+
+					if (layer == 0) continue;
+					const DrawMapChipUnit& draw_map_before = draw_map_matrix[y_][x_].cgetTile(layer - 1);
+
+					// 崖の場合
+					if (draw_map.getTerrainObject() == TerrainObject::cliff) {
+						// マップチップが不透明だったら 1 つ前のタイルを描画しない
+						if (!tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliff()))) start_layer = layer;
+						// 1 つ前のマップチップに同じものがあったら 1 つ前のタイルを描画しない
+						if (draw_map_before.getCliff() == draw_map.getCliff()) is_draw[layer - 1] = false;
+					}
+					else if (draw_map.getTerrainObject() == TerrainObject::water_ground) {
+						// マップチップが不透明だったら 1 つ前のタイルを描画しない
+						const AutoTile& at = draw_map.getAutoTile();
+						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+							) {
+							start_layer = layer;
+						}
+					}
+					//else if (
+					//	draw_map_before.getTerrainObject() == draw_map.getTerrainObject()
+					//	) {
+					//	is_draw[layer - 1] = false;
+					//}
+				}
+
+				// 処理
+				for (::As::IndexUint layer = start_layer; layer < end_layer; ++layer) {
+					// 描画しないものは処理しない
+					if (!is_draw[layer]) continue;
 
 					const DrawMapChipUnit& draw_map = draw_map_matrix[y_][x_].cgetTile(layer);
 
+					//if (layer < start_layer) continue;
 
-
-					if (layer != 0) ss << '\n';
-					ss << 'L' << layer << '|';
-					ss << 'X' << x_ << '|';
-					ss << 'Y' << draw_map.getElevation() << '|';
-					ss << 'Z' << y_ << '|';
-					ss << 'B' << ::As::IndexUint(draw_map.getDrawBlock()) << '|';
+					//if (layer != 0) ss << '\n';
+					//ss << 'L' << layer << '|';
+					//ss << 'X' << x_ << '|';
+					//ss << 'Y' << draw_map.getElevation() << '|';
+					//ss << 'Z' << y_ << '|';
+					//ss << 'B' << ::As::IndexUint(draw_map.getTerrainObject()) << '|';
 
 					bool is_map_chip_type_homogeneous_connection_all = false;
 					bool is_auto_tile_desert_alpha = false;
@@ -73,51 +131,67 @@ namespace Crafterra {
 						);
 
 					if (is_draw_biome) {
-						AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-						if (tile.getIsDesertAlpha(auto_tile_index)) is_auto_tile_desert_alpha = true;
+						//AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
+						//if (tile.getMapChipAlpha(auto_tile_index)) 
+
+						const AutoTile& at = draw_map.getBiomeAutoTile();
+						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+							) {
+							is_auto_tile_desert_alpha = false;
+						}
+						else is_auto_tile_desert_alpha = true;
 					}
 					else is_auto_tile_desert_alpha = true;
 
-					// 崖を先に描画
-					if (draw_map.getDrawBlock() == TerrainObject::cliff) {
-						if (!is_floor && tile.getMapChipCliffTopAlpha(As::IndexUint(draw_map.getCliff())) == 0) {
+					// ------------------------------------------------------------------------------------------------------------------------------------
+
+
+					switch (draw_map.getTerrainObject()) {
+					case TerrainObject::cliff:
+					{
+						if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliff()))) {
 							::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
 							is_floor = true;
 						}
 						::As::Image(tile.getMapChip("Cliff", As::IndexUint(draw_map.getCliff()))).draw(map_chip_rect);
 					}
-					// 崖上を描画
-					else if (draw_map.getIsCliffTop()) {
+						break;
+					case TerrainObject::cliff_top:
+					{
+						//else if (draw_map.getIsCliffTop()) {
 						if (is_auto_tile_desert_alpha) {
 							is_map_chip_type_homogeneous_connection_all = true;
-							if (!is_floor && tile.getMapChipCliffTopAlpha(As::IndexUint(draw_map.getCliffTop())) == 0) {
+							if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
 								::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
 								is_floor = true;
 							}
 
 							::As::Image(tile.getMapChip("Cliff", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
 						}
-					}
 
-					// ------------------------------------------------------------------------------------------------------------------------------------
-					if (draw_map.getIsCliff()) continue;
-					//if (draw_map.getDrawBlock() == TerrainObject::cliff) return;
-					if (is_draw_biome) {
-						const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
-						AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-						::As::ImageQuadrant(
-							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
-							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
-							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
-							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
+						//if (draw_map.getIsCliff()) continue;
+//if (draw_map.getTerrainObject() == TerrainObject::cliff) return;
+						if (is_draw_biome) {
+							const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
+							AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
+							::As::ImageQuadrant(
+								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
+								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
+								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
+								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
+						}
 					}
-
-					switch (draw_map.getDrawBlock()) {
+						break;
 					case TerrainObject::water_ground:
 					{
 						AutoTileIndex sea_auto_tile_index(draw_map.getBiomeAutoTile(), cd_anime_sea, 8);
 
-						if (!is_floor && tile.getIsSeaAlpha(sea_auto_tile_index)) {
+						if (!is_floor
+							//&& tile.getMapChip(sea_auto_tile_index)
+							) {
 							::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
 							is_floor = true;
 						}
@@ -222,11 +296,11 @@ namespace Crafterra {
 					
 				}
 
-				// 人間の場合はデバッグ表示
-				if (is_debug_log && mode == ::Crafterra::Enum::ActorMode::humanoid) {
-					::As::DrawRect(map_chip_rect, ::As::Color(255, 255, 255)).drawLine();
-					resource_.getFont().draw(int(map_chip_rect.start_x), int(map_chip_rect.start_y), ss.str());
-				}
+				//// 人間の場合はデバッグ表示
+				//if (is_debug_log && mode == ::Crafterra::Enum::ActorMode::humanoid) {
+				//	::As::DrawRect(map_chip_rect, ::As::Color(255, 255, 255)).drawLine();
+				//	resource_.getFont().draw(int(map_chip_rect.start_x), int(map_chip_rect.start_y), ss.str());
+				//}
 
 			}
 		);

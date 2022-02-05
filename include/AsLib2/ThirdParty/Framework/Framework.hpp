@@ -82,7 +82,11 @@ void Main()
 #endif // __DXLIB
 {
 	// 設定項目を読み込む
+#if defined(CRAFTERRA_USE_SAVE_SCREEN)
+	::Crafterra::InitRead init_read("SettingsSaveScreen.tsv");
+#else
 	::Crafterra::InitRead init_read("Settings.tsv");
+#endif
 
 	const int read_width = init_read.getInt("Window Width");
 	const int read_height = init_read.getInt("Window Height");
@@ -106,7 +110,9 @@ void Main()
 			::DxLib::ChangeWindowMode(::As::dx_true);
 #endif // __WINDOWS__
 		}
+#if !defined(CRAFTERRA_USE_SAVE_SCREEN)
 		::DxLib::SetGraphMode(width, height, 32);
+#endif
 
 		// UTF-8に変更
 		::DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
@@ -114,7 +120,13 @@ void Main()
 		::DxLib::LoadGraphScreen(
 			width / 2 - 320, height / 2 - 180,
 			::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png").c_str(), ::As::dx_false);
+
+#if defined(CRAFTERRA_USE_SAVE_SCREEN)
+		const int screen = ::DxLib::MakeScreen(width, height, FALSE);
+		::DxLib::SetDrawScreen(screen);
+#else
 		::DxLib::SetDrawScreen(DX_SCREEN_BACK);
+#endif // CRAFTERRA_USE_SAVE_SCREEN
 	}
 #elif defined(SIV3D_INCLUDED)
 	::s3d::Scene::SetBackground(::s3d::Color{ 75, 145, 230 });
@@ -126,7 +138,21 @@ void Main()
 	);
 #endif
 
+#if !defined(CRAFTERRA_USE_SAVE_SCREEN)
 	::As::initCrafterra(init_read, width, height); // Crafterra を初期化・実行
+#endif
+
+#if defined(__DXLIB)
+#if defined(CRAFTERRA_USE_SAVE_SCREEN)
+	int save_index = 26;
+	const int save_count = 10;
+	const int save_max = save_index + save_count;
+	for (; save_index < save_max; ++save_index) {
+		::As::initCrafterra(init_read, width, height); // Crafterra を初期化・実行
+		::DxLib::SaveDrawScreenToPNG(0, 0, width, height, ::std::string("PictureTest/test" + ::std::to_string(save_index) + ".png").c_str());
+	}
+#endif // CRAFTERRA_USE_SAVE_SCREEN
+#endif
 
 #if defined(__DXLIB)
 	return ::DxLib::DxLib_End();
