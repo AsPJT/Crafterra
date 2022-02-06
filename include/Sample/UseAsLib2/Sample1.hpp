@@ -59,11 +59,11 @@ namespace Crafterra {
 
 		// 地形情報
 		using TerrainInformationMatrix = ::As::UniquePtrMatrix<TerrainInformation>;
-		TerrainInformationMatrix terrain_information_matrix(default_field_map_width, default_field_map_depth);
+		TerrainInformationMatrix terrain_information_matrix(default_field_map);
 
 		// 描画マップ
 		using DrawFieldMapMatrix = ::As::UniquePtrMatrix<DrawMapChip>;
-		DrawFieldMapMatrix draw_map_matrix(default_field_map_width, default_field_map_depth);
+		DrawFieldMapMatrix draw_map_matrix(default_field_map);
 
 		// 座標系
 		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth());

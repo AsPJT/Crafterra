@@ -35,6 +35,12 @@ namespace As {
 		public:
 			UniquePtrMatrix(const ::As::IndexUint num_x_, const ::As::IndexUint num_z_) :
 				matrix(new(::std::nothrow) Type_[num_x_ * num_z_]), width(num_x_), depth(num_z_) {}
+			template<typename Struct_>
+			UniquePtrMatrix(const Struct_& struct_) :
+				matrix(new(::std::nothrow) Type_[struct_.depth * struct_.width])
+				, depth(struct_.depth)
+				, width(struct_.width)
+			{}
 
 			// 配列を取得
 			Type_* const operator[](const ::As::IndexUint z_) const {

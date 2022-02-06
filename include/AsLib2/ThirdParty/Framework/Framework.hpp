@@ -72,6 +72,30 @@ namespace As {
 
 }
 
+namespace As {
+	namespace Window {
+
+		// タイトル名を変更
+		void setTitle(const ::As::String& title_name_) {
+#if defined(__DXLIB)
+			::DxLib::SetMainWindowText(title_name_.c_str());
+#elif defined(SIV3D_INCLUDED)
+			::s3d::Window::SetTitle(::As::utf32(title_name_));
+#endif // __DXLIB
+		}
+
+		// タイトル名を変更
+		void setBackgroundColor(const ::As::Uint8 r_, const ::As::Uint8 g_, const ::As::Uint8 b_) {
+#if defined(__DXLIB)
+			::DxLib::SetBackgroundColor(int(r_), int(g_), int(b_));
+#elif defined(SIV3D_INCLUDED)
+			::s3d::Scene::SetBackground(::s3d::Color{ r_, g_, b_ }); // 背景色を変更
+#endif // __DXLIB
+		}
+
+	}
+}
+
 // Windows 版の場合
 #if defined(__DXLIB)
 #if defined(__WINDOWS__)
@@ -97,16 +121,20 @@ void Main()
 	const int height = ((read_height == 0) ? ::Crafterra::System::init_window_height : read_height);
 
 #if defined(__DXLIB)
-	{
 		// ログ出力を行わない
 		::DxLib::SetOutApplicationLogValidFlag(::As::dx_false);
+#endif
+
 		// 背景色を指定
-		::DxLib::SetBackgroundColor(75, 145, 230);
+		::As::Window::setBackgroundColor(75, 145, 230);
 		// ウィンドウテキストにタイトル名を表示
 		const ::As::String title_name =
 			::As::String("Crafterra v") +
 			::As::String(CRAFTERRA_LIBRARY_VERSION_NAME);
-		::DxLib::SetMainWindowText(title_name.c_str());
+		::As::Window::setTitle(title_name);
+
+#if defined(__DXLIB)
+	{
 		// フルスクリーンではなくウィンドウで表示
 		if (!init_read.getBool("Fullscreen")) {
 #ifdef __WINDOWS__
@@ -132,9 +160,7 @@ void Main()
 #endif // CRAFTERRA_USE_SAVE_SCREEN
 	}
 #elif defined(SIV3D_INCLUDED)
-	::s3d::Window::SetTitle(::As::utf32(::As::String("Crafterra v") + ::As::String(CRAFTERRA_LIBRARY_VERSION_NAME))); // タイトル名を変更
 	::s3d::Window::Resize(width, height); // 画面サイズを変更
-	::s3d::Scene::SetBackground(::s3d::Color{ 75, 145, 230 }); // 背景色を変更
 	if (!::s3d::System::Update()) return; // 一旦、画面を更新
 	Texture(::As::utf32(::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png"))).draw(width / 2 - 320, height / 2 - 180); // ロゴ表示
 	if (!::s3d::System::Update()) return; // もう一度、画面を更新
