@@ -124,6 +124,7 @@ namespace Crafterra {
 		AutoTile auto_tile{}; // 描画用オートタイル
 		AutoTileType auto_tile_type{ AutoTileType::normal }; // オートタイルの種類
 		AutoTile biome_auto_tile{}; // 描画用オートタイル
+		bool is_biome_cliff_top = false;
 
 	public:
 
@@ -144,6 +145,9 @@ namespace Crafterra {
 		void setCliffTop(const CliffConnection& cliff_top_) { this->cliff_top = cliff_top_; }
 		CliffConnection getCliff() const { return this->cliff; }
 		void setCliff(const CliffConnection& cliff_) { this->cliff = cliff_; }
+		// バイオームの崖上であるかどうか？
+		bool getIsBiomeCliffTop() const { return this->is_biome_cliff_top; }
+		void setIsBiomeCliffTop(const bool is_biome_cliff_) { this->is_biome_cliff_top = is_biome_cliff_; }
 		// 崖であるかどうか？
 		bool getIsCliff() const { return this->is_cliff; }
 		void setIsCliff(const bool is_cliff_) { this->is_cliff = is_cliff_; }
@@ -207,6 +211,125 @@ namespace Crafterra {
 		void setAutoTile(const AutoTile& auto_tile_) { this->tile[this->tile_num].setAutoTile(auto_tile_); }
 		void setBiomeAutoTile(const AutoTile& biome_auto_tile_) { this->tile[this->tile_num].setBiomeAutoTile(biome_auto_tile_); }
 	};
+
+	bool isBiomeCliff(const AutoTile& at, const DrawMapChipUnit& draw_map) {
+
+		if (draw_map.getTerrainObject() != TerrainObject::cliff_top) {
+			return false;
+		}
+
+		// 描画するバイオーム
+		const bool is_draw_biome = (draw_map.getDrawBiome() != TerrainBiome::empty
+			&& draw_map.getDrawBiome() != TerrainBiome::sea
+			&& draw_map.getDrawBiome() != TerrainBiome::lake
+			&& draw_map.getDrawBiome() != TerrainBiome::normal
+			&& draw_map.getDrawBiome() != TerrainBiome::hill
+			);
+		if (!is_draw_biome) return false;
+
+		if (draw_map.getDrawBiome() != TerrainBiome::forest
+			&& draw_map.getDrawBiome() != TerrainBiome::tundra) {
+			return false;
+		}
+
+		if (at.auto_tile_upper_left == AutoTileConnection::nothing_upper_left
+			&& at.auto_tile_upper_right == AutoTileConnection::nothing_upper_right
+			&& at.auto_tile_lower_left == AutoTileConnection::nothing_lower_left
+			&& at.auto_tile_lower_right == AutoTileConnection::nothing_lower_right
+			&& draw_map.getCliffTop() == CliffConnection::nothing) {
+			return true;
+		}
+		else if ((at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+			//|| at.auto_tile_upper_left == AutoTileConnection::cross_upper_left
+			) && (at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+				//|| at.auto_tile_upper_right == AutoTileConnection::cross_upper_right
+				) && (at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+					//|| at.auto_tile_lower_left == AutoTileConnection::cross_lower_left
+					) && (at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+						//|| at.auto_tile_lower_right == AutoTileConnection::cross_lower_right
+						) && draw_map.getCliffTop() == CliffConnection::all) {
+			return true;
+		}
+		else if (
+			at.auto_tile_upper_left == AutoTileConnection::up_and_down_upper_left
+			&& at.auto_tile_upper_right == AutoTileConnection::up_and_down_upper_right
+			&& draw_map.getCliffTop() == CliffConnection::up) {
+			return true;
+		}
+		else if (
+			at.auto_tile_lower_left == AutoTileConnection::up_and_down_lower_left
+			&& at.auto_tile_lower_right == AutoTileConnection::up_and_down_lower_right
+			&& draw_map.getCliffTop() == CliffConnection::down) {
+			return true;
+		}
+		else if (
+			at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
+			&& at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
+			&& draw_map.getCliffTop() == CliffConnection::left) {
+			return true;
+		}
+		else if (
+			at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
+			&& at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
+			&& draw_map.getCliffTop() == CliffConnection::right) {
+			return true;
+		}
+		else if (
+			at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
+			&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+			&& at.auto_tile_lower_left == AutoTileConnection::up_and_down_lower_left
+			&& (draw_map.getCliffTop() == CliffConnection::right_down_0
+				|| draw_map.getCliffTop() == CliffConnection::right_down_1)) {
+			return true;
+		}
+		else if (
+			at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
+			&& at.auto_tile_lower_right == AutoTileConnection::up_and_down_lower_right
+			&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+			&& (draw_map.getCliffTop() == CliffConnection::left_down_0
+				|| draw_map.getCliffTop() == CliffConnection::left_down_1)) {
+			return true;
+		}
+		else if (
+			at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
+			&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+			&& at.auto_tile_upper_left == AutoTileConnection::up_and_down_upper_left
+			&& (draw_map.getCliffTop() == CliffConnection::up_right_0
+				|| draw_map.getCliffTop() == CliffConnection::up_right_1)) {
+			return true;
+		}
+		else if (
+			at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
+			&& at.auto_tile_upper_right == AutoTileConnection::up_and_down_upper_right
+			&& at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+			&& (draw_map.getCliffTop() == CliffConnection::up_left_0
+				|| draw_map.getCliffTop() == CliffConnection::up_left_1)) {
+			return true;
+		}
+		else if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+			&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+			&& at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
+			&& at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
+			&& (draw_map.getCliffTop() == CliffConnection::up_left_right_0
+				|| draw_map.getCliffTop() == CliffConnection::up_left_right_1
+				|| draw_map.getCliffTop() == CliffConnection::up_left_right_2
+				|| draw_map.getCliffTop() == CliffConnection::up_left_right_3
+				)) {
+			return true;
+		}
+		else if (at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+			&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+			&& at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
+			&& at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
+			&& (draw_map.getCliffTop() == CliffConnection::left_right_down_0
+				|| draw_map.getCliffTop() == CliffConnection::left_right_down_1
+				|| draw_map.getCliffTop() == CliffConnection::left_right_down_2
+				|| draw_map.getCliffTop() == CliffConnection::left_right_down_3
+				)) {
+			return true;
+		}
+		return false;
+	}
 
 }
 

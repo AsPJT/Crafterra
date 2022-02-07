@@ -96,11 +96,6 @@ namespace Crafterra {
 							start_layer = layer;
 						}
 					}
-					//else if (
-					//	draw_map_before.getTerrainObject() == draw_map.getTerrainObject()
-					//	) {
-					//	is_draw[layer - 1] = false;
-					//}
 				}
 
 				// 処理
@@ -120,7 +115,6 @@ namespace Crafterra {
 					//ss << 'B' << ::As::IndexUint(draw_map.getTerrainObject()) << '|';
 
 					bool is_map_chip_type_homogeneous_connection_all = false;
-					bool is_auto_tile_desert_alpha = false;
 
 					// 描画するバイオーム
 					bool is_draw_biome = (draw_map.getDrawBiome() != TerrainBiome::empty
@@ -129,22 +123,6 @@ namespace Crafterra {
 						&& draw_map.getDrawBiome() != TerrainBiome::normal
 						&& draw_map.getDrawBiome() != TerrainBiome::hill
 						);
-
-					if (is_draw_biome) {
-						//AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-						//if (tile.getMapChipAlpha(auto_tile_index)) 
-
-						const AutoTile& at = draw_map.getBiomeAutoTile();
-						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
-							) {
-							is_auto_tile_desert_alpha = false;
-						}
-						else is_auto_tile_desert_alpha = true;
-					}
-					else is_auto_tile_desert_alpha = true;
 
 					// ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -161,28 +139,51 @@ namespace Crafterra {
 						break;
 					case TerrainObject::cliff_top:
 					{
-						//else if (draw_map.getIsCliffTop()) {
-						if (is_auto_tile_desert_alpha) {
-							is_map_chip_type_homogeneous_connection_all = true;
+						bool is_biome_auto_tile_alpha = true;
+						if (is_draw_biome) {
+							const AutoTile& at = draw_map.getBiomeAutoTile();
+							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+								&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+								&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+								&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+								);
+
+							if (is_biome_auto_tile_alpha) {
+								if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
+									::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
+									is_floor = true;
+								}
+							}
+
+							// 森バイオームの場合は森用の崖にする
+							if (draw_map.getIsBiomeCliffTop()) {
+								if (draw_map.getDrawBiome() == TerrainBiome::forest) {
+									::As::Image(tile.getMapChip("Cliff2", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
+									break;
+								}
+								else if (draw_map.getDrawBiome() == TerrainBiome::tundra) {
+									::As::Image(tile.getMapChip("Cliff3", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
+									break;
+								}
+							}
+						}
+
+						if (is_biome_auto_tile_alpha) {
 							if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
 								::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
 								is_floor = true;
 							}
-
 							::As::Image(tile.getMapChip("Cliff", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
 						}
 
-						//if (draw_map.getIsCliff()) continue;
-//if (draw_map.getTerrainObject() == TerrainObject::cliff) return;
-						if (is_draw_biome) {
-							const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
-							AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-							::As::ImageQuadrant(
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
-						}
+						if (!is_draw_biome) break;
+						const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
+						AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
+						::As::ImageQuadrant(
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 					}
 						break;
 					case TerrainObject::water_ground:

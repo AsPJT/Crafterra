@@ -42,32 +42,44 @@ namespace Crafterra {
 			cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
 			chunk.moveRight();
 			terrain.moveLeft(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getWidth() / 2);
-			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX() + 1, chunk.getZ(), terrain_information_matrix.getWidth() / 2, 0, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth());
-			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX() + 1, chunk.getZ(), 
+				::As::IndexAreaXZ(terrain_information_matrix.getWidth() / 2, 0, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth()));
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawAutoTileConnection(draw_map_matrix);
+			terrain.setDrawRange(draw_map_matrix);
 		}
 		// 左側に生成
 		else if (cs.camera_size.getCenterX() < float(cs.field_map_size.getCenterX() - (cs.field_map_size.getWidthHalf() * 2 / 3))) {
 			cs.camera_size.moveX(+float(cs.field_map_size.getWidthHalf()));
 			chunk.moveLeft();
 			terrain.moveRight(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getWidth() / 2);
-			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 0, 0, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth());
-			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 
+				::As::IndexAreaXZ(0, 0, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth()));
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawAutoTileConnection(draw_map_matrix);
+			terrain.setDrawRange(draw_map_matrix);
 		}
 		// 上側に生成
 		if (cs.camera_size.getCenterY() > float(cs.field_map_size.getCenterY() + (cs.field_map_size.getHeightHalf() * 2 / 3))) {
 			cs.camera_size.moveY(-float(cs.field_map_size.getHeightHalf()));
 			chunk.moveUp();
 			terrain.moveUp(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getDepth() / 2);
-			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ() + 1, 0, terrain_information_matrix.getDepth() / 2, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth());
-			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ() + 1, 
+				::As::IndexAreaXZ(0, terrain_information_matrix.getDepth() / 2, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth() / 2));
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawAutoTileConnection(draw_map_matrix);
+			terrain.setDrawRange(draw_map_matrix);
 		}
 		// 下側に生成
 		else if (cs.camera_size.getCenterY() < float(cs.field_map_size.getCenterY() - (cs.field_map_size.getHeightHalf() * 2 / 3))) {
 			cs.camera_size.moveY(+float(cs.field_map_size.getHeightHalf()));
 			chunk.moveDown();
 			terrain.moveDown(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getDepth() / 2);
-			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 0, 0, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth() / 2);
-			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 
+				::As::IndexAreaXZ(0, 0, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth() / 2));
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawAutoTileConnection(draw_map_matrix);
+			terrain.setDrawRange(draw_map_matrix);
 		}
 	}
 

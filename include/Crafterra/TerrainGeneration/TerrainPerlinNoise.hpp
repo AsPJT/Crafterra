@@ -21,6 +21,7 @@
 
 #include <Crafterra/Terrain/TerrainInformation.hpp>
 #include <AsLib2/DataType/PrimitiveDataType.hpp> // int
+#include <AsLib2/DataType/IndexArea.hpp>
 #include <algorithm>
 #include <random>
 
@@ -31,13 +32,14 @@ namespace Crafterra {
 	template<typename Matrix_, typename ElevationUint_>
 	void generatePerlinNoiseOnFieldMap(
 		const Matrix_& matrix_,
-		const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const As::IndexUint one_chunk_width_, const As::IndexUint one_chunk_height_,
-		const As::IndexUint start_x_, const As::IndexUint start_y_, const As::IndexUint end_x_, const As::IndexUint end_y_,
-		::Crafterra::PerlinNoise& perlin, const double frequency_, const As::IndexUint octaves_,
+		const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint one_chunk_width_, const ::As::IndexUint one_chunk_height_,
+		const ::As::IndexAreaXZ& area, ::Crafterra::PerlinNoise& perlin, const double frequency_, const ::As::IndexUint octaves_,
 		const ElevationUint_ max_height_, const ElevationUint_ min_height_ = 0) {
 
-		for (As::IndexUint row_index{ start_y_ }, row{}; row_index < end_y_; ++row_index, ++row)
-			for (As::IndexUint col_index{ start_x_ }, col{}; col_index < end_x_; ++col_index, ++col)
+		const ::As::IndexUint end_x_ = area.start_x + area.width;
+		const ::As::IndexUint end_y_ = area.start_z + area.depth;
+		for (::As::IndexUint row_index{ area.start_z }, row{}; row_index < end_y_; ++row_index, ++row)
+			for (::As::IndexUint col_index{ area.start_x }, col{}; col_index < end_x_; ++col_index, ++col)
 				matrix_(col_index, row_index,
 					min_height_ + static_cast<ElevationUint_>(
 						(max_height_ - min_height_) *
@@ -48,18 +50,32 @@ namespace Crafterra {
 						));
 	}
 
+	struct TerrainPerlinNoiseSeed {
+		::As::Uint32 temperature;				// 気温
+		::As::Uint32 amount_of_rainfall;		// 降水量
+		::As::Uint32 elevation;				// 標高
+		::As::Uint32 flower;					// 花
+		::As::Uint32 lake;						// 湖
 
+		TerrainPerlinNoiseSeed() = default;
+		
+		template<typename Seed_Gen>
+		TerrainPerlinNoiseSeed(Seed_Gen& seed_gen) {
+			const ::As::Uint32 temperature_seed = seed_gen();
+			const ::As::Uint32 amount_of_rainfall_seed = seed_gen();
+			const ::As::Uint32 elevation_seed = seed_gen();
+			const ::As::Uint32 flower_seed = seed_gen();
+			const ::As::Uint32 lake_seed = seed_gen();
+		}
+
+	};
 
 	class TerrainPerlinNoise {
 		// 暫定的なマップデータ
 		using MapMat = ::As::UniquePtrMatrix<::Crafterra::TerrainInformation>;
 		using shape_t = ElevationUint;
 
-		::As::Uint32 temperature_seed;
-		::As::Uint32 amount_of_rainfall_seed;
-		::As::Uint32 elevation_seed;
-		::As::Uint32 flower_seed;
-		::As::Uint32 lake_seed;
+		TerrainPerlinNoiseSeed seed;
 
 		::Crafterra::PerlinNoise perlin_temperature_seed;
 		::Crafterra::PerlinNoise perlin_amount_of_rainfall_seed;
@@ -69,40 +85,36 @@ namespace Crafterra {
 
 	public:
 		// コンストラクタ
-		TerrainPerlinNoise(const ::As::Uint32 temperature_seed_, const ::As::Uint32 amount_of_rainfall_seed_, const ::As::Uint32 elevation_seed_, const ::As::Uint32 flower_seed_, const ::As::Uint32 lake_seed_)
+		TerrainPerlinNoise(const TerrainPerlinNoiseSeed& seed_)
 			:
-			temperature_seed(temperature_seed_)
-			, amount_of_rainfall_seed(amount_of_rainfall_seed_)
-			, elevation_seed(elevation_seed_)
-			, flower_seed(flower_seed_)
-			, lake_seed(lake_seed_)
+			seed(seed_)
 			, perlin_temperature_seed(
-				[temperature_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
-					::std::shuffle(begin_, end_, ::std::default_random_engine(temperature_seed_)); })
+				[&seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+					::std::shuffle(begin_, end_, ::std::default_random_engine(seed_.temperature)); })
 			, perlin_amount_of_rainfall_seed(
-				[amount_of_rainfall_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
-					::std::shuffle(begin_, end_, ::std::default_random_engine(amount_of_rainfall_seed_)); })
+				[&seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+					::std::shuffle(begin_, end_, ::std::default_random_engine(seed_.amount_of_rainfall)); })
 						, perlin_elevation_seed(
-							[elevation_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
-								::std::shuffle(begin_, end_, ::std::default_random_engine(elevation_seed_)); })
+							[&seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+								::std::shuffle(begin_, end_, ::std::default_random_engine(seed_.elevation)); })
 						, perlin_flower_seed(
-							[flower_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
-								::std::shuffle(begin_, end_, ::std::default_random_engine(flower_seed_)); })
+							[&seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+								::std::shuffle(begin_, end_, ::std::default_random_engine(seed_.flower)); })
 									, perlin_lake_seed(
-										[lake_seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
-											::std::shuffle(begin_, end_, ::std::default_random_engine(lake_seed_)); })
+										[&seed_](std::array<::As::Uint8, 512>::iterator begin_, std::array<::As::Uint8, 512>::iterator end_) {
+											::std::shuffle(begin_, end_, ::std::default_random_engine(seed_.lake)); })
 		{}
 
 	public:
 
-		::As::Uint32 getElevationSeed() const { return this->elevation_seed; }
+		::As::Uint32 getElevationSeed() const { return this->seed.elevation; }
 
-		void generation(MapMat& terrain_information_matrix, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) {
+		void generation(MapMat& terrain_information_matrix, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexAreaXZ& area) {
 			//温度
 			generatePerlinNoiseOnFieldMap(
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setTemperature(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
-				start_x_, start_y_, end_x_, end_y_,
+				area,
 				perlin_temperature_seed, 40.1, 8,
 				240, 0
 			);
@@ -111,7 +123,7 @@ namespace Crafterra {
 			generatePerlinNoiseOnFieldMap(
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setAmountOfRainfall(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
-				start_x_, start_y_, end_x_, end_y_,
+				area,
 				perlin_amount_of_rainfall_seed, 40.1, 8,
 				240, 0
 			);
@@ -120,7 +132,7 @@ namespace Crafterra {
 			generatePerlinNoiseOnFieldMap(
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setElevation(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
-				start_x_, start_y_, end_x_, end_y_,
+				area,
 				perlin_elevation_seed, 600.1, 10,
 				240, 0
 			);
@@ -129,7 +141,7 @@ namespace Crafterra {
 			generatePerlinNoiseOnFieldMap(
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const double value_) { terrain_information_matrix[y_][x_].setFlower(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
-				start_x_, start_y_, end_x_, end_y_,
+				area,
 				perlin_flower_seed, 1.12345, 1,
 				1.0, 0.0
 			);
@@ -138,7 +150,7 @@ namespace Crafterra {
 			generatePerlinNoiseOnFieldMap(
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setLake(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
-				start_x_, start_y_, end_x_, end_y_,
+				area,
 				perlin_lake_seed, 10.12345, 3,
 				200, 50
 			);
