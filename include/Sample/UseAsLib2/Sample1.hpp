@@ -47,22 +47,22 @@ namespace Crafterra {
 		// ここから地形に関するもの ------------------------------
 
 		// SEED 生成
-		::std::random_device seed_gen;
-		::std::mt19937 engine(seed_gen()); // 乱数生成器
-		TerrainPerlinNoiseSeed terrain_seed(seed_gen);
+		::std::random_device	 seed_gen;					 // 乱数生成器に使用する SEED を作成
+		::std::mt19937		 engine(seed_gen());		 // 乱数生成器
+		TerrainPerlinNoiseSeed	 terrain_seed(seed_gen);	 // 地形生成に使用する SEED を作成
 
-		using TerrainObjectMatrix			 = ::As::UniquePtrMatrix4D<TerrainObject>;
-		using TerrainInformationMatrix	 = ::As::UniquePtrMatrix<TerrainInformation>;
-		using DrawFieldMapMatrix			 = ::As::UniquePtrMatrix<DrawMapChip>;
+		using FieldTerrainObj		 = ::As::UniquePtrMatrix4D<TerrainObject>;
+		using FieldTerrainInfo		 = ::As::UniquePtrMatrix<TerrainInformation>;
+		using FieldDrawMap		 = ::As::UniquePtrMatrix<DrawMapChip>;
 
-		const ::As::IndexAreaXZ	 terrain_chunk_area(0, 0, 100000000);			 // 地形チャンクの範囲
+		const ::As::IndexAreaXZ	 terrain_chunk_area(0, 0, 100000000);		 // 地形チャンクの範囲
 
-		TerrainObjectMatrix		 terrain_obj_matrix(default_field_map);			 // 地形オブジェクト
-		TerrainInformationMatrix	 terrain_info_matrix(default_field_map);			 // 地形情報
-		DrawFieldMapMatrix		 draw_map_matrix(default_field_map);			 // 描画マップ
-		TerrainChunk				 terrain_chunk(terrain_chunk_area);				 // 地形チャンク
-		TerrainPerlinNoise			 terrain_noise(terrain_seed);						 // 地形のノイズ生成
-		Terrain						 terrain;
+		FieldTerrainObj		 terrain_obj_matrix(default_field_map);			 // 地形オブジェクト
+		FieldTerrainInfo		 terrain_info_matrix(default_field_map);			 // 地形情報
+		FieldDrawMap			 draw_map_matrix(default_field_map);			 // 描画マップ
+		TerrainChunk			 terrain_chunk(terrain_chunk_area);			 // 地形チャンク
+		TerrainPerlinNoise		 terrain_noise(terrain_seed);					 // 地形のノイズ生成
+		Terrain					 terrain;
 		terrain.initialGeneration(terrain_obj_matrix, terrain_info_matrix, terrain_noise, terrain_chunk);	 // 初回の地形生成
 		terrain.setDrawMapFromTerrain(terrain_obj_matrix, terrain_info_matrix, draw_map_matrix);		 // 地形から描画マップを作成
 		terrain.setDrawAutoTileConnection(draw_map_matrix);												 // 描画マップのオートタイルの接続を計算する
