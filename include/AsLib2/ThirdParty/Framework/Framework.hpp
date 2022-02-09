@@ -142,15 +142,17 @@ void Main()
 #endif // __WINDOWS__
 		}
 #if !defined(CRAFTERRA_USE_SAVE_SCREEN)
+#ifdef __WINDOWS__
+		::DxLib::SetWindowSizeChangeEnableFlag(TRUE, TRUE);
+#endif // __WINDOWS__
 		::DxLib::SetGraphMode(width, height, 32);
 #endif
 
 		// UTF-8に変更
 		::DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 		if (::DxLib::DxLib_Init() == -1) return -1;
-		::DxLib::LoadGraphScreen(
-			width / 2 - 320, height / 2 - 180,
-			::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png").c_str(), ::As::dx_false);
+		const int crafterra_logo = ::DxLib::LoadGraph(::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png").c_str());
+		::DxLib::DrawRotaGraph(width / 2, height / 2, 1.0, 0.0, crafterra_logo, ::As::dx_true);
 
 #if defined(CRAFTERRA_USE_SAVE_SCREEN)
 		const int screen = ::DxLib::MakeScreen(width, height, FALSE);
@@ -162,7 +164,7 @@ void Main()
 #elif defined(SIV3D_INCLUDED)
 	::s3d::Window::Resize(width, height); // 画面サイズを変更
 	if (!::s3d::System::Update()) return; // 一旦、画面を更新
-	Texture(::As::utf32(::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png"))).draw(width / 2 - 320, height / 2 - 180); // ロゴ表示
+	Texture(::As::utf32(::As::String(init_read.getString("Picture Path") + "Logo/Init Logo(As).png"))).drawAt(width / 2, height / 2); // ロゴ表示
 	if (!::s3d::System::Update()) return; // もう一度、画面を更新
 	const ::s3d::ScopedRenderStates2D state(::s3d::SamplerState::ClampNearest); // ドット絵を見栄え良くする
 #endif

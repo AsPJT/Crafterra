@@ -40,8 +40,9 @@ namespace Crafterra {
 	public:
 		// コンストラクタ
 		TerrainChunk(const ::As::IndexAreaXZ& area_)
-			:chunk_min_x(area_.start_x), chunk_min_z(area_.start_z), chunk_max_x(area_.start_x + area_.width), chunk_max_z(area_.start_z + area_.depth),
-			init_chunk_x(area_.start_x + area_.width / 2), init_chunk_z(area_.start_z + area_.depth / 2),
+			:chunk_min_x(::As::Uint32(area_.start_x)), chunk_min_z(::As::Uint32(area_.start_z)),
+			chunk_max_x(::As::Uint32(area_.start_x + area_.width)), chunk_max_z(::As::Uint32(area_.start_z + area_.depth)),
+			init_chunk_x(::As::Uint32(area_.start_x + area_.width / 2)), init_chunk_z(::As::Uint32(area_.start_z + area_.depth / 2)),
 			chunk_x(init_chunk_x), chunk_z(init_chunk_z) {}
 
 		::As::Uint32 getX() const { return this->chunk_x; }

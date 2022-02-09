@@ -96,6 +96,10 @@ namespace As {
 			::As::IndexUint getIndexMulZXY(const ::As::IndexUint z_, const ::As::IndexUint x_, const ::As::IndexUint y_) const {
 				return this->getIndexZXY(z_, x_, y_) * layer;
 			}
+			// 配列の添え字を取得
+			::As::IndexUint getIndexMulZXY(const ::As::IndexUint zx_, const ::As::IndexUint y_) const {
+				return (zx_ + y_) * layer;
+			}
 
 			// 配列の添え字を取得
 			::As::IndexUint getIndexZXYL(const ::As::IndexUint z_, const ::As::IndexUint x_, const ::As::IndexUint y_, const ::As::IndexUint l_) const {

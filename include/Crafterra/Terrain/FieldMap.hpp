@@ -525,16 +525,17 @@ namespace Crafterra {
 
 					// ブロックを初期化
 					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i) {
-						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
-							terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, layer);
-						}
-					}
+						const ::As::IndexUint bo_index_3d = terrain_object_matrix.getIndexMulZXY(bo_index_2d, i);
 
-					for (As::IndexUint i = 0; i < block_elevation; ++i) {
-						terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff, bo_index_2d, i, block_layer_index);
-					}
-					for (As::IndexUint i = block_elevation + 1; i < terrain_object_matrix.getHeight(); ++i) {
-						terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, block_layer_index); // からの場合 ( 崖上を除く )
+						if (i < block_elevation) {
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff, bo_index_3d, block_layer_index); // 崖
+							for (As::IndexUint layer = block_layer_index + 1; layer < terrain_object_matrix.getLayer(); ++layer) {
+								terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_3d, layer); // から
+							}
+						}
+						else for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_3d, layer); // からの場合 ( 崖上を除く )
+						}
 					}
 					terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, block_elevation, block_layer_index); // からだけど崖上の場合
 
@@ -543,9 +544,9 @@ namespace Crafterra {
 						field_map.setElevation(sea_elevation);
 						field_map.setBlockElevation(sea_elevation / 2);
 
-						for (As::IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
+						for (As::IndexUint i = block_elevation; i <= sea_elevation / 2; ++i) {
 							terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, i, block_layer_index);
-							terrain_object_matrix.setValueMulZXYL(TerrainObject::water_ground, bo_index_2d, i, block_layer_index + 1);
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::sea, bo_index_2d, i, block_layer_index + 1);
 						}
 					}
 					// 陸

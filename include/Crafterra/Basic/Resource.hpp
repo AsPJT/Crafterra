@@ -34,10 +34,10 @@ namespace Crafterra {
 
 		// 各種素材のポインタ
 	private:
-		::As::Font* font = nullptr;
-		::As::Music* music = nullptr;
-		::As::MapChipImage* map_chip = nullptr;
-		::As::MapChipImage* character_chip = nullptr;
+		::As::Font*					font			 = nullptr; // フォント
+		::As::Music*				music			 = nullptr; // 音楽
+		::As::MapChipImage*		map_chip		 = nullptr; // マップチップ
+		::As::MapChipImage*		character_chip	 = nullptr; // キャラチップ
 
 	public:
 		void setFont(::As::Font& font_) { this->font = &font_; }

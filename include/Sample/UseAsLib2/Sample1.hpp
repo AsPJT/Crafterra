@@ -57,12 +57,14 @@ namespace Crafterra {
 
 		const ::As::IndexAreaXZ	 terrain_chunk_area(0, 0, 100000000);		 // 地形チャンクの範囲
 
-		FieldTerrainObj		 terrain_obj_matrix(default_field_map);			 // 地形オブジェクト
-		FieldTerrainInfo		 terrain_info_matrix(default_field_map);			 // 地形情報
-		FieldDrawMap			 draw_map_matrix(default_field_map);			 // 描画マップ
-		TerrainChunk			 terrain_chunk(terrain_chunk_area);			 // 地形チャンク
-		TerrainPerlinNoise		 terrain_noise(terrain_seed);					 // 地形のノイズ生成
+		FieldTerrainObj		 terrain_obj_matrix(default_field_map);			 // 地形オブジェクト ( 4 次元配列 )
+		FieldTerrainInfo		 terrain_info_matrix(default_field_map);			 // 地形情報 ( 2 次元配列 )
+		FieldDrawMap			 draw_map_matrix(default_field_map);			 // 描画マップ ( 2 次元配列 )
+		TerrainChunk			 terrain_chunk(terrain_chunk_area);				 // 地形チャンク
+		TerrainPerlinNoise		 terrain_noise(terrain_seed);						 // 地形のノイズ生成
+		TerrainObjectImage	 terrain_obj_image(resource_.getMapChip());		 // 地形オブジェクトの画像 ( 後に tsv 読み込みにする  )
 		Terrain					 terrain;
+
 		terrain.initialGeneration(terrain_obj_matrix, terrain_info_matrix, terrain_noise, terrain_chunk);	 // 初回の地形生成
 		terrain.setDrawMapFromTerrain(terrain_obj_matrix, terrain_info_matrix, draw_map_matrix);		 // 地形から描画マップを作成
 		terrain.setDrawAutoTileConnection(draw_map_matrix);												 // 描画マップのオートタイルの接続を計算する
@@ -104,14 +106,6 @@ namespace Crafterra {
 		{
 			elapsed_time.update();
 			const ::As::Int64 elapsed = elapsed_time.getMicroseconds();
-#ifdef __DXLIB
-			if (is_debug_log) {
-				::DxLib::clsDx();
-				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
-			}
-#elif defined(SIV3D_INCLUDED)
-			::s3d::ClearPrint();
-#endif // __DXLIB
 
 			++time_count;
 			if (time_count >= time_count_max) {
@@ -134,7 +128,7 @@ namespace Crafterra {
 			::Crafterra::updateTerrain(cs, terrain_chunk, terrain, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise);
 
 			// 描画関数
-			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea, player.getMode(), is_debug_log);
+			::Crafterra::updateCamera(cs, draw_map_matrix, terrain_obj_image, resource_, cd_anime_sea, player.getMode(), is_debug_log);
 			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
@@ -195,11 +189,11 @@ namespace Crafterra {
 			}
 			//----------------------------------------------------------------------------------------------------
 
-
 			if (is_debug_log) {
 				log_background.draw();
 #ifdef __DXLIB
-
+				::DxLib::clsDx();
+				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
 				::DxLib::printfDx(
 					//#if (__cplusplus >= 202002L)
 					//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
@@ -219,6 +213,7 @@ namespace Crafterra {
 #elif defined(SIV3D_INCLUDED)
 			::s3d::ClearPrint();
 			::s3d::Print
+				<< int(elapsed) << U" micro sec/f\n"
 				<< U"Camera CenterX: " << cs.camera_size.getCenterX()
 				<< U"\nCamera CenterY: " << cs.camera_size.getCenterY()
 				<< U"\nCamera StartX: " << cs.camera_size.getStartX()

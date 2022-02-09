@@ -27,6 +27,7 @@
 #include <Crafterra/Enum/CrafterraEnum.hpp>
 
 #include <Crafterra/Enum/TerrainBiome.hpp>
+#include <Crafterra/Enum/TerrainObject.hpp>
 
 namespace Crafterra {
 
@@ -46,46 +47,6 @@ namespace Crafterra {
 		//			"無し","海","湖","山","砂漠","森林","岩山","丘","サバンナ","草原","壁","道","部屋","通常"
 		//} };
 	//#endif
-
-		// 未完成
-	enum class TerrainObject : TerrainObjectType {
-		empty     // 無し
-		, normal_ground        // 地面
-		, water_ground       // 水
-		, water_ground_2       // 水
-		, running_water // 流水
-		, waterfall    // 滝
-		, cliff    // 崖
-		, cliff_top      // 崖上
-		, flower_1      // 花
-		, flower_2      // 花
-		, flower_3      // 花
-		, flower_4      // 花
-		, grass_1      // 草
-		, grass_2      // 草
-		, grass_3      // 草
-		, grass_4      // 草
-		, house_wall_1_up      // 家の壁
-		, house_wall_1_down      // 家の壁
-		, yellow_green_broadleaf_tree_up      // 黄緑色の広葉樹 上
-		, yellow_green_broadleaf_tree_down   // 黄緑色の広葉樹 下
-		, green_broadleaf_tree_up      // 緑色の広葉樹 上
-		, green_broadleaf_tree_down   // 緑色の広葉樹 下
-		, yellow_broadleaf_tree_up      // 黄色の広葉樹 上
-		, yellow_broadleaf_tree_down   // 黄色の広葉樹 下
-		, red_broadleaf_tree_up      // 赤色の広葉樹 上
-		, red_broadleaf_tree_down   // 赤色の広葉樹 下
-		, deciduous_tree_up      // 落葉樹 上
-		, deciduous_tree_down   // 落葉樹 下
-		, yellow_green_coniferous_tree_up      // 黄緑色の針葉樹 上
-		, yellow_green_coniferous_tree_down   // 黄緑色の針葉樹 下
-		, green_coniferous_tree_up      // 緑色の針葉樹 上
-		, green_coniferous_tree_down   // 緑色の針葉樹 下
-		, b      // 家の壁
-		, cultivated_land      // 畑
-		, planted_carrot      // ニンジン
-		, size   // ブロックの数
-	};
 
 	// 148,185,32
 	// 110,163,0
