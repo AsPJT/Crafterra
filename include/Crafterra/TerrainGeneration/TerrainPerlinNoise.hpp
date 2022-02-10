@@ -30,7 +30,9 @@
 
 namespace Crafterra {
 
-
+	constexpr double getElevationOfSeaLevel(){
+		return 110.0;
+	}
 	// パーリンノイズをフィールドマップ上に生成
 	template<typename Matrix_, typename ElevationUint_>
 	void generatePerlinNoiseOnFieldMap(
@@ -50,7 +52,7 @@ namespace Crafterra {
 							);
 				if(for_elevation_){
 					// ノイズ値、最低/最高標高、険しさ値(0.0 - 1.0)、海面の標高
-					noise = Crafterra::processNoiseUsingHypsographicCurve(noise, min_height_, max_height_, 0.9, 110.0);
+					noise = Crafterra::processNoiseUsingHypsographicCurve(noise, min_height_, max_height_, 0.85, ::Crafterra::getElevationOfSeaLevel());
 				}
 				matrix_(col_index, row_index,
 					min_height_ + static_cast<ElevationUint_>((max_height_ - min_height_) * noise));
