@@ -20,6 +20,7 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_CHUNK_HPP
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
+#include <AsLib2/DataType/IndexArea.hpp>
 
 namespace Crafterra {
 
@@ -38,9 +39,10 @@ namespace Crafterra {
 
 	public:
 		// コンストラクタ
-		TerrainChunk(const ::As::Uint32 chunk_min_x_, const ::As::Uint32 chunk_min_z_, const ::As::Uint32 chunk_max_x_, const ::As::Uint32 chunk_max_z_)
-			:chunk_min_x(chunk_min_x_), chunk_min_z(chunk_min_z_), chunk_max_x(chunk_max_x_), chunk_max_z(chunk_max_z_),
-			init_chunk_x((chunk_max_x_ - chunk_min_x_) / 2), init_chunk_z((chunk_max_z_ - chunk_min_z_) / 2),
+		TerrainChunk(const ::As::IndexAreaXZ& area_)
+			:chunk_min_x(::As::Uint32(area_.start_x)), chunk_min_z(::As::Uint32(area_.start_z)),
+			chunk_max_x(::As::Uint32(area_.start_x + area_.width)), chunk_max_z(::As::Uint32(area_.start_z + area_.depth)),
+			init_chunk_x(::As::Uint32(area_.start_x + area_.width / 2)), init_chunk_z(::As::Uint32(area_.start_z + area_.depth / 2)),
 			chunk_x(init_chunk_x), chunk_z(init_chunk_z) {}
 
 		::As::Uint32 getX() const { return this->chunk_x; }

@@ -1,6 +1,8 @@
 width	height	x	y	tile	label	path	alpha
 32	32	8	133	MapChip	Base	Chip/Map/Base(pipoya).png	nnnnnnnn
 32	32	4	10	Cliff	Cliff	Chip/AutoTile/Cliff(pipoya).png	ynnynyyynnyynnyynnnynnnynnnynnnynnnnyyyy
+32	32	4	10	Cliff	Cliff2	Chip/AutoTile/Cliff2(pipoya).png	ynnynyyynnyynnyynnnynnnynnnynnnynnnnyyyy
+32	32	4	10	Cliff	Cliff3	Chip/AutoTile/Cliff3(pipoya).png	ynnynyyynnyynnyynnnynnnynnnynnnynnnnyyyy
 16	16	16	10	Wolf	Sea	Chip/AutoTile/Water1(pipoya).png	yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyynnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 16	16	16	10	Wolf	Lake	Chip/AutoTile/Water2(pipoya).png	yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyynnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 16	16	4	10	Wolf	Desert	Chip/AutoTile/Dirt3(pipoya).png	yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyynnnnnnnn

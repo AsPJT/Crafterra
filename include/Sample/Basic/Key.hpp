@@ -58,8 +58,10 @@ namespace Crafterra {
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
 		if (key.isDown(::As::Key::key_g)) {
-			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ());
-			terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawAutoTileConnection(draw_map_matrix);
+			terrain.setDrawRange(draw_map_matrix);
 		}
 		if (key.isPressed(::As::Key::key_j)) {
 			cs.expandMapChipSize(0.995f); // 画面縮小

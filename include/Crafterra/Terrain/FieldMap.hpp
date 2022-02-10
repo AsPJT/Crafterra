@@ -79,8 +79,18 @@ namespace Crafterra {
 		using shape_t = ElevationUint;
 
 	public:
-
-		void setTile(DrawMapMat& draw_map_matrix) const {
+		// 描画マップの描画範囲を作成
+		void setDrawRange(DrawMapMat& draw_map_matrix) const {
+			// 崖上のバイオームオートタイルを調べる
+			for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col)
+				for (::As::IndexUint row{}; row < draw_map_matrix.getDepth(); ++row)
+					for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
+						DrawMapChipUnit& draw_map = draw_map_matrix[row][col].getTile(layer);
+						draw_map.setIsBiomeCliffTop(isBiomeCliff(draw_map.getBiomeAutoTile(), draw_map));
+					}
+		}
+		// 描画マップのオートタイルの接続を計算する
+		void setDrawAutoTileConnection(DrawMapMat& draw_map_matrix) const {
 			// 崖のオートタイルを計算
 			for (::As::IndexUint col{ 1 }; col < draw_map_matrix.getWidth() - 1; ++col)
 				for (::As::IndexUint row{}; row < draw_map_matrix.getDepth() - 1; ++row)
@@ -231,12 +241,12 @@ namespace Crafterra {
 					}
 				}
 		}
-
-		void setTerrain(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix) const {
+		// 地形から描画マップを作成
+		void setDrawMapFromTerrain(ObjectMapMat& terrain_object_matrix, const MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix) const {
 
 			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col, ++mat_index) {
-					TerrainInformation& field_map = terrain_information_matrix[row][col];
+					const TerrainInformation& terrain_info = terrain_information_matrix[row][col];
 					DrawMapChip& draw_map = draw_map_matrix[row][col];
 					draw_map.setTileNum(0);
 					draw_map.clearTile();
@@ -244,36 +254,35 @@ namespace Crafterra {
 						draw_map.getTile(layer).setElevation(0); // 初期化
 					}
 
-					for (::As::IndexUint row3{ row }, block_index{}; block_index < terrain_object_matrix.getHeight(); --row3, ++block_index) {
-						for (::As::IndexUint block_layer_index = 0; block_layer_index < terrain_object_matrix.getLayer(); ++block_layer_index) {
-							const TerrainObject block = terrain_object_matrix.getValueZXYL(mat_index, block_index, block_layer_index);
-							if (block != TerrainObject::empty) {
+					for (::As::IndexUint row3{ row }, terrain_obj_index{}; terrain_obj_index < terrain_object_matrix.getHeight(); --row3, ++terrain_obj_index) {
+						for (::As::IndexUint terrain_obj_layer_index = 0; terrain_obj_layer_index < terrain_object_matrix.getLayer(); ++terrain_obj_layer_index) {
+							const TerrainObject terrain_obj = terrain_object_matrix.getValueZXYL(mat_index, terrain_obj_index, terrain_obj_layer_index);
+							if (terrain_obj != TerrainObject::empty) {
 								DrawMapChip& draw_map_2 = draw_map_matrix[row3][col];
 								draw_map_2.setNextTile();
-								draw_map_2.setIsCliff(block == TerrainObject::cliff); // どこが崖になっているか調べる
-								draw_map_2.setIsCliffTop(block_index == ::As::IndexUint(field_map.getBlockElevation())); // どこが崖上になっているか調べる
-								draw_map_2.setTerrainObject(block); // ブロックを格納
+								draw_map_2.setIsCliff(terrain_obj == TerrainObject::cliff); // どこが崖になっているか調べる
+								draw_map_2.setIsCliffTop(terrain_obj_index == ::As::IndexUint(terrain_info.getBlockElevation())); // どこが崖上になっているか調べる
+								draw_map_2.setTerrainObject(terrain_obj); // ブロックを格納
 								draw_map_2.setX(col);
-								draw_map_2.setY(block_index);
+								draw_map_2.setY(terrain_obj_index);
 								draw_map_2.setZ(row);
 
-								if (ElevationUint(block_index) <= field_map.getBlockElevation()) {
-									if (draw_map_2.getTile().getElevation() < ElevationUint(block_index)) draw_map_2.setElevation(ElevationUint(block_index));
+								if (ElevationUint(terrain_obj_index) <= terrain_info.getBlockElevation()) {
+									if (draw_map_2.getTile().getElevation() < ElevationUint(terrain_obj_index)) draw_map_2.setElevation(ElevationUint(terrain_obj_index));
 								}
 							}
 						}
 						if (row3 == 0) break;
 					}
 
-					const As::Int32 row2 = As::Int32(row) - As::Int32(field_map.getBlockElevation());
+					const As::Int32 row2 = As::Int32(row) - As::Int32(terrain_info.getBlockElevation());
 					if (row2 >= 0) {
 						for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
-							draw_map_matrix[row2][col].getTile(layer).setDrawBiome(field_map.getBiome());
+							draw_map_matrix[row2][col].getTile(layer).setDrawBiome(terrain_info.getBiome());
 						}
 					}
 
 				}
-			this->setTile(draw_map_matrix);
 		}
 
 		// フィールドマップの下半分の地形が上半分へ移動する
@@ -472,17 +481,19 @@ namespace Crafterra {
 		}
 
 		// フィールドマップを生成
-		void generation(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, TerrainPerlinNoise& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint start_x_, const ::As::IndexUint start_y_, const ::As::IndexUint end_x_, const ::As::IndexUint end_y_) const {
+		void generation(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, TerrainPerlinNoise& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexAreaXZ& area) const {
 
 			const ElevationUint sea_elevation = 110;
 
-			terrain_noise_.generation(terrain_information_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
+			terrain_noise_.generation(terrain_information_matrix, chunk_index_x_, chunk_index_y_, area);
 
 			XorShift32 xs32(terrain_noise_.getElevationSeed());
 
+			const ::As::IndexUint end_x_ = area.start_x + area.width;
+			const ::As::IndexUint end_y_ = area.start_z + area.depth;
 			//バイオームの分類分け
-			for (::As::IndexUint row{ start_y_ }; row < end_y_; ++row)
-				for (::As::IndexUint col{ start_x_ }; col < end_x_; ++col) {
+			for (::As::IndexUint row{ area.start_z }; row < end_y_; ++row)
+				for (::As::IndexUint col{ area.start_x }; col < end_x_; ++col) {
 					const ::As::IndexUint bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
 					TerrainInformation& field_map = terrain_information_matrix[row][col];
 
@@ -514,16 +525,17 @@ namespace Crafterra {
 
 					// ブロックを初期化
 					for (As::IndexUint i = 0; i < terrain_object_matrix.getHeight(); ++i) {
-						for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
-							terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, layer);
-						}
-					}
+						const ::As::IndexUint bo_index_3d = terrain_object_matrix.getIndexMulZXY(bo_index_2d, i);
 
-					for (As::IndexUint i = 0; i < block_elevation; ++i) {
-						terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff, bo_index_2d, i, block_layer_index);
-					}
-					for (As::IndexUint i = block_elevation + 1; i < terrain_object_matrix.getHeight(); ++i) {
-						terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_2d, i, block_layer_index); // からの場合 ( 崖上を除く )
+						if (i < block_elevation) {
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff, bo_index_3d, block_layer_index); // 崖
+							for (As::IndexUint layer = block_layer_index + 1; layer < terrain_object_matrix.getLayer(); ++layer) {
+								terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_3d, layer); // から
+							}
+						}
+						else for (As::IndexUint layer = 0; layer < terrain_object_matrix.getLayer(); ++layer) {
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::empty, bo_index_3d, layer); // からの場合 ( 崖上を除く )
+						}
 					}
 					terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, block_elevation, block_layer_index); // からだけど崖上の場合
 
@@ -532,9 +544,9 @@ namespace Crafterra {
 						field_map.setElevation(sea_elevation);
 						field_map.setBlockElevation(sea_elevation / 2);
 
-						for (As::IndexUint i = elevation / 2; i <= sea_elevation / 2; ++i) {
+						for (As::IndexUint i = block_elevation; i <= sea_elevation / 2; ++i) {
 							terrain_object_matrix.setValueMulZXYL(TerrainObject::cliff_top, bo_index_2d, i, block_layer_index);
-							terrain_object_matrix.setValueMulZXYL(TerrainObject::water_ground, bo_index_2d, i, block_layer_index + 1);
+							terrain_object_matrix.setValueMulZXYL(TerrainObject::sea, bo_index_2d, i, block_layer_index + 1);
 						}
 					}
 					// 陸
@@ -545,8 +557,8 @@ namespace Crafterra {
 					}
 				}
 		}
-		void initialGeneration(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix_, TerrainPerlinNoise& terrain_noise_, const ::As::Uint32 chunk_index_x_, const ::As::Uint32 chunk_index_y_) const {
-			generation(terrain_object_matrix, field_map_matrix_, terrain_noise_, chunk_index_x_, chunk_index_y_, 0, 0, field_map_matrix_.getWidth(), field_map_matrix_.getDepth());
+		void initialGeneration(ObjectMapMat& terrain_object_matrix, MapMat& field_map_matrix_, TerrainPerlinNoise& terrain_noise_, const TerrainChunk& chunk) const {
+			generation(terrain_object_matrix, field_map_matrix_, terrain_noise_, chunk.getX(), chunk.getZ(), ::As::IndexAreaXZ(0, 0, field_map_matrix_.getWidth(), field_map_matrix_.getDepth()));
 		}
 
 	};

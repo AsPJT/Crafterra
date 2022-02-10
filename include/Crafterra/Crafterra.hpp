@@ -14,6 +14,15 @@
 	Distributed under the CC0 1.0.
 	https://creativecommons.org/publicdomain/zero/1.0/
 
+############################################################################################
+
+	[Committers]
+
+	| Name							| GitHub								| First Commit Date	|
+	| As Project					| https://github.com/AsPJT			| 2022/01/24			|
+	| kugi							| https://github.com/kugimasa		| 2022/01/26			|
+	| Tada Teruki (多田 瑛貴)		| https://github.com/TadaTeruki		| 2022/02/08			|
+
 ##########################################################################################*/
 
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_CRAFTERRA_HPP
@@ -85,5 +94,7 @@ namespace Crafterra {
 #include <AsLib2/AsLib2.hpp>
 
 #include <Crafterra/Terrain/FieldMap.hpp>
+
+#include <Crafterra/Terrain/TerrainObjectImage.hpp>
 
 #endif //Included Crafterra Library

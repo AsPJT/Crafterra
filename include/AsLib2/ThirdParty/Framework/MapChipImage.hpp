@@ -28,6 +28,8 @@
 
 #include <AsLib2/Basic/Unicode.hpp>
 
+#include <AsLib2/Basic/Rect.hpp>
+
 #include <vector>
 #include <string>
 
@@ -67,13 +69,6 @@ namespace As {
 
 	class MapChipImage {
 	private:
-
-#ifdef SIV3D_INCLUDED
-		using Image_ = ::s3d::TextureRegion;
-#else
-		using Image_ = int;
-#endif
-
 #ifdef SIV3D_INCLUDED
 		::std::vector <::s3d::Texture> texture_map_chip{};
 #endif
@@ -84,7 +79,7 @@ namespace As {
 		//Image_ desert[4 * 10]{};
 
 		::std::vector<MapChipFormat> map_chip_format{};
-		::std::vector<Image_> map_chip{};
+		::std::vector<::As::Image> map_chip{};
 		::std::vector<bool> map_chip_alpha{};
 
 	public:
@@ -112,12 +107,12 @@ namespace As {
 #if defined(__DXLIB)
 			::DxLib::LoadDivGraph(link_.c_str(), int(x_ * y_),
 				int(x_), int(y_),
-				int(width_), int(height_), &(map_chip[start_index_]));
+				int(width_), int(height_), &(map_chip[start_index_].get()));
 #elif defined(SIV3D_INCLUDED)
 			texture_map_chip.emplace_back(::s3d::Texture(::As::utf32(link_)));
 			for (::As::IndexUint y = 0, count = 0; y < y_; ++y)
 				for (::As::IndexUint x = 0; x < x_; ++x, ++count) {
-					map_chip[start_index_ + count] = (texture_map_chip.back()(double(width_ * x), double(height_ * y), double(width_), double(height_)));
+					map_chip[start_index_ + count].set(texture_map_chip.back(),double(width_ * x), double(height_ * y), double(width_), double(height_));
 				}
 #endif
 			start_index_ += num;
@@ -155,7 +150,7 @@ namespace As {
 			}
 		}
 
-		Image_ getMapChip(const ::std::string& str_, const::As::IndexUint index_) const {
+		::As::Image& getMapChip(const ::std::string& str_, const::As::IndexUint index_) {
 			for (const auto& mcf : map_chip_format) {
 				if (mcf.getString() != str_) continue;
 				return this->map_chip[mcf.getStartIndex() + index_];

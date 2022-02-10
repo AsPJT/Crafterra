@@ -44,36 +44,34 @@ namespace Crafterra {
 		// 曲を再生
 		resource_.getMusic().playLoop();
 
+		// ここから地形に関するもの ------------------------------
+
 		// SEED 生成
-		::std::random_device seed_gen;
-		::std::mt19937 engine(seed_gen()); // 乱数生成器
-		const ::As::Uint32 temperature_seed = seed_gen();
-		const ::As::Uint32 amount_of_rainfall_seed = seed_gen();
-		const ::As::Uint32 elevation_seed = seed_gen();
-		const ::As::Uint32 flower_seed = seed_gen();
-		const ::As::Uint32 lake_seed = seed_gen();
+		::std::random_device	 seed_gen;					 // 乱数生成器に使用する SEED を作成
+		::std::mt19937		 engine(seed_gen());		 // 乱数生成器
+		TerrainPerlinNoiseSeed	 terrain_seed(seed_gen);	 // 地形生成に使用する SEED を作成
 
-		// 地形オブジェクト
-		using TerrainObjectMatrix = ::As::UniquePtrMatrix4D<TerrainObject>;
-		TerrainObjectMatrix terrain_object_matrix(default_field_map);
+		using FieldTerrainObj		 = ::As::UniquePtrMatrix4D<TerrainObject>;
+		using FieldTerrainInfo		 = ::As::UniquePtrMatrix<TerrainInformation>;
+		using FieldDrawMap		 = ::As::UniquePtrMatrix<DrawMapChip>;
 
-		// 地形情報
-		using TerrainInformationMatrix = ::As::UniquePtrMatrix<TerrainInformation>;
-		TerrainInformationMatrix terrain_information_matrix(default_field_map_width, default_field_map_depth);
+		const ::As::IndexAreaXZ	 terrain_chunk_area(0, 0, 100000000);		 // 地形チャンクの範囲
 
-		// 描画マップ
-		using DrawFieldMapMatrix = ::As::UniquePtrMatrix<DrawMapChip>;
-		DrawFieldMapMatrix draw_map_matrix(default_field_map_width, default_field_map_depth);
+		FieldTerrainObj		 terrain_obj_matrix(default_field_map);			 // 地形オブジェクト ( 4 次元配列 )
+		FieldTerrainInfo		 terrain_info_matrix(default_field_map);			 // 地形情報 ( 2 次元配列 )
+		FieldDrawMap			 draw_map_matrix(default_field_map);			 // 描画マップ ( 2 次元配列 )
+		TerrainChunk			 terrain_chunk(terrain_chunk_area);				 // 地形チャンク
+		TerrainPerlinNoise		 terrain_noise(terrain_seed);						 // 地形のノイズ生成
+		TerrainObjectImage	 terrain_obj_image(resource_.getMapChip());		 // 地形オブジェクトの画像 ( 後に tsv 読み込みにする  )
+		Terrain					 terrain;
+
+		terrain.initialGeneration(terrain_obj_matrix, terrain_info_matrix, terrain_noise, terrain_chunk);	 // 初回の地形生成
+		terrain.setDrawMapFromTerrain(terrain_obj_matrix, terrain_info_matrix, draw_map_matrix);		 // 地形から描画マップを作成
+		terrain.setDrawAutoTileConnection(draw_map_matrix);												 // 描画マップのオートタイルの接続を計算する
+		terrain.setDrawRange(draw_map_matrix);																 // 描画マップの描画範囲を作成
 
 		// 座標系
-		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth());
-
-		// 地形生成
-		TerrainChunk chunk(0, 0, 100000000, 100000000); // チャンクの範囲を指定
-		TerrainPerlinNoise terrain_noise(temperature_seed, amount_of_rainfall_seed, elevation_seed, flower_seed, lake_seed);
-		Terrain terrain;
-		terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ());
-		terrain.setTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+		CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight(), terrain_info_matrix.getWidth(), terrain_info_matrix.getDepth());
 
 		// プレイヤ
 		Actor player{};
@@ -108,14 +106,6 @@ namespace Crafterra {
 		{
 			elapsed_time.update();
 			const ::As::Int64 elapsed = elapsed_time.getMicroseconds();
-#ifdef __DXLIB
-			if (is_debug_log) {
-				::DxLib::clsDx();
-				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
-			}
-#elif defined(SIV3D_INCLUDED)
-			::s3d::ClearPrint();
-#endif // __DXLIB
 
 			++time_count;
 			if (time_count >= time_count_max) {
@@ -132,13 +122,13 @@ namespace Crafterra {
 			}
 
 			// キー関連
-			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_object_matrix, terrain_information_matrix, draw_map_matrix, terrain_noise, chunk);
+			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise, terrain_chunk);
 
 			// 無限生成処理
-			::Crafterra::updateTerrain(cs, chunk, terrain, terrain_object_matrix, terrain_information_matrix, draw_map_matrix, terrain_noise);
+			::Crafterra::updateTerrain(cs, terrain_chunk, terrain, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise);
 
 			// 描画関数
-			::Crafterra::updateCamera(cs, draw_map_matrix, resource_, cd_anime_sea, player.getMode(), is_debug_log);
+			::Crafterra::updateCamera(cs, draw_map_matrix, terrain_obj_image, resource_, cd_anime_sea, player.getMode(), is_debug_log);
 			
 			// 飛空艇のアニメーションを計算
 			int dir = 0;
@@ -199,11 +189,11 @@ namespace Crafterra {
 			}
 			//----------------------------------------------------------------------------------------------------
 
-
 			if (is_debug_log) {
 				log_background.draw();
 #ifdef __DXLIB
-
+				::DxLib::clsDx();
+				::DxLib::printfDx("%d micro sec/f\n", int(elapsed));
 				::DxLib::printfDx(
 					//#if (__cplusplus >= 202002L)
 					//					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
@@ -214,15 +204,16 @@ namespace Crafterra {
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
 					, MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())].c_str()
-					//, int(getAutoTileIndex(terrain_information_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
+					//, int(getAutoTileIndex(terrain_info_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
 					, resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
 					, player.getX(), player.getY(), player.getZ()
-					//, terrain_information_matrix[100][100].getCliffTop()
+					//, terrain_info_matrix[100][100].getCliffTop()
 				);
 
 #elif defined(SIV3D_INCLUDED)
 			::s3d::ClearPrint();
 			::s3d::Print
+				<< int(elapsed) << U" micro sec/f\n"
 				<< U"Camera CenterX: " << cs.camera_size.getCenterX()
 				<< U"\nCamera CenterY: " << cs.camera_size.getCenterY()
 				<< U"\nCamera StartX: " << cs.camera_size.getStartX()

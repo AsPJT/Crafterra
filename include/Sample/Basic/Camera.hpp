@@ -25,6 +25,8 @@
 // 各描画ライブラリをまとめたもの
 #include <AsLib2/ThirdParty/Framework/Framework.hpp>
 
+
+
 #include <memory>
 #include <new>
 #include <sstream>
@@ -35,6 +37,7 @@ namespace Crafterra {
 	void updateCamera(
 		CoordinateSystem& cs // 座標系管理クラス
 		, const ::As::UniquePtrMatrix<DrawMapChip>& draw_map_matrix // フィールドマップ
+		, TerrainObjectImage& terrain_obj_image
 		, ::Crafterra::Resource& resource_
 		, const int cd_anime_sea
 		, const ::Crafterra::Enum::ActorMode mode
@@ -85,7 +88,7 @@ namespace Crafterra {
 						// 1 つ前のマップチップに同じものがあったら 1 つ前のタイルを描画しない
 						if (draw_map_before.getCliff() == draw_map.getCliff()) is_draw[layer - 1] = false;
 					}
-					else if (draw_map.getTerrainObject() == TerrainObject::water_ground) {
+					else if (draw_map.getTerrainObject() == TerrainObject::sea) {
 						// マップチップが不透明だったら 1 つ前のタイルを描画しない
 						const AutoTile& at = draw_map.getAutoTile();
 						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
@@ -96,11 +99,6 @@ namespace Crafterra {
 							start_layer = layer;
 						}
 					}
-					//else if (
-					//	draw_map_before.getTerrainObject() == draw_map.getTerrainObject()
-					//	) {
-					//	is_draw[layer - 1] = false;
-					//}
 				}
 
 				// 処理
@@ -119,9 +117,6 @@ namespace Crafterra {
 					//ss << 'Z' << y_ << '|';
 					//ss << 'B' << ::As::IndexUint(draw_map.getTerrainObject()) << '|';
 
-					bool is_map_chip_type_homogeneous_connection_all = false;
-					bool is_auto_tile_desert_alpha = false;
-
 					// 描画するバイオーム
 					bool is_draw_biome = (draw_map.getDrawBiome() != TerrainBiome::empty
 						&& draw_map.getDrawBiome() != TerrainBiome::sea
@@ -130,30 +125,16 @@ namespace Crafterra {
 						&& draw_map.getDrawBiome() != TerrainBiome::hill
 						);
 
-					if (is_draw_biome) {
-						//AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-						//if (tile.getMapChipAlpha(auto_tile_index)) 
-
-						const AutoTile& at = draw_map.getBiomeAutoTile();
-						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
-							) {
-							is_auto_tile_desert_alpha = false;
-						}
-						else is_auto_tile_desert_alpha = true;
-					}
-					else is_auto_tile_desert_alpha = true;
-
 					// ------------------------------------------------------------------------------------------------------------------------------------
 
-
-					switch (draw_map.getTerrainObject()) {
+					const TerrainObject tobj = draw_map.getTerrainObject();
+					const ::As::IndexUint tobji = ::As::IndexUint(tobj);
+					const ::As::IndexUint ngi = ::As::IndexUint(TerrainObject::normal_ground);
+					switch (tobj) {
 					case TerrainObject::cliff:
 					{
 						if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliff()))) {
-							::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
+							(terrain_obj_image.terrain_image[ngi]).draw(map_chip_rect); // 通常地面
 							is_floor = true;
 						}
 						::As::Image(tile.getMapChip("Cliff", As::IndexUint(draw_map.getCliff()))).draw(map_chip_rect);
@@ -161,38 +142,61 @@ namespace Crafterra {
 						break;
 					case TerrainObject::cliff_top:
 					{
-						//else if (draw_map.getIsCliffTop()) {
-						if (is_auto_tile_desert_alpha) {
-							is_map_chip_type_homogeneous_connection_all = true;
-							if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
-								::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
-								is_floor = true;
+						bool is_biome_auto_tile_alpha = true;
+						if (is_draw_biome) {
+							const AutoTile& at = draw_map.getBiomeAutoTile();
+							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == AutoTileConnection::all_upper_left
+								&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
+								&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
+								&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+								);
+
+							if (is_biome_auto_tile_alpha) {
+								if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
+									(terrain_obj_image.terrain_image[ngi]).draw(map_chip_rect); // 通常地面
+									is_floor = true;
+								}
 							}
 
+							// 森バイオームの場合は森用の崖にする
+							if (draw_map.getIsBiomeCliffTop()) {
+								if (draw_map.getDrawBiome() == TerrainBiome::forest) {
+									::As::Image(tile.getMapChip("Cliff2", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
+									break;
+								}
+								else if (draw_map.getDrawBiome() == TerrainBiome::tundra) {
+									::As::Image(tile.getMapChip("Cliff3", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
+									break;
+								}
+							}
+						}
+
+						if (is_biome_auto_tile_alpha) {
+							if (!is_floor && !tile.getMapChipAlpha("Cliff", As::IndexUint(draw_map.getCliffTop()))) {
+								(terrain_obj_image.terrain_image[ngi]).draw(map_chip_rect); // 通常地面
+								is_floor = true;
+							}
 							::As::Image(tile.getMapChip("Cliff", As::IndexUint(draw_map.getCliffTop()))).draw(map_chip_rect);
 						}
 
-						//if (draw_map.getIsCliff()) continue;
-//if (draw_map.getTerrainObject() == TerrainObject::cliff) return;
-						if (is_draw_biome) {
-							const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
-							AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
-							::As::ImageQuadrant(
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
-								tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
-						}
+						if (!is_draw_biome) break;
+						const ::std::string& biome_string = MapChipTypeBiomeString[As::IndexUint(draw_map.getDrawBiome())];
+						AutoTileIndex auto_tile_index(draw_map.getBiomeAutoTile(), 0, 2);
+						::As::ImageQuadrant(
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_left),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_upper_right),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_left),
+							tile.getMapChip(biome_string, auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 					}
 						break;
-					case TerrainObject::water_ground:
+					case TerrainObject::sea:
 					{
 						AutoTileIndex sea_auto_tile_index(draw_map.getBiomeAutoTile(), cd_anime_sea, 8);
 
 						if (!is_floor
 							//&& tile.getMapChip(sea_auto_tile_index)
 							) {
-							::As::Image(tile.getMapChip("Base", 0)).draw(map_chip_rect);
+							(terrain_obj_image.terrain_image[ngi]).draw(map_chip_rect); // 通常地面
 							is_floor = true;
 						}
 						::As::ImageQuadrant(
@@ -201,86 +205,6 @@ namespace Crafterra {
 							tile.getMapChip("Sea", sea_auto_tile_index.auto_tile_lower_left),
 							tile.getMapChip("Sea", sea_auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 					}
-						break;
-					case TerrainObject::grass_1:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 0)).draw(map_chip_rect);
-						break;
-					case TerrainObject::grass_2:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 1)).draw(map_chip_rect);
-						break;
-					case TerrainObject::grass_3:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 2)).draw(map_chip_rect);
-						break;
-					case TerrainObject::grass_4:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::flower_1:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 4)).draw(map_chip_rect);
-						break;
-					case TerrainObject::flower_2:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 5)).draw(map_chip_rect);
-						break;
-					case TerrainObject::flower_3:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 6)).draw(map_chip_rect);
-						break;
-					case TerrainObject::flower_4:
-						::As::Image(tile.getMapChip("Base", 8 * 6 + 7)).draw(map_chip_rect);
-						break;
-					case TerrainObject::house_wall_1_up:
-						//::As::Image(tile.getMapChip("Base", 8 * 46 + 7)).draw(map_chip_rect);
-						::As::Image(tile.getMapChip("Base", 8 * 115 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::house_wall_1_down:
-						//::As::Image(tile.getMapChip("Base", 8 * 47 + 7)).draw(map_chip_rect);
-						::As::Image(tile.getMapChip("Base", 8 * 116 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_green_broadleaf_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 0)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_green_broadleaf_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 0)).draw(map_chip_rect);
-						break;
-					case TerrainObject::green_broadleaf_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 1)).draw(map_chip_rect);
-						break;
-					case TerrainObject::green_broadleaf_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 1)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_broadleaf_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 2)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_broadleaf_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 2)).draw(map_chip_rect);
-						break;
-					case TerrainObject::red_broadleaf_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::red_broadleaf_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::deciduous_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 4)).draw(map_chip_rect);
-						break;
-					case TerrainObject::deciduous_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 4)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_green_coniferous_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 5)).draw(map_chip_rect);
-						break;
-					case TerrainObject::yellow_green_coniferous_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 5)).draw(map_chip_rect);
-						break;
-					case TerrainObject::green_coniferous_tree_up:
-						::As::Image(tile.getMapChip("Base", 8 * 9 + 6)).draw(map_chip_rect);
-						break;
-					case TerrainObject::green_coniferous_tree_down:
-						::As::Image(tile.getMapChip("Base", 8 * 10 + 6)).draw(map_chip_rect);
-						break;
-					case TerrainObject::cultivated_land:
-						::As::Image(tile.getMapChip("Base", 8 * 21 + 3)).draw(map_chip_rect);
-						break;
-					case TerrainObject::planted_carrot:
-						::As::Image(tile.getMapChip("Base", 8 * 19 + 6)).draw(map_chip_rect);
 						break;
 					case TerrainObject::water_ground_2:
 					{
@@ -291,6 +215,9 @@ namespace Crafterra {
 							tile.getMapChip("Lake", auto_tile_index.auto_tile_lower_left),
 							tile.getMapChip("Lake", auto_tile_index.auto_tile_lower_right)).draw(map_chip_rect);
 					}
+						break;
+					default:
+						(terrain_obj_image.terrain_image[tobji]).draw(map_chip_rect); // 通常のマップチップを描画する
 						break;
 					}
 					

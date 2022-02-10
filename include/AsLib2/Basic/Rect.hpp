@@ -21,7 +21,7 @@
 
 namespace As {
 
-#ifdef __DXLIB
+#if defined(__DXLIB)
 	using RectDataType = int;
 #else
 	using RectDataType = double;
@@ -42,74 +42,71 @@ namespace As {
 			: start_x(start_x_), start_y(start_y_), width(size_), height(size_) {}
 	};
 
-#ifdef __DXLIB
+
 	class Image {
 	private:
-		int handle = -1;
+
+#if defined(__DXLIB)
+		using Image_ = int;
+		Image_ handle = -1;
+#elif defined(SIV3D_INCLUDED)
+		using Image_ = ::s3d::TextureRegion;
+		Image_ handle{};
+#endif
+
 	public:
-		Image(const int handle_) :handle(handle_) {};
+		Image() = default;
+
+#if defined(__DXLIB)
+		Image(const Image_ handle_) :handle(handle_) {};
+#endif // __DXLIB
 
 		void draw(const Rect& rect_) const {
-#ifdef __DXLIB
+#if defined(__DXLIB)
 			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle, TRUE);
-#endif // __DXLIB
-		}
-	};
-#else
-	class Image {
-	private:
-		const ::s3d::TextureRegion& handle;
-	public:
-		Image(const ::s3d::TextureRegion& handle_) :handle(handle_) {};
-
-		void draw(const Rect& rect_) const {
+#elif defined(SIV3D_INCLUDED)
 			handle.resized(rect_.width, rect_.height).draw(rect_.start_x, rect_.start_y);
+#endif // __DXLIB
+		}
+#if defined(SIV3D_INCLUDED)
+		Image(::s3d::Texture& handle_, const double start_x_, const double start_y_, const double width_, const double height_)
+			:handle(handle_(start_x_, start_y_, width_, height_)) {};
+		void set(::s3d::Texture& handle_, const double start_x_, const double start_y_, const double width_, const double height_) {
+			this->handle = handle_(start_x_, start_y_, width_, height_);
+		}
+#endif // __DXLIB
+		Image_& get() {
+			return this->handle;
 		}
 	};
-#endif // __DXLIB
 
 
-#ifdef __DXLIB
 	class ImageQuadrant {
 	private:
-		int handle1 = -1;
-		int handle2 = -1;
-		int handle3 = -1;
-		int handle4 = -1;
+		::As::Image& handle1;
+		::As::Image& handle2;
+		::As::Image& handle3;
+		::As::Image& handle4;
 
 	public:
-		ImageQuadrant(const int handle_) :handle1(handle_), handle2(handle_), handle3(handle_), handle4(handle_) {};
-		ImageQuadrant(const int handle1_, const int handle2_, const int handle3_, const int handle4_) :handle1(handle1_), handle2(handle2_), handle3(handle3_), handle4(handle4_) {};
+		ImageQuadrant(::As::Image& handle_) :handle1(handle_), handle2(handle_), handle3(handle_), handle4(handle_) {};
+		ImageQuadrant(::As::Image& handle1_, ::As::Image& handle2_, ::As::Image& handle3_, ::As::Image& handle4_) :handle1(handle1_), handle2(handle2_), handle3(handle3_), handle4(handle4_) {};
 
 		void draw(const Rect& rect_) const {
 #ifdef __DXLIB
-			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, this->handle1, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height / 2, this->handle2, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height, this->handle3, TRUE);
-			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle4, TRUE);
-#endif // __DXLIB
-		}
-	};
+			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, this->handle1.get(), TRUE);
+			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height / 2, this->handle2.get(), TRUE);
+			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height, this->handle3.get(), TRUE);
+			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle4.get(), TRUE);
 #else
-	class ImageQuadrant {
-	private:
-		const ::s3d::TextureRegion& handle1{};
-		const ::s3d::TextureRegion& handle2{};
-		const ::s3d::TextureRegion& handle3{};
-		const ::s3d::TextureRegion& handle4{};
-
-	public:
-		ImageQuadrant(const ::s3d::TextureRegion& handle_) :handle1(handle_), handle2(handle_), handle3(handle_), handle4(handle_) {};
-		ImageQuadrant(const ::s3d::TextureRegion& handle1_, const ::s3d::TextureRegion& handle2_, const ::s3d::TextureRegion& handle3_, const ::s3d::TextureRegion& handle4_) :handle1(handle1_), handle2(handle2_), handle3(handle3_), handle4(handle4_) {};
-
-		void draw(const Rect& rect_) const {
-			handle1.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y);
-			handle2.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y);
-			handle3.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y + rect_.height / 2);
-			handle4.resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2);
+			handle1.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y);
+			handle2.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y);
+			handle3.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y + rect_.height / 2);
+			handle4.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2);
+#endif // __DXLIB
 		}
 	};
-#endif // __DXLIB
+
 
 }
 
