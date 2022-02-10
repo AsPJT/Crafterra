@@ -20,13 +20,16 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_PERLIN_NOISE_ON_FIELD_MAP_HPP
 
 #include <Crafterra/Terrain/TerrainInformation.hpp>
+#include <Crafterra/TerrainGeneration/HypsographicCurve.hpp>
 #include <AsLib2/DataType/PrimitiveDataType.hpp> // int
 #include <AsLib2/DataType/IndexArea.hpp>
 #include <algorithm>
 #include <random>
 
 
+
 namespace Crafterra {
+
 
 	// パーリンノイズをフィールドマップ上に生成
 	template<typename Matrix_, typename ElevationUint_>
@@ -34,20 +37,25 @@ namespace Crafterra {
 		const Matrix_& matrix_,
 		const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexUint one_chunk_width_, const ::As::IndexUint one_chunk_height_,
 		const ::As::IndexAreaXZ& area, ::Crafterra::PerlinNoise& perlin, const double frequency_, const ::As::IndexUint octaves_,
-		const ElevationUint_ max_height_, const ElevationUint_ min_height_ = 0) {
+		const bool for_elevation_, const ElevationUint_ max_height_, const ElevationUint_ min_height_ = 0) {
 
 		const ::As::IndexUint end_x_ = area.start_x + area.width;
 		const ::As::IndexUint end_y_ = area.start_z + area.depth;
-		for (::As::IndexUint row_index{ area.start_z }, row{}; row_index < end_y_; ++row_index, ++row)
-			for (::As::IndexUint col_index{ area.start_x }, col{}; col_index < end_x_; ++col_index, ++col)
+		for (::As::IndexUint row_index{ area.start_z }, row{}; row_index < end_y_; ++row_index, ++row){
+			for (::As::IndexUint col_index{ area.start_x }, col{}; col_index < end_x_; ++col_index, ++col){
+
+				double noise = perlin.octaveNoise(octaves_,
+								(::As::Uint64(chunk_index_x_) * ::As::Uint64(one_chunk_width_)  + ::As::Uint64(col)) / frequency_,
+								(::As::Uint64(chunk_index_y_) * ::As::Uint64(one_chunk_height_) + ::As::Uint64(row)) / frequency_
+							);
+				if(for_elevation_){
+					// ノイズ値、最低/最高標高、険しさ値(0.0 - 1.0)、海面の標高
+					noise = Crafterra::processNoiseUsingHypsographicCurve(noise, min_height_, max_height_, 0.9, 110.0);
+				}
 				matrix_(col_index, row_index,
-					min_height_ + static_cast<ElevationUint_>(
-						(max_height_ - min_height_) *
-						perlin.octaveNoise(octaves_,
-							(::As::Uint64(chunk_index_x_) * ::As::Uint64(one_chunk_width_) + ::As::Uint64(col)) / frequency_,
-							((::As::Uint64(chunk_index_y_) * ::As::Uint64(one_chunk_height_) + ::As::Uint64(row)) / frequency_)
-						)
-						));
+					min_height_ + static_cast<ElevationUint_>((max_height_ - min_height_) * noise));
+			}
+		}
 	}
 
 	struct TerrainPerlinNoiseSeed {
@@ -116,6 +124,7 @@ namespace Crafterra {
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				area,
 				perlin_temperature_seed, 40.1, 8,
+				false,
 				240, 0
 			);
 
@@ -125,6 +134,7 @@ namespace Crafterra {
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				area,
 				perlin_amount_of_rainfall_seed, 40.1, 8,
+				false,
 				240, 0
 			);
 
@@ -134,6 +144,7 @@ namespace Crafterra {
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				area,
 				perlin_elevation_seed, 600.1, 10,
+				true,
 				240, 0
 			);
 
@@ -143,6 +154,7 @@ namespace Crafterra {
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				area,
 				perlin_flower_seed, 1.12345, 1,
+				false,
 				1.0, 0.0
 			);
 
@@ -152,6 +164,7 @@ namespace Crafterra {
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth() / 2,
 				area,
 				perlin_lake_seed, 10.12345, 3,
+				false,
 				200, 50
 			);
 		}
