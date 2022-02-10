@@ -46,14 +46,14 @@ namespace Crafterra {
         double noise_adj;
 
         double water_prop = (water_height-min_height_)/(max_height_-min_height_); // 海面率
-        
+
         if(noise_ > water_prop){
             noise_adj = (noise_-water_prop)/(1.0-water_prop)*0.5+0.5;
         } else {
             noise_adj = (noise_/water_prop)*0.5;
         }
 
-        double fa = funcA(noise_adj, mountainous_);
+        double fa = funcA(noise_adj, mountainous_*0.5+0.5);
         double fr = funcB(fa)*funcC(fa);
 
         if(fr > water_prop){
