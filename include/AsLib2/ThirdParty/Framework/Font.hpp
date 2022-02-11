@@ -49,7 +49,7 @@ namespace As {
 #if defined(__DXLIB)
 			if (is_font) m_font = ::DxLib::CreateFontToHandle(nullptr, 10, -1, -1, DX_CHARSET_SHFTJIS);
 #elif defined(SIV3D_INCLUDED)
-			font = ::s3d::Font(8);
+			font = ::s3d::Font(12);
 #endif // __DXLIB
 		}
 
