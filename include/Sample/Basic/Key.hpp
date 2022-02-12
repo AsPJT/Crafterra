@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	Crafterra Sample Source Code 🌏
 
@@ -40,23 +40,45 @@ namespace Crafterra {
 		TerrainChunk& chunk // 地形チャンク管理
 	) {
 
+        // 移動
 		key.setKey();
+        
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-			cs.camera_size.moveX(-player.getWalkingSpeed());
+            float move_speed = -player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
+                cs.camera_size.moveX(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::left);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-			cs.camera_size.moveX(player.getWalkingSpeed());
+            float move_speed = player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
+                cs.camera_size.moveX(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::right);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-			cs.camera_size.moveY(-player.getWalkingSpeed());
+            float move_speed = -player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+                cs.camera_size.moveY(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::up);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-			cs.camera_size.moveY(player.getWalkingSpeed());
+            float move_speed = player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+                cs.camera_size.moveY(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
+        // ジャンプ
+//        if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
+//            float move_speed = player.getWalkingSpeed();
+//            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+//                cs.camera_size.moveY(move_speed);
+//            }
+//            player.setDirection(::Crafterra::Enum::ActorDirection::down);
+//        }
 		if (key.isDown(::As::Key::key_g)) {
 			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk);
 			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);

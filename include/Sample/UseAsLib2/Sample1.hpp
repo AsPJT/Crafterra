@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	Crafterra Sample Source Code 🌏
 
@@ -77,7 +77,7 @@ namespace Crafterra {
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
 		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
-		player.setZ(cs.camera_size.getCenterY() - player.getY());
+		player.setZ(cs.camera_size.getCenterY());
 		player.setWalkingSpeed(0.2f);
 		player.setMode(ActorMode::humanoid);
 
