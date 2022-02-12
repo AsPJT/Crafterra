@@ -66,8 +66,8 @@ namespace Crafterra {
 		using ElevationUint = CRAFTERRA_ELEVATION_T;
 		using ActorDirectionUint = CRAFTERRA_ACTOR_DIRECTION_T;
 		using ActorModeUint = CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T;
-		using CliffConnectionUint = MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T;
-		using AutoTileConnectionUint = AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T;
+		using TerrainTileConnectionCliffUint = MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T;
+		using TerrainTileConnectionWoditorAutoTileUint = AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T;
 	}
 }
 //##########################################################################################

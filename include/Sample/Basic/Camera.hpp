@@ -91,10 +91,10 @@ namespace Crafterra {
 					else if (draw_map.getTerrainObject() == TerrainObject::sea) {
 						// マップチップが不透明だったら 1 つ前のタイルを描画しない
 						const AutoTile& at = draw_map.getAutoTile();
-						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+						if (at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+							&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+							&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+							&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
 							) {
 							start_layer = layer;
 						}
@@ -150,10 +150,10 @@ namespace Crafterra {
 						bool is_biome_auto_tile_alpha = true;
 						if (is_draw_biome) {
 							const AutoTile& at = draw_map.getBiomeAutoTile();
-							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-								&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-								&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-								&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+								&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+								&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+								&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
 								);
 
 							if (is_biome_auto_tile_alpha) {
