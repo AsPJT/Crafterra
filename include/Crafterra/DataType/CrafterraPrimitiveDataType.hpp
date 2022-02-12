@@ -24,17 +24,17 @@
 //##########################################################################################
 // BIOME_T
 #ifndef CRAFTERRA_BIOME_T
-#define CRAFTERRA_BIOME_T ::As::Uint16
+#define CRAFTERRA_BIOME_T ::As::Uint8
 #endif // CRAFTERRA_BIOME_T
 
-// BLOCK_T
-#ifndef CRAFTERRA_BLOCK_T
-#define CRAFTERRA_BLOCK_T ::As::Uint16
-#endif // CRAFTERRA_BLOCK_T
+// TERRAIN_OBJECT_T
+#ifndef CRAFTERRA_TERRAIN_OBJECT_T
+#define CRAFTERRA_TERRAIN_OBJECT_T ::As::Uint8
+#endif // CRAFTERRA_TERRAIN_OBJECT_T
 
 // ELEVATION_T
 #ifndef CRAFTERRA_ELEVATION_T
-#define CRAFTERRA_ELEVATION_T ::As::Uint16
+#define CRAFTERRA_ELEVATION_T ::As::Uint8
 #endif // CRAFTERRA_ELEVATION_T
 
 // ACTOR_DIRECTION_T
@@ -42,32 +42,32 @@
 #define CRAFTERRA_ACTOR_DIRECTION_T ::As::Uint8
 #endif // CRAFTERRA_ACTOR_DIRECTION_T
 
-// OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
-#ifndef CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
-#define CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T ::As::Uint8
-#endif // CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T
+// ACTOR_MODE_T
+#ifndef CRAFTERRA_ACTOR_MODE_T
+#define CRAFTERRA_ACTOR_MODE_T ::As::Uint8
+#endif // CRAFTERRA_ACTOR_MODE_T
 
-// MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
-#ifndef MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
-#define MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T ::As::Uint8
-#endif // MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T
+// TERRAIN_TILE_CONNECTION_CLIFF_T
+#ifndef TERRAIN_TILE_CONNECTION_CLIFF_T
+#define TERRAIN_TILE_CONNECTION_CLIFF_T ::As::Uint8
+#endif // TERRAIN_TILE_CONNECTION_CLIFF_T
 
-// AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
-#ifndef AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
-#define AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T ::As::Uint8
-#endif // AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T
+// TERRAIN_TILE_CONNECTION_WODITOR_AUTO_TILE_T
+#ifndef TERRAIN_TILE_CONNECTION_WODITOR_AUTO_TILE_T
+#define TERRAIN_TILE_CONNECTION_WODITOR_AUTO_TILE_T ::As::Uint8
+#endif // TERRAIN_TILE_CONNECTION_WODITOR_AUTO_TILE_T
 //##########################################################################################
 // using 型定義
 namespace Crafterra {
 	inline namespace DataType {
 		using BiomeType = CRAFTERRA_BIOME_T;
-		using TerrainObjectType = CRAFTERRA_BLOCK_T;
+		using TerrainObjectType = CRAFTERRA_TERRAIN_OBJECT_T;
 		// 標高値
 		using ElevationUint = CRAFTERRA_ELEVATION_T;
 		using ActorDirectionUint = CRAFTERRA_ACTOR_DIRECTION_T;
-		using ActorModeUint = CRAFTERRA_OPERATION_ACTOR_STATE_IN_FIELD_MAP_T;
-		using TerrainTileConnectionCliffUint = MAP_CHIP_TYPE_HOMOGENEOUS_CONNECTION_T;
-		using TerrainTileConnectionWoditorAutoTileUint = AUTO_TILE_TYPE_HOMOGENEOUS_CONNECTION_T;
+		using ActorModeUint = CRAFTERRA_ACTOR_MODE_T;
+		using TerrainTileConnectionCliffUint = TERRAIN_TILE_CONNECTION_CLIFF_T;
+		using TerrainTileConnectionWoditorAutoTileUint = TERRAIN_TILE_CONNECTION_WODITOR_AUTO_TILE_T;
 	}
 }
 //##########################################################################################
