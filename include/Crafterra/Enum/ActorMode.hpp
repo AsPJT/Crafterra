@@ -19,12 +19,22 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ENUM_ACTOR_MODE_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ENUM_ACTOR_MODE_HPP
 
-#include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
+/*#######################################################################################
+	日本語リファレンス (Reference-ja)
+	https://github.com/AsPJT/Crafterra/wiki/仕様：アクタの形態
+#######################################################################################*/
+
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
+
+#ifndef CRAFTERRA_ACTOR_MODE_T
+#define CRAFTERRA_ACTOR_MODE_T ::As::Uint8
+#endif // CRAFTERRA_ACTOR_MODE_T
 
 namespace Crafterra {
+	inline namespace DataType { using ActorModeUint = CRAFTERRA_ACTOR_MODE_T; }
 	inline namespace Enum {
 
-		// フィールドマップにおける操作アクタの状態
+		// アクタの形態
 		enum class ActorMode : ::Crafterra::DataType::ActorModeUint {
 			  empty
 			, humanoid     // 陸路の歩行
