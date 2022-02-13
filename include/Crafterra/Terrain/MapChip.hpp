@@ -75,8 +75,8 @@ namespace Crafterra {
 		::As::IndexUint field_map_y{};
 		::As::IndexUint field_map_z{};
 
-		CliffConnection cliff_top{ CliffConnection::size }; // 崖上タイルの種類
-		CliffConnection cliff{ CliffConnection::size }; // 崖タイルの種類
+		TerrainTileConnectionCliff cliff_top{ TerrainTileConnectionCliff::size }; // 崖上タイルの種類
+		TerrainTileConnectionCliff cliff{ TerrainTileConnectionCliff::size }; // 崖タイルの種類
 		bool is_cliff = false;
 		bool is_cliff_top = false;
 		TerrainObject terrain_object{};
@@ -102,10 +102,10 @@ namespace Crafterra {
 		void setTerrainObject(const TerrainObject& block_) { this->terrain_object = block_; }
 		ElevationUint getElevation() const { return this->elevation; }
 		void setElevation(const ElevationUint& elevation_) { this->elevation = elevation_; }
-		CliffConnection getCliffTop() const { return this->cliff_top; }
-		void setCliffTop(const CliffConnection& cliff_top_) { this->cliff_top = cliff_top_; }
-		CliffConnection getCliff() const { return this->cliff; }
-		void setCliff(const CliffConnection& cliff_) { this->cliff = cliff_; }
+		TerrainTileConnectionCliff getCliffTop() const { return this->cliff_top; }
+		void setCliffTop(const TerrainTileConnectionCliff& cliff_top_) { this->cliff_top = cliff_top_; }
+		TerrainTileConnectionCliff getCliff() const { return this->cliff; }
+		void setCliff(const TerrainTileConnectionCliff& cliff_) { this->cliff = cliff_; }
 		// バイオームの崖上であるかどうか？
 		bool getIsBiomeCliffTop() const { return this->is_biome_cliff_top; }
 		void setIsBiomeCliffTop(const bool is_biome_cliff_) { this->is_biome_cliff_top = is_biome_cliff_; }
@@ -165,8 +165,8 @@ namespace Crafterra {
 		void setDrawBiome(const TerrainBiome& draw_biome_) { this->tile[this->tile_num].setDrawBiome(draw_biome_); }
 		void setTerrainObject(const TerrainObject& block_) { this->tile[this->tile_num].setTerrainObject(block_); }
 		void setElevation(const ElevationUint& elevation_) { this->tile[this->tile_num].setElevation(elevation_); }
-		void setCliffTop(const CliffConnection& cliff_top_) { this->tile[this->tile_num].setCliffTop(cliff_top_); }
-		void setCliff(const CliffConnection& cliff_) { this->tile[this->tile_num].setCliff(cliff_); }
+		void setCliffTop(const TerrainTileConnectionCliff& cliff_top_) { this->tile[this->tile_num].setCliffTop(cliff_top_); }
+		void setCliff(const TerrainTileConnectionCliff& cliff_) { this->tile[this->tile_num].setCliff(cliff_); }
 		void setIsCliff(const bool is_cliff_) { this->tile[this->tile_num].setIsCliff(is_cliff_); }
 		void setIsCliffTop(const bool is_cliff_top_) { this->tile[this->tile_num].setIsCliffTop(is_cliff_top_); }
 		void setAutoTile(const AutoTile& auto_tile_) { this->tile[this->tile_num].setAutoTile(auto_tile_); }
@@ -193,99 +193,99 @@ namespace Crafterra {
 			return false;
 		}
 
-		if (at.auto_tile_upper_left == AutoTileConnection::nothing_upper_left
-			&& at.auto_tile_upper_right == AutoTileConnection::nothing_upper_right
-			&& at.auto_tile_lower_left == AutoTileConnection::nothing_lower_left
-			&& at.auto_tile_lower_right == AutoTileConnection::nothing_lower_right
-			&& draw_map.getCliffTop() == CliffConnection::nothing) {
+		if (at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::nothing_upper_left
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::nothing_upper_right
+			&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::nothing_lower_left
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::nothing_lower_right
+			&& draw_map.getCliffTop() == TerrainTileConnectionCliff::nothing) {
 			return true;
 		}
-		else if ((at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-			//|| at.auto_tile_upper_left == AutoTileConnection::cross_upper_left
-			) && (at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-				//|| at.auto_tile_upper_right == AutoTileConnection::cross_upper_right
-				) && (at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-					//|| at.auto_tile_lower_left == AutoTileConnection::cross_lower_left
-					) && (at.auto_tile_lower_right == AutoTileConnection::all_lower_right
-						//|| at.auto_tile_lower_right == AutoTileConnection::cross_lower_right
-						) && draw_map.getCliffTop() == CliffConnection::all) {
-			return true;
-		}
-		else if (
-			at.auto_tile_upper_left == AutoTileConnection::up_and_down_upper_left
-			&& at.auto_tile_upper_right == AutoTileConnection::up_and_down_upper_right
-			&& draw_map.getCliffTop() == CliffConnection::up) {
+		else if ((at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+			//|| at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::cross_upper_left
+			) && (at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+				//|| at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::cross_upper_right
+				) && (at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+					//|| at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::cross_lower_left
+					) && (at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
+						//|| at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::cross_lower_right
+						) && draw_map.getCliffTop() == TerrainTileConnectionCliff::all) {
 			return true;
 		}
 		else if (
-			at.auto_tile_lower_left == AutoTileConnection::up_and_down_lower_left
-			&& at.auto_tile_lower_right == AutoTileConnection::up_and_down_lower_right
-			&& draw_map.getCliffTop() == CliffConnection::down) {
+			at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::up_and_down_upper_left
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::up_and_down_upper_right
+			&& draw_map.getCliffTop() == TerrainTileConnectionCliff::up) {
 			return true;
 		}
 		else if (
-			at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
-			&& at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
-			&& draw_map.getCliffTop() == CliffConnection::left) {
+			at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::up_and_down_lower_left
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::up_and_down_lower_right
+			&& draw_map.getCliffTop() == TerrainTileConnectionCliff::down) {
 			return true;
 		}
 		else if (
-			at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
-			&& at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
-			&& draw_map.getCliffTop() == CliffConnection::right) {
+			at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_left
+			&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_left
+			&& draw_map.getCliffTop() == TerrainTileConnectionCliff::left) {
 			return true;
 		}
 		else if (
-			at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
-			&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
-			&& at.auto_tile_lower_left == AutoTileConnection::up_and_down_lower_left
-			&& (draw_map.getCliffTop() == CliffConnection::right_down_0
-				|| draw_map.getCliffTop() == CliffConnection::right_down_1)) {
+			at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_right
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_right
+			&& draw_map.getCliffTop() == TerrainTileConnectionCliff::right) {
 			return true;
 		}
 		else if (
-			at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
-			&& at.auto_tile_lower_right == AutoTileConnection::up_and_down_lower_right
-			&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-			&& (draw_map.getCliffTop() == CliffConnection::left_down_0
-				|| draw_map.getCliffTop() == CliffConnection::left_down_1)) {
+			at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_right
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
+			&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::up_and_down_lower_left
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::right_down_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::right_down_1)) {
 			return true;
 		}
 		else if (
-			at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
-			&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-			&& at.auto_tile_upper_left == AutoTileConnection::up_and_down_upper_left
-			&& (draw_map.getCliffTop() == CliffConnection::up_right_0
-				|| draw_map.getCliffTop() == CliffConnection::up_right_1)) {
+			at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_left
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::up_and_down_lower_right
+			&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::left_down_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::left_down_1)) {
 			return true;
 		}
 		else if (
-			at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
-			&& at.auto_tile_upper_right == AutoTileConnection::up_and_down_upper_right
-			&& at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-			&& (draw_map.getCliffTop() == CliffConnection::up_left_0
-				|| draw_map.getCliffTop() == CliffConnection::up_left_1)) {
+			at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_right
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+			&& at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::up_and_down_upper_left
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::up_right_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::up_right_1)) {
 			return true;
 		}
-		else if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-			&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-			&& at.auto_tile_lower_left == AutoTileConnection::left_and_right_lower_left
-			&& at.auto_tile_lower_right == AutoTileConnection::left_and_right_lower_right
-			&& (draw_map.getCliffTop() == CliffConnection::up_left_right_0
-				|| draw_map.getCliffTop() == CliffConnection::up_left_right_1
-				|| draw_map.getCliffTop() == CliffConnection::up_left_right_2
-				|| draw_map.getCliffTop() == CliffConnection::up_left_right_3
+		else if (
+			at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_left
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::up_and_down_upper_right
+			&& at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_1)) {
+			return true;
+		}
+		else if (at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+			&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_left
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::left_and_right_lower_right
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_right_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_right_1
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_right_2
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::up_left_right_3
 				)) {
 			return true;
 		}
-		else if (at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-			&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
-			&& at.auto_tile_upper_left == AutoTileConnection::left_and_right_upper_left
-			&& at.auto_tile_upper_right == AutoTileConnection::left_and_right_upper_right
-			&& (draw_map.getCliffTop() == CliffConnection::left_right_down_0
-				|| draw_map.getCliffTop() == CliffConnection::left_right_down_1
-				|| draw_map.getCliffTop() == CliffConnection::left_right_down_2
-				|| draw_map.getCliffTop() == CliffConnection::left_right_down_3
+		else if (at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+			&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
+			&& at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_left
+			&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::left_and_right_upper_right
+			&& (draw_map.getCliffTop() == TerrainTileConnectionCliff::left_right_down_0
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::left_right_down_1
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::left_right_down_2
+				|| draw_map.getCliffTop() == TerrainTileConnectionCliff::left_right_down_3
 				)) {
 			return true;
 		}
