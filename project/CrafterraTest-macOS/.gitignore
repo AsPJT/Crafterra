@@ -6,3 +6,10 @@ CrafterraTest-macOS/App/*
 
 # OpenSiv3D Executables
 !CrafterraTest-macOS/App/Settings.tsv
+
+# XCode Setting Files
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcuserdata/
