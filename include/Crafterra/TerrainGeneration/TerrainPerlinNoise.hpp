@@ -28,10 +28,15 @@
 
 namespace Crafterra {
 
+	//海面の高さを設定
 	constexpr double getElevationOfSeaLevel(){ return 110.0; }
+	//気候ノイズの幅(周波数)を設定
+	constexpr double getClimateFrequency(){ return 200.1; }
+	//地形ノイズの幅(周波数)を設定
+	constexpr double getTerrainFrequency(){ return 600.1; }
 
 	// 気温と降水量から地形の険しさを計算
-    double getMountainousnessByTempatureAndRainFall(double tempature, double amount_of_rainfall){
+    double getMountainousnessByTemperatureAndRainFall(double tempature, double amount_of_rainfall){
         double temp_scale = double(tempature)/240.0;
         double amrf_scale = double(amount_of_rainfall)/240.0;
         return ((1.0-temp_scale)+(1.0-amrf_scale)*0.25)/1.25;
@@ -62,8 +67,7 @@ namespace Crafterra {
 					// ノイズ値、最低/最高標高、険しさ値(0.0 - 1.0)、海面の標高
 					noise = Crafterra::processNoiseUsingHypsographicCurve(
 						noise, min_height_, max_height_,
-						//1.0-double(terrain_information_matrix[row_index][col_index].getTemperature())/240.0,
-						getMountainousnessByTempatureAndRainFall(terrain_information_matrix[row_index][col_index].getTemperature(), terrain_information_matrix[row_index][col_index].getAmountOfRainfall()),
+						getMountainousnessByTemperatureAndRainFall(terrain_information_matrix[row_index][col_index].getTemperature(), terrain_information_matrix[row_index][col_index].getAmountOfRainfall()),
 						::Crafterra::getElevationOfSeaLevel());
 				}
 				matrix_(col_index, row_index,
@@ -137,7 +141,7 @@ namespace Crafterra {
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setTemperature(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix,
 				area,
-				perlin_temperature_seed, 40.1, 8,
+				perlin_temperature_seed, ::Crafterra::getClimateFrequency(), 8,
 				false,
 				240, 0
 			);
@@ -147,7 +151,7 @@ namespace Crafterra {
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setAmountOfRainfall(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix,
 				area,
-				perlin_amount_of_rainfall_seed, 40.1, 8,
+				perlin_amount_of_rainfall_seed, ::Crafterra::getClimateFrequency(), 8,
 				false,
 				240, 0
 			);
@@ -157,7 +161,7 @@ namespace Crafterra {
 				[&terrain_information_matrix](const As::IndexUint x_, const As::IndexUint y_, const ElevationUint value_) { terrain_information_matrix[y_][x_].setElevation(value_); },
 				chunk_index_x_, chunk_index_y_, terrain_information_matrix,
 				area,
-				perlin_elevation_seed, 600.1, 10,
+				perlin_elevation_seed, ::Crafterra::getTerrainFrequency(), 10,
 				true,
 				240, 0
 			);
