@@ -226,9 +226,9 @@ namespace Crafterra {
 				<< U"\nbiome:" 
 				<< ::As::utf32(MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())])
 				//<< resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
-				<< U"\nPlayer PosX: " << player.getX()
-				<< U"\nPlayer PosY: " << player.getY()
-				<< U"\nPlayer PosZ: " << player.getZ();
+				<< U"\nPlayer dx: " << player.getX()
+				<< U"\nPlayer dy: " << player.getY()
+				<< U"\nPlayer dz: " << player.getZ();
 #endif // __DXLIB
 						}
 

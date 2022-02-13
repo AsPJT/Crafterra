@@ -79,14 +79,17 @@ namespace Crafterra {
 		void setHitDepth(const Pos_ depth_) { this->hit_depth = depth_; }
         
         // あたり判定処理 ----------
-        bool checkFieldCollision(ObjectMapMat& terrain_object_matrix, Pos_ nextPosX_, Pos_ nextPosZ_) {
-            ::As::IndexUint z = As::IndexUint(nextPosZ_);
-            ::As::IndexUint y = As::IndexUint(this->y);
-            ::As::IndexUint x = As::IndexUint(nextPosX_);
-            ::As::IndexUint l = 0;
-            if (terrain_object_matrix.getValueZXYL(z, x, y, l) == TerrainObject::empty ||
-                terrain_object_matrix.getValueZXYL(z, x, y, l) == TerrainObject::sea) {
-                return true;
+        bool playerCanMove(ObjectMapMat& terrain_object_matrix, Pos_ nextPosX_, Pos_ nextPosZ_) {
+            // フィールドマップ座標系
+            ::As::IndexUint fx = As::IndexUint(nextPosX_);
+            ::As::IndexUint fy = As::IndexUint(this->y);
+            ::As::IndexUint fz = As::IndexUint(nextPosZ_) + fy;
+            // 崖上 or 海判定
+            for (int l = 0; l <= 2; ++l) {
+                TerrainObject obj = terrain_object_matrix.getValueZXYL(fz, fx, fy, l);
+                if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
+                    return true;
+                }
             }
             return false;
         }
@@ -97,21 +100,17 @@ namespace Crafterra {
         
         // 移動処理 ----------
         bool movePlayer(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
+            Pos_ next_pos_x = this->x + speed_x_;
+            Pos_ next_pos_z = this->z + speed_z_;
             // プレイヤ移動
             if (this->actor_mode == ActorMode::humanoid) {
-                Pos_ next_pos_x = this->x + speed_x_;
-                Pos_ next_pos_z = this->z + speed_z_;
-                if (checkFieldCollision(terrain_object_matrix, next_pos_x, next_pos_z)) {
-                    this->x = next_pos_x;
-                    this->z = next_pos_z;
-                    return true;
-                } else {
-                    this->x = ::As::IndexUint(this->x);
-                    this->z = ::As::IndexUint(this->z);
+                // 当たり判定
+                if (!playerCanMove(terrain_object_matrix, next_pos_x, next_pos_z)) {
                     return false;
                 }
             }
-            // プレイヤ以外
+            this->x = next_pos_x;
+            this->z = next_pos_z;
             return true;
         }
 

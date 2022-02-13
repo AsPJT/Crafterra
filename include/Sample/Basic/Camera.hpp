@@ -103,7 +103,9 @@ namespace Crafterra {
 				if (end_layer == 0) return;
 				const DrawMapChipUnit& draw_map_end = draw_map_matrix[y_][x_].cgetTile(end_layer - 1);
 				const ::As::Int32 y_elevation = ::As::Int32(draw_map_end.getElevation());
-				ss << 'Y' << y_elevation;
+				ss << 'Y' << y_elevation << '\n';
+                ss << '(' << x_ << ',' << y_ << ')' << '\n';
+                ss << ::As::IndexUint(draw_map_end.getTerrainObject()) << '\n';
 				bool is_elevation = true;
 
 				// 処理

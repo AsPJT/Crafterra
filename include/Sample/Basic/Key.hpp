@@ -99,6 +99,8 @@ namespace Crafterra {
 		if (key.isDown(::As::Key::key_2)) {
 			cs.setMapChipSize(64.f);
 			player.setMode(::Crafterra::Enum::ActorMode::humanoid);
+            // 高さ情報をセット(暫定実装)
+            player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
 			player.setWalkingSpeed(0.2f);
 		}
 		if (key.isDown(::As::Key::key_p)) {
