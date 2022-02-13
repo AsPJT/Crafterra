@@ -24,12 +24,12 @@
 
 namespace Crafterra {
 
-    double funcG(double x_, double mountainous_){
-        return atan((2.0*x_-1.0)*tan(mountainous_*M_PI*0.5))/(mountainous_*M_PI*0.5)*0.5+0.5;
+    double funcG(double x_, double mountainousness_){
+        return atan((2.0*x_-1.0)*tan(mountainousness_*M_PI*0.5))/(mountainousness_*M_PI*0.5)*0.5+0.5;
     }
 
-    double funcA(double x_, double mountainous_){
-        return (funcG(x_, mountainous_)-0.5)*(mountainous_*0.5+0.5)+0.5;
+    double funcA(double x_, double mountainousness_){
+        return (funcG(x_, mountainousness_)-0.5)*(mountainousness_*0.5+0.5)+0.5;
     }
 
     double funcB(double x_){
@@ -41,7 +41,8 @@ namespace Crafterra {
         return (tan((2.0*x_-1.0)*0.25*M_PI)*pow(abs(2.0*x_-1.0), 2.0*x_)+1.0)*0.5;
     }
 
-    double processNoiseUsingHypsographicCurve(double noise_, double min_height_, double max_height_, double mountainous_, double water_height){
+    // 地形の標高分布を表す曲線
+    double processNoiseUsingHypsographicCurve(double noise_, double min_height_, double max_height_, double mountainousness_, double water_height){
 
         double noise_adj;
 
@@ -53,7 +54,7 @@ namespace Crafterra {
             noise_adj = (noise_/water_prop)*0.5;
         }
 
-        double fa = funcA(noise_adj, mountainous_*0.5+0.5);
+        double fa = funcA(noise_adj, mountainousness_*0.5+0.5);
         double fr = funcB(fa)*funcC(fa);
 
         if(fr > water_prop){
