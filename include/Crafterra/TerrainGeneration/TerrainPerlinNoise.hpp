@@ -26,8 +26,6 @@
 #include <algorithm>
 #include <random>
 
-#include <stdio.h>
-
 namespace Crafterra {
 
 	constexpr double getElevationOfSeaLevel(){ return 110.0; }
