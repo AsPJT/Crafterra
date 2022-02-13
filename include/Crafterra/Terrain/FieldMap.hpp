@@ -504,7 +504,7 @@ namespace Crafterra {
 					field_map.setTemperature(temperature);
 
 					// 標高がある定数値よりも少ない場合は海になる
-					if (elevation < sea_elevation) field_map.setBiome(TerrainBiome::sea);
+					if (elevation <= sea_elevation) field_map.setBiome(TerrainBiome::sea);
 					// 気温が低い場合はツンドラになる
 					else if (temperature < 24) field_map.setBiome(TerrainBiome::tundra);
 					// 降水量が少ない場合は砂漠になる

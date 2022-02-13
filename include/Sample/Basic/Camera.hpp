@@ -59,7 +59,7 @@ namespace Crafterra {
 				
 				::As::MapChipImage& tile = resource_.getMapChip();
 
-				//::std::stringstream ss;
+				::std::stringstream ss;
 				
 				::As::IndexUint start_layer = 0;
 				::As::IndexUint end_layer = 0;
@@ -91,26 +91,31 @@ namespace Crafterra {
 					else if (draw_map.getTerrainObject() == TerrainObject::sea) {
 						// マップチップが不透明だったら 1 つ前のタイルを描画しない
 						const AutoTile& at = draw_map.getAutoTile();
-						if (at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-							&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-							&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-							&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+						if (at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+							&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+							&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+							&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
 							) {
 							start_layer = layer;
 						}
 					}
 				}
+				if (end_layer == 0) return;
+				const DrawMapChipUnit& draw_map_end = draw_map_matrix[y_][x_].cgetTile(end_layer - 1);
+				const ::As::Int32 y_elevation = ::As::Int32(draw_map_end.getElevation());
+				ss << 'Y' << y_elevation;
+				bool is_elevation = true;
 
 				// 処理
 				for (::As::IndexUint layer = start_layer; layer < end_layer; ++layer) {
 					// 描画しないものは処理しない
 					if (!is_draw[layer]) continue;
-
 					const DrawMapChipUnit& draw_map = draw_map_matrix[y_][x_].cgetTile(layer);
 
 					//if (layer < start_layer) continue;
 
 					//if (layer != 0) ss << '\n';
+
 					//ss << 'L' << layer << '|';
 					//ss << 'X' << x_ << '|';
 					//ss << 'Y' << draw_map.getElevation() << '|';
@@ -145,10 +150,10 @@ namespace Crafterra {
 						bool is_biome_auto_tile_alpha = true;
 						if (is_draw_biome) {
 							const AutoTile& at = draw_map.getBiomeAutoTile();
-							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == AutoTileConnection::all_upper_left
-								&& at.auto_tile_upper_right == AutoTileConnection::all_upper_right
-								&& at.auto_tile_lower_left == AutoTileConnection::all_lower_left
-								&& at.auto_tile_lower_right == AutoTileConnection::all_lower_right
+							is_biome_auto_tile_alpha = !(at.auto_tile_upper_left == TerrainTileConnectionWoditorAutoTile::all_upper_left
+								&& at.auto_tile_upper_right == TerrainTileConnectionWoditorAutoTile::all_upper_right
+								&& at.auto_tile_lower_left == TerrainTileConnectionWoditorAutoTile::all_lower_left
+								&& at.auto_tile_lower_right == TerrainTileConnectionWoditorAutoTile::all_lower_right
 								);
 
 							if (is_biome_auto_tile_alpha) {
@@ -223,11 +228,16 @@ namespace Crafterra {
 					
 				}
 
-				//// 人間の場合はデバッグ表示
-				//if (is_debug_log && mode == ::Crafterra::Enum::ActorMode::humanoid) {
-				//	::As::DrawRect(map_chip_rect, ::As::Color(255, 255, 255)).drawLine();
-				//	resource_.getFont().draw(int(map_chip_rect.start_x), int(map_chip_rect.start_y), ss.str());
-				//}
+				// 人間の場合はデバッグ表示
+				if (is_debug_log && mode == ::Crafterra::Enum::ActorMode::humanoid) {
+					::As::DrawRect(map_chip_rect,
+						((!is_elevation) ? ::As::Color(255, 255, 255) :
+						((y_elevation % 3 == 0)?::As::Color(150, 0, 0):
+							((y_elevation % 3 == 1) ? ::As::Color(0, 150, 0) :
+								::As::Color(0, 0, 150))))
+					).drawLine();
+					resource_.getFont().draw(int(map_chip_rect.start_x), int(map_chip_rect.start_y), ss.str());
+				}
 
 			}
 		);

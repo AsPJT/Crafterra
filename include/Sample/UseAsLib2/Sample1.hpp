@@ -121,8 +121,12 @@ namespace Crafterra {
 				}
 			}
 
+#if defined(SIV3D_INCLUDED)
+::s3d::ClearPrint();
+#endif
+
 			// キー関連
-			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise, terrain_chunk);
+			::Crafterra::updateKey(key, cs, player, terrain, is_debug_log, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise, terrain_chunk, resource_);
 
 			// 無限生成処理
 			::Crafterra::updateTerrain(cs, terrain_chunk, terrain, terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, terrain_noise);

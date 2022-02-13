@@ -21,68 +21,14 @@
 
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
 
+#include <Crafterra/Enum/ActorMode.hpp>
+#include <Crafterra/Enum/TerrainTileConnectionCliff.hpp>
+
 namespace Crafterra {
 	inline namespace Enum {
 
-		// フィールドマップにおける操作アクタの状態
-		enum class ActorMode : ::Crafterra::DataType::ActorModeUint {
-			  empty
-			, humanoid     // 陸路の歩行
-			, ratite_bird // 飛べない鳥 ( 地上の高速移動 )
-			, ship        // 船
-			, airship     // 飛空艇
-			, size
-		};
-
-
-		// 同じ性質のブロックとの接続タイプ ( 通常 + 崖 )
-		enum class CliffConnection : CliffConnectionUint {
-			nothing
-			, all
-			, up_down
-			, left_right
-			, up
-			, left
-			, right
-			, down
-			, up_left_0
-			, up_right_0
-			, left_down_0
-			, right_down_0
-			, up_left_1
-			, up_right_1
-			, left_down_1
-			, right_down_1
-			, up_left_right_0
-			, up_left_down_0
-			, up_right_down_0
-			, left_right_down_0
-			, up_left_right_1
-			, up_left_down_1
-			, up_right_down_1
-			, left_right_down_1
-			, up_left_right_2
-			, up_left_down_2
-			, up_right_down_2
-			, left_right_down_2
-			, up_left_right_3
-			, up_left_down_3
-			, up_right_down_3
-			, left_right_down_3
-			, right_down_cliff
-			, left_right_down_cliff
-			, left_down_cliff
-			, down_cliff
-			, right_up_cliff
-			, left_right_up_cliff
-			, left_up_cliff
-			, up_cliff
-			, size
-		};
-
-
 		// ( オートタイル ) 同じ性質のブロックとの接続タイプ ( 通常 + 崖 )
-		enum class AutoTileConnection : AutoTileConnectionUint {
+		enum class TerrainTileConnectionWoditorAutoTile : TerrainTileConnectionWoditorAutoTileUint {
 			  nothing_upper_left
 			, nothing_upper_right
 			, nothing_lower_left
@@ -108,10 +54,10 @@ namespace Crafterra {
 
 		// 今後、別の hpp を作成して管理
 		struct AutoTile {
-			AutoTileConnection auto_tile_upper_left{ AutoTileConnection::nothing_upper_left };
-			AutoTileConnection auto_tile_upper_right{ AutoTileConnection::nothing_upper_right };
-			AutoTileConnection auto_tile_lower_left{ AutoTileConnection::nothing_lower_left };
-			AutoTileConnection auto_tile_lower_right{ AutoTileConnection::nothing_lower_right };
+			TerrainTileConnectionWoditorAutoTile auto_tile_upper_left{ TerrainTileConnectionWoditorAutoTile::nothing_upper_left };
+			TerrainTileConnectionWoditorAutoTile auto_tile_upper_right{ TerrainTileConnectionWoditorAutoTile::nothing_upper_right };
+			TerrainTileConnectionWoditorAutoTile auto_tile_lower_left{ TerrainTileConnectionWoditorAutoTile::nothing_lower_left };
+			TerrainTileConnectionWoditorAutoTile auto_tile_lower_right{ TerrainTileConnectionWoditorAutoTile::nothing_lower_right };
 		};
 
 	}
