@@ -45,6 +45,10 @@ namespace Crafterra {
 		};
 
 	}
+	inline namespace Value {
+		// アクタの形態の大きさ
+		constexpr ::Crafterra::DataType::ActorModeUint actor_mode_size = static_cast<::Crafterra::DataType::ActorModeUint>(::Crafterra::Enum::ActorMode::size);
+	}
 }
 
 #endif //Included Crafterra Library

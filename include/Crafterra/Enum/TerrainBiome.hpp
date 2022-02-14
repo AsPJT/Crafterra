@@ -35,7 +35,7 @@ namespace Crafterra {
 	inline namespace Enum {
 
 		// バイオームの種類
-		enum class TerrainBiome : ::Crafterra::BiomeUint {
+		enum class TerrainBiome : ::Crafterra::DataType::BiomeUint {
 			empty     // 無し
 			, sea        // 海
 			, lake       // 湖
@@ -54,6 +54,10 @@ namespace Crafterra {
 			, size   // バイオームの数
 		};
 
+	}
+	inline namespace Value {
+		// 地形バイオームの大きさ
+		constexpr ::Crafterra::DataType::BiomeUint terrain_biome_size = static_cast<::Crafterra::DataType::BiomeUint>(::Crafterra::Enum::TerrainBiome::size);
 	}
 }
 

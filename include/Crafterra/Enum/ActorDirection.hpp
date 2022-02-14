@@ -49,6 +49,10 @@ namespace Crafterra {
 		};
 
 	}
+	inline namespace Value {
+		// アクタの向きの大きさ
+		constexpr ::Crafterra::DataType::ActorDirectionUint actor_direction_size = static_cast<::Crafterra::DataType::ActorDirectionUint>(::Crafterra::Enum::ActorDirection::size);
+	}
 }
 
 #endif //Included Crafterra Library

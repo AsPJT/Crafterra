@@ -75,6 +75,10 @@ namespace Crafterra {
 		};
 
 	}
+	inline namespace Value {
+		// 地形オブジェクトの大きさ
+		constexpr ::Crafterra::DataType::TerrainObjectUint terrain_object_size = static_cast<::Crafterra::DataType::TerrainObjectUint>(::Crafterra::Enum::TerrainObject::size);
+	}
 }
 
 #endif //Included Crafterra Library
