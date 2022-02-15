@@ -92,6 +92,12 @@ namespace Crafterra {
 			const ::As::Uint32 elevation_seed = seed_gen();
 			const ::As::Uint32 flower_seed = seed_gen();
 			const ::As::Uint32 lake_seed = seed_gen();
+
+			temperature 		= temperature_seed;
+			amount_of_rainfall 	= amount_of_rainfall_seed;
+			elevation			= elevation_seed;
+			flower				= flower_seed;
+			lake				= lake_seed;
 		}
 
 	};
