@@ -71,7 +71,7 @@ namespace Crafterra {
 						::Crafterra::getElevationOfSeaLevel());
 				}
 				matrix_(col_index, row_index,
-					min_height_ + static_cast<ElevationUint_>((max_height_ - min_height_) * noise));
+					ElevationUint_(min_height_ + static_cast<ElevationUint_>((max_height_ - min_height_) * noise)));
 			}
 		}
 	}

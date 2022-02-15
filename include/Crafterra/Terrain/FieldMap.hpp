@@ -483,7 +483,7 @@ namespace Crafterra {
 		// フィールドマップを生成
 		void generation(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, TerrainPerlinNoise& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexAreaXZ& area) const {
 
-			const ElevationUint sea_elevation = ::Crafterra::getElevationOfSeaLevel();
+			const ElevationUint sea_elevation = ElevationUint(::Crafterra::getElevationOfSeaLevel());
 
 			terrain_noise_.generation(terrain_information_matrix, chunk_index_x_, chunk_index_y_, area);
 

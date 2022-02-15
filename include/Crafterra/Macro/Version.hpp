@@ -21,7 +21,7 @@
 
 // 正式バージョン数値
 #ifndef CRAFTERRA_LIBRARY_VERSION
-#define CRAFTERRA_LIBRARY_VERSION (20220202L)
+#define CRAFTERRA_LIBRARY_VERSION (20220216L)
 #endif
 
 // Crafterra 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
@@ -36,18 +36,19 @@
 
 // Crafterra 微修正バージョン
 #ifndef CRAFTERRA_LIBRARY_PATCHLEVEL
-#define CRAFTERRA_LIBRARY_PATCHLEVEL (6)
+#define CRAFTERRA_LIBRARY_PATCHLEVEL (7)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/Crafterra )
 #ifndef CRAFTERRA_LIBRARY_VERSION_NAME
-#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.6"
+#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.7"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン |     更新日    |           概要
 	5.0.0.1.X  | 2022/0X/XX | コピペ用
+	5.0.0.1.7  | 2022/02/16 | 山岳・平地形成の実装 (@TadaTeruki)
 	5.0.0.1.6  | 2022/02/02 | 描画する地形タイルのレイヤー機能を実装
 	5.0.0.1.5  | 2022/01/20 | 広大な地形生成（ 1000 億マス × 1000 億マス ）機能を実装
 	5.0.0.1.4  | 2022/01/18 | 崖上＆崖自動タイル独自規格とウディタオートタイル規格に対応

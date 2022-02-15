@@ -24,8 +24,10 @@
 
 namespace Crafterra {
 
+    constexpr double math_pi = 3.14159265358979323846;
+
     double funcG(double x_, double mountainousness_){
-        return atan((2.0*x_-1.0)*tan(mountainousness_*M_PI*0.5))/(mountainousness_*M_PI*0.5)*0.5+0.5;
+        return atan((2.0*x_-1.0)*tan(mountainousness_* math_pi *0.5))/(mountainousness_* math_pi *0.5)*0.5+0.5;
     }
 
     double funcA(double x_, double mountainousness_){
@@ -38,7 +40,7 @@ namespace Crafterra {
     }
 
     double funcC(double x_){
-        return (tan((2.0*x_-1.0)*0.25*M_PI)*pow(abs(2.0*x_-1.0), 2.0*x_)+1.0)*0.5;
+        return (tan((2.0*x_-1.0)*0.25* math_pi)*pow(abs(2.0*x_-1.0), 2.0*x_)+1.0)*0.5;
     }
 
     // 地形の標高分布を表す曲線
