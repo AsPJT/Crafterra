@@ -36,11 +36,11 @@ namespace Crafterra {
 	constexpr double getTerrainFrequency(){ return 600.1; }
 
 	// 気温と降水量から地形の険しさを計算
-    double getMountainousnessByTemperatureAndRainFall(double tempature, double amount_of_rainfall){
-        double temp_scale = double(tempature)/240.0;
-        double amrf_scale = double(amount_of_rainfall)/240.0;
-        return ((1.0-temp_scale)+(1.0-amrf_scale)*0.25)/1.25;
-    }
+	double getMountainousnessByTemperatureAndRainFall(const double tempature, const double amount_of_rainfall) {
+		const double temp_scale = double(tempature) / 240.0;
+		const double amrf_scale = double(amount_of_rainfall) / 240.0;
+		return ((1.0 - temp_scale) + (1.0 - amrf_scale) * 0.25) / 1.25;
+	}
 
 	// パーリンノイズをフィールドマップ上に生成
 	template<typename Matrix_, typename ElevationUint_, typename MapMat_>
@@ -50,8 +50,8 @@ namespace Crafterra {
 		const ::As::IndexAreaXZ& area, ::Crafterra::PerlinNoise& perlin, const double frequency_, const ::As::IndexUint octaves_,
 		const bool for_elevation_, const ElevationUint_ max_height_, const ElevationUint_ min_height_ = 0) {
 
-		::As::IndexUint one_chunk_width_  = terrain_information_matrix.getWidth() / 2;
-		::As::IndexUint one_chunk_height_ = terrain_information_matrix.getDepth() / 2;
+		const ::As::IndexUint one_chunk_width_  = terrain_information_matrix.getWidth() / 2;
+		const ::As::IndexUint one_chunk_height_ = terrain_information_matrix.getDepth() / 2;
 		
 		const ::As::IndexUint end_x_ = area.start_x + area.width;
 		const ::As::IndexUint end_y_ = area.start_z + area.depth;
@@ -63,7 +63,7 @@ namespace Crafterra {
 								(::As::Uint64(chunk_index_y_) * ::As::Uint64(one_chunk_height_) + ::As::Uint64(row)) / frequency_
 							);
 
-				if(for_elevation_){
+				if (for_elevation_) {
 					// ノイズ値、最低/最高標高、険しさ値(0.0 - 1.0)、海面の標高
 					noise = Crafterra::processNoiseUsingHypsographicCurve(
 						noise, min_height_, max_height_,

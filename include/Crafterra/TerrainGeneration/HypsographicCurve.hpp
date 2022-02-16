@@ -16,61 +16,58 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_HYPSOGRAPHIC_CURVE
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_HYPSOGRAPHIC_CURVE
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_HYPSOGRAPHIC_CURVE_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_TERRAIN_GENERATION_HYPSOGRAPHIC_CURVE_HPP
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp> // int
 #include <cmath>
 
 namespace Crafterra {
 
-    constexpr double math_pi = 3.14159265358979323846;
+	namespace HypsographicCurve {
 
-    double funcG(double x_, double mountainousness_){
-        return atan((2.0*x_-1.0)*tan(mountainousness_* math_pi *0.5))/(mountainousness_* math_pi *0.5)*0.5+0.5;
-    }
+		constexpr double math_pi = 3.14159265358979323846; // 円周率
 
-    double funcA(double x_, double mountainousness_){
-        return (funcG(x_, mountainousness_)-0.5)*(mountainousness_*0.5+0.5)+0.5;
-    }
+		double funcG(const double x_, const double mountainousness_) {
+			return ::std::atan((2.0 * x_ - 1.0) * ::std::tan(mountainousness_ * math_pi * 0.5)) / (mountainousness_ * math_pi * 0.5) * 0.5 + 0.5;
+		}
 
-    double funcB(double x_){
-        double a = (2.0*x_-2.0);
-        return a*a*(1.0 + a)*0.25+1.0;
-    }
+		double funcA(const double x_, const double mountainousness_) {
+			return (funcG(x_, mountainousness_) - 0.5) * (mountainousness_ * 0.5 + 0.5) + 0.5;
+		}
 
-    double funcC(double x_){
-        return (tan((2.0*x_-1.0)*0.25* math_pi)*pow(abs(2.0*x_-1.0), 2.0*x_)+1.0)*0.5;
-    }
+		double funcB(const double x_) {
+			double a = (2.0 * x_ - 2.0);
+			return a * a * (1.0 + a) * 0.25 + 1.0;
+		}
 
-    // 地形の標高分布を表す曲線
-    double processNoiseUsingHypsographicCurve(double noise_, double min_height_, double max_height_, double mountainousness_, double water_height){
+		double funcC(const double x_) {
+			return (::std::tan((2.0 * x_ - 1.0) * 0.25 * math_pi) * ::std::pow(::std::abs(2.0 * x_ - 1.0), 2.0 * x_) + 1.0) * 0.5;
+		}
 
-        double noise_adj;
+	}
 
-        double water_prop = (water_height-min_height_)/(max_height_-min_height_); // 海面率
+	// 地形の標高分布を表す曲線
+	double processNoiseUsingHypsographicCurve(const double noise_, const double min_height_, const double max_height_, const double mountainousness_, const double water_height) {
 
-        if(noise_ > water_prop){
-            noise_adj = (noise_-water_prop)/(1.0-water_prop)*0.5+0.5;
-        } else {
-            noise_adj = (noise_/water_prop)*0.5;
-        }
+		const double water_prop = (water_height - min_height_) / (max_height_ - min_height_); // 海面率
 
-        double fa = funcA(noise_adj, mountainousness_*0.5+0.5);
-        double fr = funcB(fa)*funcC(fa);
+		const double noise_adj = ((noise_ > water_prop) ?
+				(noise_ - water_prop) / (1.0 - water_prop) * 0.5 + 0.5
+				: (noise_ / water_prop) * 0.5);
 
-        if(fr > water_prop){
-            fr = (2.0*fr-1.0)*(1.0-water_prop)+water_prop;
-        } else {
-            fr = (2.0*fr)*water_prop;
-        }
-        
-        if(fr < 0.0) fr = 0.0; // never
-        if(fr > 1.0) fr = 1.0; // never
+		const double fa = HypsographicCurve::funcA(noise_adj, mountainousness_ * 0.5 + 0.5);
+		double fr = HypsographicCurve::funcB(fa) * HypsographicCurve::funcC(fa);
 
-        return fr;
+		if (fr > water_prop)	fr = (2.0 * fr - 1.0) * (1.0 - water_prop) + water_prop;
+		else					fr = (2.0 * fr) * water_prop;
 
-    }
+		if (fr < 0.0)		fr = 0.0; // never
+		else if (fr > 1.0)	fr = 1.0; // never
+
+		return fr;
+
+	}
 }
 
 #endif //Included Crafterra Library
