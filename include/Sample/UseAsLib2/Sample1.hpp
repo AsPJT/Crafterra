@@ -34,6 +34,10 @@ namespace Crafterra {
 	// Crafterra を再生
 	void playCrafterra(::Crafterra::Resource& resource_) {
 
+#ifdef __clang__
+        int x = 0
+#endif
+        
 		// カウンタ
 		int cd_anime = 0; // アニメーション
 		int cd_anime_sea = 0; // アニメーション
