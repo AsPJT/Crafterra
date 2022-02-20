@@ -17,7 +17,7 @@ jobs:
     
     strategy:
       matrix:
-        compiler: [gcc, clang]
+        compiler: [g++, clang++]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,10 +26,8 @@ jobs:
       run: |
         mkdir ${{env.WORK_SPACE}}/build
         cmake -B ${{env.WORK_SPACE}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
+        echo "Configuring CMake Compiler"
+        cmake -DCMAKE_CXX_COMPILER=${{matrix.compiler}} ${{env.WORK_SPACE}}
 
     - name: Build
-      env:
-        CXX: ${{matrix.compiler}}
-      run: |
-        echo $CXX
-        cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
+      run: cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
