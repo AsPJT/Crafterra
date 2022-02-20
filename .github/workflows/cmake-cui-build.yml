@@ -22,5 +22,5 @@ jobs:
       run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
 
     - name: Build
-      run: cmake --build ${{env.WORK_SPACE}}/cmake-build-debug --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
+      run: cmake --build ${{env.WORK_SPACE}} --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
       
