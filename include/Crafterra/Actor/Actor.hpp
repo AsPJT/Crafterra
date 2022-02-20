@@ -90,6 +90,9 @@ namespace Crafterra {
                 if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
                     return true;
                 }
+                else if (obj == TerrainObject::empty) {
+                    
+                }
             }
             return false;
         }
@@ -113,6 +116,11 @@ namespace Crafterra {
             this->z = next_pos_z;
             return true;
         }
+        
+        // ジャンプ処理 ----------
+        void jump(ObjectMapMat& terrain_object_matrix) {
+            
+        
 
 		// 様式 ----------
 		ActorMode getMode() const { return this->actor_mode; }
