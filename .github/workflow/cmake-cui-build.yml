@@ -1,0 +1,26 @@
+name: CMake-CUI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Debug
+  WORK_SPACE: ${{github.workspace}}/project/CrafterraTest-CMake-CUI
+  TARGET: CrafterraTest-CMake-CUI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
+
+    - name: Build
+      run: cmake --build ${{env.WORK_SPACE}}/cmake-build-debug --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
+      
