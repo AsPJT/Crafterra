@@ -21,7 +21,7 @@ jobs:
     - name: Configure CMake
       run: |
         mkdir ${{env.WORK_SPACE}}/build
-        cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
+        cmake -B ${{env.WORK_SPACE}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
 
     - name: Build
       run: cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
