@@ -14,6 +14,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
 
     steps:
     - uses: actions/checkout@v2
@@ -24,5 +28,6 @@ jobs:
         cmake -B ${{env.WORK_SPACE}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
 
     - name: Build
+      env:
+        CC: ${{matrix.compiler}}
       run: cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
-      
