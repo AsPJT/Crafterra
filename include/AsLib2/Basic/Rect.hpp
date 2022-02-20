@@ -52,6 +52,9 @@ namespace As {
 #elif defined(SIV3D_INCLUDED)
 		using Image_ = ::s3d::TextureRegion;
 		Image_ handle{};
+#else
+		using Image_ = int;
+		Image_ handle{};
 #endif
 
 	public:
@@ -98,7 +101,7 @@ namespace As {
 			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y, rect_.start_x + rect_.width, rect_.start_y + rect_.height / 2, this->handle2.get(), TRUE);
 			::DxLib::DrawExtendGraph(rect_.start_x, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height, this->handle3.get(), TRUE);
 			::DxLib::DrawExtendGraph(rect_.start_x + rect_.width / 2, rect_.start_y + rect_.height / 2, rect_.start_x + rect_.width, rect_.start_y + rect_.height, this->handle4.get(), TRUE);
-#else
+#elif defined(SIV3D_INCLUDED)
 			handle1.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y);
 			handle2.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x + rect_.width / 2, rect_.start_y);
 			handle3.get().resized(rect_.width / 2, rect_.height / 2).draw(rect_.start_x, rect_.start_y + rect_.height / 2);

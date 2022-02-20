@@ -105,6 +105,8 @@ int ios_main()
 #endif // __WINDOWS__
 #elif defined(SIV3D_INCLUDED)
 void Main()
+#else // __CUI__
+int main()
 #endif // __DXLIB
 {
 

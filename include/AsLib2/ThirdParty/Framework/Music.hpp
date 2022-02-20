@@ -28,11 +28,15 @@ namespace As {
 		using Music_ = int;
 #elif defined(SIV3D_INCLUDED)
 		using Music_ = ::s3d::Audio;
+#else
+		using Music_ = int;
 #endif
 
 #if defined(__DXLIB)
 		Music_ m_music = -1;
 #elif defined(SIV3D_INCLUDED)
+		Music_ m_music{};
+#else
 		Music_ m_music{};
 #endif
         double volume_offset = 0.1;
