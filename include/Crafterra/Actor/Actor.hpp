@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	Crafterra Library 🌏
 
@@ -20,6 +20,7 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ACTOR_ACTOR_HPP
 
 #include <Crafterra/Enum/ActorDirection.hpp>
+#include <AsLib2/DataType/Matrix.hpp>
 
 namespace Crafterra {
 
@@ -29,6 +30,7 @@ namespace Crafterra {
 		::Crafterra::Enum::ActorDirection direction{ ::Crafterra::Enum::ActorDirection::down };
 
 		using Pos_ = float;
+        using ObjectMapMat = ::As::UniquePtrMatrix4D<TerrainObject>;
 
 		// 座標 ( フィールドマップ座標系 )
 		Pos_ x{}, y{}, z{};
@@ -75,10 +77,42 @@ namespace Crafterra {
 		void setHitWidth(const Pos_ width_) { this->hit_width = width_; }
 		void setHitHeight(const Pos_ height_) { this->hit_height = height_; }
 		void setHitDepth(const Pos_ depth_) { this->hit_depth = depth_; }
+        
+        // あたり判定処理 ----------
+        bool playerCanMove(ObjectMapMat& terrain_object_matrix, Pos_ nextPosX_, Pos_ nextPosZ_) {
+            // フィールドマップ座標系
+            ::As::IndexUint fx = As::IndexUint(nextPosX_);
+            ::As::IndexUint fy = As::IndexUint(this->y);
+            ::As::IndexUint fz = As::IndexUint(nextPosZ_) + fy;
+            // 崖上 or 海判定
+            for (int l = 0; l <= 2; ++l) {
+                TerrainObject obj = terrain_object_matrix.getValueZXYL(fz, fx, fy, l);
+                if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 		// 速度 ----------
 		float getWalkingSpeed() const { return this->walking_speed; }
 		void setWalkingSpeed(const float walking_speed_) { this->walking_speed = walking_speed_; }
+        
+        // 移動処理 ----------
+        bool movePlayer(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
+            Pos_ next_pos_x = this->x + speed_x_;
+            Pos_ next_pos_z = this->z + speed_z_;
+            // プレイヤ移動
+            if (this->actor_mode == ActorMode::humanoid) {
+                // 当たり判定
+                if (!playerCanMove(terrain_object_matrix, next_pos_x, next_pos_z)) {
+                    return false;
+                }
+            }
+            this->x = next_pos_x;
+            this->z = next_pos_z;
+            return true;
+        }
 
 		// 様式 ----------
 		ActorMode getMode() const { return this->actor_mode; }

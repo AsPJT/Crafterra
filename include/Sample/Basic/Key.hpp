@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	Crafterra Sample Source Code 🌏
 
@@ -41,23 +41,45 @@ namespace Crafterra {
         ::Crafterra::Resource& resource_
 	) {
 
+        // 移動
 		key.setKey();
+        
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-			cs.camera_size.moveX(-player.getWalkingSpeed());
+            float move_speed = -player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
+                cs.camera_size.moveX(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::left);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-			cs.camera_size.moveX(player.getWalkingSpeed());
+            float move_speed = player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
+                cs.camera_size.moveX(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::right);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-			cs.camera_size.moveY(-player.getWalkingSpeed());
+            float move_speed = -player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+                cs.camera_size.moveY(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::up);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-			cs.camera_size.moveY(player.getWalkingSpeed());
+            float move_speed = player.getWalkingSpeed();
+            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+                cs.camera_size.moveY(move_speed);
+            }
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
+        // ジャンプ
+//        if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
+//            float move_speed = player.getWalkingSpeed();
+//            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
+//                cs.camera_size.moveY(move_speed);
+//            }
+//            player.setDirection(::Crafterra::Enum::ActorDirection::down);
+//        }
 		if (key.isDown(::As::Key::key_g)) {
 			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk);
 			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
@@ -78,6 +100,8 @@ namespace Crafterra {
 		if (key.isDown(::As::Key::key_2)) {
 			cs.setMapChipSize(64.f);
 			player.setMode(::Crafterra::Enum::ActorMode::humanoid);
+            // 高さ情報をセット(暫定実装)
+            player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
 			player.setWalkingSpeed(0.2f);
 		}
         // 音量調整

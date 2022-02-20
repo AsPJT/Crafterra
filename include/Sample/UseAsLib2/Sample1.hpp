@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	Crafterra Sample Source Code 🌏
 
@@ -77,7 +77,7 @@ namespace Crafterra {
 		Actor player{};
 		player.setX(cs.camera_size.getCenterX());
 		player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
-		player.setZ(cs.camera_size.getCenterY() - player.getY());
+		player.setZ(cs.camera_size.getCenterY());
 		player.setWalkingSpeed(0.2f);
 		player.setMode(ActorMode::humanoid);
 
@@ -91,7 +91,7 @@ namespace Crafterra {
 		ElapsedTime elapsed_time;
 
 		// ログ関連 ----------
-		::As::DrawRect log_background(::As::Rect(0, 0, 250, 300), ::As::Color(40));
+		::As::DrawRect log_background(::As::Rect(0, 0, 250, 400), ::As::Color(40));
 		
 #if defined(CRAFTERRA_USE_SAVE_SCREEN)
 		bool is_debug_log = false;
@@ -226,9 +226,9 @@ namespace Crafterra {
 				<< U"\nbiome:" 
 				<< ::As::utf32(MapChipTypeBiomeString[As::IndexUint(draw_map_matrix[As::IndexUint(cs.camera_size.getCenterY())][As::IndexUint(cs.camera_size.getCenterX())].getTile(draw_map_layer_max - 1).getDrawBiome())])
 				//<< resource_.getMapChip().getMapChip("Desert", getAutoTileIndex(draw_map_matrix[100][100].getTile(draw_map_layer_max - 1).getAutoTile().auto_tile_lower_left, 0, 0))
-				<< player.getX()
-				<< player.getY()
-				<< player.getZ();
+				<< U"\nPlayer dx: " << player.getX()
+				<< U"\nPlayer dy: " << player.getY()
+				<< U"\nPlayer dz: " << player.getZ();
 #endif // __DXLIB
 						}
 
