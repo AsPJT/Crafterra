@@ -175,8 +175,8 @@ void Main()
 
 #if defined(__DXLIB)
 #if defined(CRAFTERRA_USE_SAVE_SCREEN)
-	int save_index = 44;
-	const int save_count = 10;
+	int save_index = 111;
+	const int save_count = 15;
 	const int save_max = save_index + save_count;
 	for (; save_index < save_max; ++save_index) {
 		::As::initCrafterra(init_read, width, height); // Crafterra を初期化・実行

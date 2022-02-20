@@ -35,6 +35,7 @@ namespace As {
 #elif defined(SIV3D_INCLUDED)
 		Music_ m_music{};
 #endif
+        double volume_offset = 0.1;
 	public:
 
 		Music() {
@@ -59,7 +60,38 @@ namespace As {
 
 #endif // __DXLIB
 		}
+        
+        // BGM音量ダウン
+        void volumeDown() const {
+#if defined(__DXLIB)
+            // DXLIB用の音量調整未実装
+#elif defined(SIV3D_INCLUDED)
+            double val = m_music.getVolume();
+            if (val <= 0.0) return;
+            m_music.setVolume(val - volume_offset);
+#endif // __DXLIB
+        }
 
+        // BGM音量アップ
+        void volumeUp() const {
+#if defined(__DXLIB)
+            // DXLIB用の音量調整未実装
+#elif defined(SIV3D_INCLUDED)
+            double val = m_music.getVolume();
+            if (val >= 1.0) return;
+            m_music.setVolume(val + volume_offset);
+#endif // __DXLIB
+        }
+        
+        // ミュート
+        void mute() const {
+#if defined(__DXLIB)
+            // DXLIB用の音量調整未実装
+#elif defined(SIV3D_INCLUDED)
+            m_music.setVolume(0.0);
+#endif // __DXLIB
+        }
+        
 	};
 }
 

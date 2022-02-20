@@ -37,7 +37,8 @@ namespace Crafterra {
 		::As::UniquePtrMatrix<TerrainInformation>& terrain_information_matrix, // フィールドマップ
 		::As::UniquePtrMatrix<DrawMapChip>& draw_map_matrix, // 描画用フィールドマップ
 		TerrainPerlinNoise& terrain_noise, // 地形生成
-		TerrainChunk& chunk // 地形チャンク管理
+		TerrainChunk& chunk, // 地形チャンク管理
+        ::Crafterra::Resource& resource_
 	) {
 
         // 移動
@@ -103,6 +104,19 @@ namespace Crafterra {
             player.setY(float(draw_map_matrix[::As::IndexUint(cs.camera_size.getCenterY() + 0.5f)][::As::IndexUint(cs.camera_size.getCenterX() + 0.5f)].getTile(draw_map_layer_max - 1).getElevation()));
 			player.setWalkingSpeed(0.2f);
 		}
+        // 音量調整
+        if (key.isDown(::As::Key::key_8)) {
+            // ボリュームダウン
+            resource_.getMusic().volumeDown();
+        }
+        if (key.isDown(::As::Key::key_9)) {
+            // ボリュームアップ
+            resource_.getMusic().volumeUp();
+        }
+        if (key.isDown(::As::Key::key_0)) {
+            // ボリュームアップ
+            resource_.getMusic().mute();
+        }
 		if (key.isDown(::As::Key::key_p)) {
 			is_debug_log = (!is_debug_log);
 #ifdef __DXLIB

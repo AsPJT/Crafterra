@@ -19,13 +19,23 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ENUM_TERRAIN_BIOME_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ENUM_TERRAIN_BIOME_HPP
 
-#include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
+/*#######################################################################################
+	日本語リファレンス (Reference-ja)
+	https://github.com/AsPJT/Crafterra/wiki/仕様：地形バイオーム
+#######################################################################################*/
+
+#include <AsLib2/DataType/PrimitiveDataType.hpp>
+
+#ifndef CRAFTERRA_BIOME_T
+#define CRAFTERRA_BIOME_T ::As::Uint8
+#endif // CRAFTERRA_BIOME_T
 
 namespace Crafterra {
+	inline namespace DataType { using BiomeUint = CRAFTERRA_BIOME_T; }
 	inline namespace Enum {
 
 		// バイオームの種類
-		enum class TerrainBiome : BiomeType {
+		enum class TerrainBiome : ::Crafterra::DataType::BiomeUint {
 			empty     // 無し
 			, sea        // 海
 			, lake       // 湖
@@ -44,6 +54,10 @@ namespace Crafterra {
 			, size   // バイオームの数
 		};
 
+	}
+	inline namespace Value {
+		// 地形バイオームの大きさ
+		constexpr ::Crafterra::DataType::BiomeUint terrain_biome_size = static_cast<::Crafterra::DataType::BiomeUint>(::Crafterra::Enum::TerrainBiome::size);
 	}
 }
 

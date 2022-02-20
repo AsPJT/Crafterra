@@ -18,6 +18,11 @@ Third party content is copyrighted by its respective owners.
 
 ---
 
+# Terrain Generation ⛰️
+
+![Terrain](https://raw.githubusercontent.com/AsPJT/CrafterraPicture/main/Picture/TerrainGeneration/2022/0216/8px/14.png)
+![Terrain](https://raw.githubusercontent.com/AsPJT/CrafterraPicture/main/Picture/TerrainGeneration/2022/0216/8px/20.png)
+
 # Implementation Features 💡
 
 [![Airship](https://raw.githubusercontent.com/AsPJT/CrafterraPicture/main/Picture/ActorMode/airship.gif)](https://github.com/AsPJT/Crafterra/wiki)
