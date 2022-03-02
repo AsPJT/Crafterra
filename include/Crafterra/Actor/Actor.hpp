@@ -91,6 +91,23 @@ namespace Crafterra {
 		void setWalkingSpeed(const float walking_speed_) { this->walking_speed = walking_speed_; }
         
         // 移動処理 ----------
+        
+        bool moveRight(ObjectMapMat& terrain_object_matrix_, float speed_) {
+            return move(terrain_object_matrix_, speed_, 0.0f);
+        }
+        
+        bool moveLeft(ObjectMapMat& terrain_object_matrix_, float speed_) {
+            return move(terrain_object_matrix_, -speed_, 0.0f);
+        }
+        
+        bool moveUp(ObjectMapMat& terrain_object_matrix_, float speed_) {
+            return move(terrain_object_matrix_, 0.0f, speed_);
+        }
+        
+        bool moveDown(ObjectMapMat& terrain_object_matrix_, float speed_) {
+            return move(terrain_object_matrix_, 0.0f, -speed_);
+        }
+        
         bool move(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
             Pos_ next_pos_x = this->x + speed_x_;
             Pos_ next_pos_z = this->z + speed_z_;

@@ -44,30 +44,27 @@ namespace Crafterra {
         // 移動
 		key.setKey();
         
+        float move_speed = player.getWalkingSpeed();
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-            float move_speed = -player.getWalkingSpeed();
-            if (player.move(terrain_object_matrix, move_speed, 0.0f)) {
+            if (player.moveLeft(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveX(move_speed);
             }
 			player.setDirection(::Crafterra::Enum::ActorDirection::left);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-            float move_speed = player.getWalkingSpeed();
-            if (player.move(terrain_object_matrix, move_speed, 0.0f)) {
+            if (player.moveRight(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveX(move_speed);
             }
 			player.setDirection(::Crafterra::Enum::ActorDirection::right);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-            float move_speed = -player.getWalkingSpeed();
-            if (player.move(terrain_object_matrix, 0.0f, move_speed)) {
+            if (player.moveUp(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveY(move_speed);
             }
 			player.setDirection(::Crafterra::Enum::ActorDirection::up);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-            float move_speed = player.getWalkingSpeed();
-            if (player.move(terrain_object_matrix, 0.0f, move_speed)) {
+            if (player.moveDown(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveY(move_speed);
             }
 			player.setDirection(::Crafterra::Enum::ActorDirection::down);
