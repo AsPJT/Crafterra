@@ -20,17 +20,10 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ACTOR_ACTOR_HPP
 
 #include <Crafterra/Enum/ActorDirection.hpp>
+#include <Crafterra/Enum/ActorMoveType.hpp>
 #include <AsLib2/DataType/Matrix.hpp>
 
 namespace Crafterra {
-
-    // アクタの移動タイプ
-    enum class ActorMoveType : ::As::Uint32 {
-        stay,           // 移動なし
-        walk,           // 歩く(高さの移動なし)
-        climb_up,       // 登る(高さ+1)
-        climb_down,     // 下る(高さ-1)
-    };
 
 	// アクタ ( プレイヤー、動物、人間、動くもの全般 )
 	class Actor {
@@ -39,6 +32,7 @@ namespace Crafterra {
 
 		using Pos_ = float;
         using ObjectMapMat = ::As::UniquePtrMatrix4D<TerrainObject>;
+        using MoveType = ::Crafterra::Enum::ActorMoveType;
 
 		// 座標 ( フィールドマップ座標系 )
 		Pos_ x{}, y{}, z{};
@@ -135,12 +129,18 @@ namespace Crafterra {
             
             // 崖上 or 海判定
             for (int l = 0; l <= 2; ++l) {
+                // 歩き判定
                 TerrainObject obj = terrain_object_matrix_.getValueZXYL(fz, fx, fy, l);
                 if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
-                    return ActorMoveType::walk;
+                    return MoveType::walk;
+                }
+                // 崖下り判定
+                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz, fx, fy - 1, l);
+                if (objBellow == TerrainObject::cliff_top) {
+                    return MoveType::climb_down;
                 }
             }
-            return ActorMoveType::stay;
+            return MoveType::stay;
         }
         
         // プレイヤーの移動処理 ----------
@@ -154,6 +154,11 @@ namespace Crafterra {
                 case ActorMoveType::walk:
                     this->x = pos_x;
                     this->z = pos_z;
+                    return true;
+                case ActorMoveType::climb_down:
+                    this->x = pos_x;
+                    this->z = pos_z;
+                    this->y--;
                     return true;
                 default:
                     return false;

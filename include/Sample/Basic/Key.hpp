@@ -46,10 +46,10 @@ namespace Crafterra {
         
         float move_speed = player.getWalkingSpeed();
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
+            player.setDirection(::Crafterra::Enum::ActorDirection::left);
             if (player.moveLeft(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveX(-move_speed);
             }
-			player.setDirection(::Crafterra::Enum::ActorDirection::left);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
             if (player.moveRight(terrain_object_matrix, move_speed)) {
@@ -58,16 +58,16 @@ namespace Crafterra {
 			player.setDirection(::Crafterra::Enum::ActorDirection::right);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
+            player.setDirection(::Crafterra::Enum::ActorDirection::up);
             if (player.moveUp(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveY(-move_speed);
             }
-			player.setDirection(::Crafterra::Enum::ActorDirection::up);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
+            player.setDirection(::Crafterra::Enum::ActorDirection::down);
             if (player.moveDown(terrain_object_matrix, move_speed)) {
                 cs.camera_size.moveY(move_speed);
             }
-			player.setDirection(::Crafterra::Enum::ActorDirection::down);
 		}
         // ジャンプ
 //        if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
