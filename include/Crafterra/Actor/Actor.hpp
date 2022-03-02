@@ -101,11 +101,11 @@ namespace Crafterra {
         }
         
         bool moveUp(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, 0.0f, speed_);
+            return move(terrain_object_matrix_, 0.0f, -speed_);
         }
         
         bool moveDown(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, 0.0f, -speed_);
+            return move(terrain_object_matrix_, 0.0f, speed_);
         }
         
         bool move(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
