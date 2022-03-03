@@ -119,10 +119,10 @@ namespace Crafterra {
 		ActorMode getMode() const { return this->actor_mode; }
 		void setMode(const ActorMode actor_mode_) { this->actor_mode = actor_mode_; }
         
-        // プレイヤーの処理 =============
+        // プレイヤの処理 =============
         
         // あたり判定処理 ----------
-        ActorMoveType playerMoveType(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x_, Pos_ pos_z_) {
+        ActorMoveType humanoidMoveType(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x_, Pos_ pos_z_) {
             // フィールドマップ座標系
             ::As::IndexUint fx = As::IndexUint(pos_x_);
             ::As::IndexUint fy = As::IndexUint(this->y);
@@ -136,18 +136,22 @@ namespace Crafterra {
                     return MoveType::walk;
                 }
                 // 崖下り判定(cliffなし)
-                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz, fx, fy - 1, l);
+                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz - 1, fx, fy - 1, l);
                 if (objBellow == TerrainObject::cliff_top) {
                     return MoveType::climb_down;
+                }
+                // 崖下り判定(cliffあり)
+                if (obj == TerrainObject::empty && objBellow == TerrainObject::cliff) {
+                    return MoveType::climb_down_cliff;
                 }
             }
             return MoveType::stay;
         }
         
-        // プレイヤーの移動処理 ----------
+        // プレイヤの移動処理 ----------
         void moveHumanoid(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z) {
             // 移動タイプの取得
-            ActorMoveType moveType = playerMoveType(terrain_object_matrix_, pos_x, pos_z);
+            ActorMoveType moveType = humanoidMoveType(terrain_object_matrix_, pos_x, pos_z);
             // 移動なし
             switch(moveType) {
                 case ActorMoveType::stay:
@@ -157,11 +161,46 @@ namespace Crafterra {
                     this->z = pos_z;
                     drawActor(cs_);
                     return;
+                // 崖下り(cliffなし)
                 case ActorMoveType::climb_down:
                     this->x = pos_x;
                     this->z = pos_z;
                     this->y--;
                     drawActor(cs_);
+                    return;
+                // 崖下り(cliffあり)
+                case ActorMoveType::climb_down_cliff:
+                    climbDownCliffHumanoid(cs_);
+                    return;
+                default:
+                    return;
+            }
+        }
+        
+        // プレイヤー崖下り(cliffあり)
+        void climbDownCliffHumanoid(CoordinateSystem& cs_) {
+            float speed = this->walking_speed;
+            float fall_speed = speed + 1.0f;
+            // 高さ更新
+            this->y--;
+            switch(this->direction) {
+                // X方向
+                case ::Crafterra::Enum::ActorDirection::right:
+                    cs_.camera_size.moveX(speed);
+                    cs_.camera_size.moveY(fall_speed);
+                    this->x += speed;
+                    this->z += fall_speed;
+                    return;
+                case ::Crafterra::Enum::ActorDirection::left:
+                    cs_.camera_size.moveX(-speed);
+                    cs_.camera_size.moveY(fall_speed);
+                    this->x -= speed;
+                    this->z += fall_speed;
+                    return;
+                // Z方向
+                case ::Crafterra::Enum::ActorDirection::down:
+                    cs_.camera_size.moveY(fall_speed);
+                    this->z += fall_speed;
                     return;
                 default:
                     return;

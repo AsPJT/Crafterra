@@ -36,10 +36,11 @@ namespace Crafterra {
 
         // アクタの移動タイプ
         enum class ActorMoveType : ::Crafterra::DataType::ActorMoveTypeUint {
-            stay,           // 移動なし
-            walk,           // 歩く(高さの移動なし)
-            climb_up,       // 登る(高さ+1)
-            climb_down,     // 下る(高さ-1)
+            stay,               // 移動なし
+            walk,               // 歩く(高さの移動なし)
+            climb_up,           // 登る(高さ+1)
+            climb_down,         // 下る(高さ-1)
+            climb_down_cliff,   // 崖を下る(高さ-1)
             size,
         };
 
