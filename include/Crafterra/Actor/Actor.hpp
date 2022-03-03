@@ -86,32 +86,33 @@ namespace Crafterra {
         
         // 移動処理 ----------
         
-        bool moveRight(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, speed_, 0.0f);
+        void moveRight(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, this->walking_speed, 0.0f);
         }
         
-        bool moveLeft(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, -speed_, 0.0f);
+        void moveLeft(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, -this->walking_speed, 0.0f);
         }
         
-        bool moveUp(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, 0.0f, -speed_);
+        void moveUp(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, 0.0f, -this->walking_speed);
         }
         
-        bool moveDown(ObjectMapMat& terrain_object_matrix_, float speed_) {
-            return move(terrain_object_matrix_, 0.0f, speed_);
+        void moveDown(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, 0.0f, this->walking_speed);
         }
         
-        bool move(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
+        void move(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
             Pos_ next_pos_x = this->x + speed_x_;
             Pos_ next_pos_z = this->z + speed_z_;
             // プレイヤ移動
             if (this->actor_mode == ActorMode::humanoid) {
-                return moveHumanoid(terrain_object_matrix, next_pos_x, next_pos_z);
+                moveHumanoid(cs_, terrain_object_matrix, next_pos_x, next_pos_z);
+                return;
             }
             this->x = next_pos_x;
             this->z = next_pos_z;
-            return true;
+            drawActor(cs_);
         }
 
 		// 様式 ----------
@@ -134,7 +135,7 @@ namespace Crafterra {
                 if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
                     return MoveType::walk;
                 }
-                // 崖下り判定
+                // 崖下り判定(cliffなし)
                 TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz, fx, fy - 1, l);
                 if (objBellow == TerrainObject::cliff_top) {
                     return MoveType::climb_down;
@@ -144,24 +145,46 @@ namespace Crafterra {
         }
         
         // プレイヤーの移動処理 ----------
-        bool moveHumanoid(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z) {
+        void moveHumanoid(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z) {
             // 移動タイプの取得
             ActorMoveType moveType = playerMoveType(terrain_object_matrix_, pos_x, pos_z);
             // 移動なし
             switch(moveType) {
                 case ActorMoveType::stay:
-                    return false;
+                    return;
                 case ActorMoveType::walk:
                     this->x = pos_x;
                     this->z = pos_z;
-                    return true;
+                    drawActor(cs_);
+                    return;
                 case ActorMoveType::climb_down:
                     this->x = pos_x;
                     this->z = pos_z;
                     this->y--;
-                    return true;
+                    drawActor(cs_);
+                    return;
                 default:
-                    return false;
+                    return;
+            }
+        }
+        
+        // プレイヤーの描画処理 ----------
+        void drawActor(CoordinateSystem& cs_) {
+            switch(this->direction) {
+                case ::Crafterra::Enum::ActorDirection::right:
+                    cs_.camera_size.moveX(this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::left:
+                    cs_.camera_size.moveX(-this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::up:
+                    cs_.camera_size.moveY(-this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::down:
+                    cs_.camera_size.moveY(this->walking_speed);
+                    return;
+                default:
+                    return;
             }
         }
 
