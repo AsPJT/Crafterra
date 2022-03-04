@@ -20,6 +20,7 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_ACTOR_ACTOR_HPP
 
 #include <Crafterra/Enum/ActorDirection.hpp>
+#include <Crafterra/Enum/ActorMoveType.hpp>
 #include <AsLib2/DataType/Matrix.hpp>
 
 namespace Crafterra {
@@ -31,6 +32,7 @@ namespace Crafterra {
 
 		using Pos_ = float;
         using ObjectMapMat = ::As::UniquePtrMatrix4D<TerrainObject>;
+        using MoveType = ::Crafterra::Enum::ActorMoveType;
 
 		// 座標 ( フィールドマップ座標系 )
 		Pos_ x{}, y{}, z{};
@@ -77,46 +79,153 @@ namespace Crafterra {
 		void setHitWidth(const Pos_ width_) { this->hit_width = width_; }
 		void setHitHeight(const Pos_ height_) { this->hit_height = height_; }
 		void setHitDepth(const Pos_ depth_) { this->hit_depth = depth_; }
-        
-        // あたり判定処理 ----------
-        bool playerCanMove(ObjectMapMat& terrain_object_matrix, Pos_ nextPosX_, Pos_ nextPosZ_) {
-            // フィールドマップ座標系
-            ::As::IndexUint fx = As::IndexUint(nextPosX_);
-            ::As::IndexUint fy = As::IndexUint(this->y);
-            ::As::IndexUint fz = As::IndexUint(nextPosZ_) + fy;
-            // 崖上 or 海判定
-            for (int l = 0; l <= 2; ++l) {
-                TerrainObject obj = terrain_object_matrix.getValueZXYL(fz, fx, fy, l);
-                if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
-                    return true;
-                }
-            }
-            return false;
-        }
 
 		// 速度 ----------
 		float getWalkingSpeed() const { return this->walking_speed; }
 		void setWalkingSpeed(const float walking_speed_) { this->walking_speed = walking_speed_; }
         
         // 移動処理 ----------
-        bool movePlayer(ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
+        
+        void moveRight(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, this->walking_speed, 0.0f);
+        }
+        
+        void moveLeft(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, -this->walking_speed, 0.0f);
+        }
+        
+        void moveUp(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, 0.0f, -this->walking_speed);
+        }
+        
+        void moveDown(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
+            move(cs_, terrain_object_matrix_, 0.0f, this->walking_speed);
+        }
+        
+        void move(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
             Pos_ next_pos_x = this->x + speed_x_;
             Pos_ next_pos_z = this->z + speed_z_;
             // プレイヤ移動
             if (this->actor_mode == ActorMode::humanoid) {
-                // 当たり判定
-                if (!playerCanMove(terrain_object_matrix, next_pos_x, next_pos_z)) {
-                    return false;
-                }
+                moveHumanoid(cs_, terrain_object_matrix, next_pos_x, next_pos_z);
+                return;
             }
             this->x = next_pos_x;
             this->z = next_pos_z;
-            return true;
+            drawActor(cs_);
         }
 
 		// 様式 ----------
 		ActorMode getMode() const { return this->actor_mode; }
 		void setMode(const ActorMode actor_mode_) { this->actor_mode = actor_mode_; }
+        
+        // プレイヤの処理 =============
+        
+        // あたり判定処理 ----------
+        ActorMoveType humanoidMoveType(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x_, Pos_ pos_z_) {
+            // フィールドマップ座標系
+            ::As::IndexUint fx = As::IndexUint(pos_x_);
+            ::As::IndexUint fy = As::IndexUint(this->y);
+            ::As::IndexUint fz = As::IndexUint(pos_z_) + fy;
+            
+            // 崖上 or 海判定
+            for (int l = 0; l <= 2; ++l) {
+                // 歩き判定
+                TerrainObject obj = terrain_object_matrix_.getValueZXYL(fz, fx, fy, l);
+                if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
+                    return MoveType::walk;
+                }
+                // 崖下り判定(cliffなし)
+                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz - 1, fx, fy - 1, l);
+                if (objBellow == TerrainObject::cliff_top) {
+                    return MoveType::climb_down;
+                }
+                // 崖下り判定(cliffあり)
+                if (obj == TerrainObject::empty && objBellow == TerrainObject::cliff) {
+                    return MoveType::climb_down_cliff;
+                }
+            }
+            return MoveType::stay;
+        }
+        
+        // プレイヤの移動処理 ----------
+        void moveHumanoid(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z) {
+            // 移動タイプの取得
+            ActorMoveType moveType = humanoidMoveType(terrain_object_matrix_, pos_x, pos_z);
+            // 移動なし
+            switch(moveType) {
+                case ActorMoveType::stay:
+                    return;
+                case ActorMoveType::walk:
+                    this->x = pos_x;
+                    this->z = pos_z;
+                    drawActor(cs_);
+                    return;
+                // 崖下り(cliffなし)
+                case ActorMoveType::climb_down:
+                    this->x = pos_x;
+                    this->z = pos_z;
+                    this->y--;
+                    drawActor(cs_);
+                    return;
+                // 崖下り(cliffあり)
+                case ActorMoveType::climb_down_cliff:
+                    climbDownCliffHumanoid(cs_);
+                    return;
+                default:
+                    return;
+            }
+        }
+        
+        // プレイヤー崖下り(cliffあり)
+        void climbDownCliffHumanoid(CoordinateSystem& cs_) {
+            float speed = this->walking_speed;
+            float fall_speed = speed + 1.0f;
+            // 高さ更新
+            this->y--;
+            switch(this->direction) {
+                // X方向
+                case ::Crafterra::Enum::ActorDirection::right:
+                    cs_.camera_size.moveX(speed);
+                    cs_.camera_size.moveY(fall_speed);
+                    this->x += speed;
+                    this->z += fall_speed;
+                    return;
+                case ::Crafterra::Enum::ActorDirection::left:
+                    cs_.camera_size.moveX(-speed);
+                    cs_.camera_size.moveY(fall_speed);
+                    this->x -= speed;
+                    this->z += fall_speed;
+                    return;
+                // Z方向
+                case ::Crafterra::Enum::ActorDirection::down:
+                    cs_.camera_size.moveY(fall_speed);
+                    this->z += fall_speed;
+                    return;
+                default:
+                    return;
+            }
+        }
+        
+        // プレイヤーの描画処理 ----------
+        void drawActor(CoordinateSystem& cs_) {
+            switch(this->direction) {
+                case ::Crafterra::Enum::ActorDirection::right:
+                    cs_.camera_size.moveX(this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::left:
+                    cs_.camera_size.moveX(-this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::up:
+                    cs_.camera_size.moveY(-this->walking_speed);
+                    return;
+                case ::Crafterra::Enum::ActorDirection::down:
+                    cs_.camera_size.moveY(this->walking_speed);
+                    return;
+                default:
+                    return;
+            }
+        }
 
 	};
 

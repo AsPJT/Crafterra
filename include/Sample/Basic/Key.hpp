@@ -45,32 +45,20 @@ namespace Crafterra {
 		key.setKey();
         
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
-            float move_speed = -player.getWalkingSpeed();
-            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
-                cs.camera_size.moveX(move_speed);
-            }
-			player.setDirection(::Crafterra::Enum::ActorDirection::left);
+            player.setDirection(::Crafterra::Enum::ActorDirection::left);
+            player.moveLeft(cs, terrain_object_matrix);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
-            float move_speed = player.getWalkingSpeed();
-            if (player.movePlayer(terrain_object_matrix, move_speed, 0.0f)) {
-                cs.camera_size.moveX(move_speed);
-            }
-			player.setDirection(::Crafterra::Enum::ActorDirection::right);
+            player.setDirection(::Crafterra::Enum::ActorDirection::right);
+            player.moveRight(cs, terrain_object_matrix);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
-            float move_speed = -player.getWalkingSpeed();
-            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
-                cs.camera_size.moveY(move_speed);
-            }
-			player.setDirection(::Crafterra::Enum::ActorDirection::up);
+            player.setDirection(::Crafterra::Enum::ActorDirection::up);
+            player.moveUp(cs, terrain_object_matrix);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-            float move_speed = player.getWalkingSpeed();
-            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
-                cs.camera_size.moveY(move_speed);
-            }
-			player.setDirection(::Crafterra::Enum::ActorDirection::down);
+            player.setDirection(::Crafterra::Enum::ActorDirection::down);
+            player.moveDown(cs, terrain_object_matrix);
 		}
         // ジャンプ
 //        if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
