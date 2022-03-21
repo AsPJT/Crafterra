@@ -41,33 +41,30 @@ namespace Crafterra {
         ::Crafterra::Resource& resource_
 	) {
 
-        // 移動
+        
 		key.setKey();
         
+        // ジャンプ入力
+        bool is_jump = key.isPressed(::As::Key::key_space);
+        
+        // 移動
 		if (key.isPressed(::As::Key::key_a) || key.isPressed(::As::Key::key_left)) {
             player.setDirection(::Crafterra::Enum::ActorDirection::left);
-            player.moveLeft(cs, terrain_object_matrix);
+            player.moveLeft(cs, terrain_object_matrix, is_jump);
 		}
 		if (key.isPressed(::As::Key::key_d) || key.isPressed(::As::Key::key_right)) {
             player.setDirection(::Crafterra::Enum::ActorDirection::right);
-            player.moveRight(cs, terrain_object_matrix);
+            player.moveRight(cs, terrain_object_matrix, is_jump);
 		}
 		if (key.isPressed(::As::Key::key_w) || key.isPressed(::As::Key::key_up)) {
             player.setDirection(::Crafterra::Enum::ActorDirection::up);
-            player.moveUp(cs, terrain_object_matrix);
+            player.moveUp(cs, terrain_object_matrix, is_jump);
 		}
 		if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
             player.setDirection(::Crafterra::Enum::ActorDirection::down);
-            player.moveDown(cs, terrain_object_matrix);
+            player.moveDown(cs, terrain_object_matrix, is_jump);
 		}
-        // ジャンプ
-//        if (key.isPressed(::As::Key::key_s) || key.isPressed(::As::Key::key_down)) {
-//            float move_speed = player.getWalkingSpeed();
-//            if (player.movePlayer(terrain_object_matrix, 0.0f, move_speed)) {
-//                cs.camera_size.moveY(move_speed);
-//            }
-//            player.setDirection(::Crafterra::Enum::ActorDirection::down);
-//        }
+        
 		if (key.isDown(::As::Key::key_g)) {
 			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk);
 			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);

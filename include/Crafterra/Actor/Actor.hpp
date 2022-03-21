@@ -86,23 +86,23 @@ namespace Crafterra {
         
         // 移動処理 ----------
         
-        void moveRight(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
-            move(cs_, terrain_object_matrix_, this->walking_speed, 0.0f);
+        void moveRight(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, bool is_jump_) {
+            move(cs_, terrain_object_matrix_, this->walking_speed, 0.0f, is_jump_);
         }
         
-        void moveLeft(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
-            move(cs_, terrain_object_matrix_, -this->walking_speed, 0.0f);
+        void moveLeft(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, bool is_jump_) {
+            move(cs_, terrain_object_matrix_, -this->walking_speed, 0.0f, is_jump_);
         }
         
-        void moveUp(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
-            move(cs_, terrain_object_matrix_, 0.0f, -this->walking_speed);
+        void moveUp(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, bool is_jump_) {
+            move(cs_, terrain_object_matrix_, 0.0f, -this->walking_speed, is_jump_);
         }
         
-        void moveDown(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_) {
-            move(cs_, terrain_object_matrix_, 0.0f, this->walking_speed);
+        void moveDown(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, bool is_jump_) {
+            move(cs_, terrain_object_matrix_, 0.0f, this->walking_speed, is_jump_);
         }
         
-        void move(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_) {
+        void move(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix, float speed_x_, float speed_z_, bool is_jump_) {
             Pos_ next_pos_x = this->x + speed_x_;
             Pos_ next_pos_z = this->z + speed_z_;
             // プレイヤ移動

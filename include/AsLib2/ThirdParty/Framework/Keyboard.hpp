@@ -66,7 +66,10 @@ namespace As {
 		, key_right
 		, key_up
 		, key_down
-		, key_size
+        , key_space
+        , key_l_shift
+        , key_r_shift
+        , key_size
 	};
 #if defined(__DXLIB)
 	std::array<::As::IndexUint, ::As::IndexUint(Key::key_size)> dxKey{ {
@@ -110,6 +113,9 @@ namespace As {
 			,KEY_INPUT_RIGHT
 			,KEY_INPUT_UP
 			,KEY_INPUT_DOWN
+            ,KEY_INPUT_SPACE
+            ,KEY_INPUT_LSHIFT
+            ,KEY_INPUT_RSHIFT
 } };
 #endif
 
@@ -193,6 +199,9 @@ namespace As {
 			case Key::key_right: return ::s3d::KeyRight.pressed(); break;
 			case Key::key_up: return ::s3d::KeyUp.pressed(); break;
 			case Key::key_down: return ::s3d::KeyDown.pressed(); break;
+            case Key::key_space: return ::s3d::KeySpace.pressed(); break;
+            case Key::key_l_shift: return ::s3d::KeyLShift.pressed(); break;
+            case Key::key_r_shift: return ::s3d::KeyRShift.pressed(); break;
 			}
 #endif
 			return false;
@@ -242,6 +251,9 @@ namespace As {
 			case Key::key_right: return ::s3d::KeyRight.up(); break;
 			case Key::key_up: return ::s3d::KeyUp.up(); break;
 			case Key::key_down: return ::s3d::KeyDown.up(); break;
+            case Key::key_space: return ::s3d::KeySpace.up(); break;
+            case Key::key_l_shift: return ::s3d::KeyLShift.up(); break;
+            case Key::key_r_shift: return ::s3d::KeyRShift.up(); break;
 			}
 #endif
 			return false;
@@ -291,6 +303,9 @@ namespace As {
 			case Key::key_right: return ::s3d::KeyRight.down(); break;
 			case Key::key_up: return ::s3d::KeyUp.down(); break;
 			case Key::key_down: return ::s3d::KeyDown.down(); break;
+            case Key::key_space: return ::s3d::KeySpace.down(); break;
+            case Key::key_l_shift: return ::s3d::KeyLShift.down(); break;
+            case Key::key_r_shift: return ::s3d::KeyRShift.down(); break;
 			}
 			return false;
 #endif
