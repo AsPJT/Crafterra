@@ -107,7 +107,7 @@ namespace Crafterra {
             Pos_ next_pos_z = this->z + speed_z_;
             // プレイヤ移動
             if (this->actor_mode == ActorMode::humanoid) {
-                moveHumanoid(cs_, terrain_object_matrix, next_pos_x, next_pos_z);
+                moveHumanoid(cs_, terrain_object_matrix, next_pos_x, next_pos_z, is_jump_);
                 return;
             }
             this->x = next_pos_x;
@@ -122,7 +122,7 @@ namespace Crafterra {
         // プレイヤの処理 =============
         
         // あたり判定処理 ----------
-        ActorMoveType humanoidMoveType(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x_, Pos_ pos_z_) {
+        ActorMoveType humanoidMoveType(ObjectMapMat& terrain_object_matrix_, Pos_ pos_x_, Pos_ pos_z_, bool is_jump_) {
             // フィールドマップ座標系
             ::As::IndexUint fx = As::IndexUint(pos_x_);
             ::As::IndexUint fy = As::IndexUint(this->y);
@@ -130,13 +130,28 @@ namespace Crafterra {
             
             // 崖上 or 海判定
             for (int l = 0; l <= 2; ++l) {
-                // 歩き判定
+                
                 TerrainObject obj = terrain_object_matrix_.getValueZXYL(fz, fx, fy, l);
+                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz - 1, fx, fy - 1, l);
+                
+                // ジャンプ入力あり
+                if (is_jump_) {
+                    TerrainObject objAbove = terrain_object_matrix_.getValueZXYL(fz + 1, fx, fy + 1, l);
+                    // 崖登り(cliffなし)
+                    if (objAbove == TerrainObject::cliff_top) {
+                        return MoveType::climb_up;
+                    }
+                    // 崖登り(cliffあり)
+                    if (objAbove == TerrainObject::empty && obj == TerrainObject::cliff) {
+                        return MoveType::climb_up_cliff;
+                    }
+                }
+                
+                // 歩き判定
                 if (obj == TerrainObject::cliff_top || obj == TerrainObject::sea) {
                     return MoveType::walk;
                 }
                 // 崖下り判定(cliffなし)
-                TerrainObject objBellow = terrain_object_matrix_.getValueZXYL(fz - 1, fx, fy - 1, l);
                 if (objBellow == TerrainObject::cliff_top) {
                     return MoveType::climb_down;
                 }
@@ -149,11 +164,11 @@ namespace Crafterra {
         }
         
         // プレイヤの移動処理 ----------
-        void moveHumanoid(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z) {
+        void moveHumanoid(CoordinateSystem& cs_, ObjectMapMat& terrain_object_matrix_, Pos_ pos_x, Pos_ pos_z, bool is_jump_) {
             // 移動タイプの取得
-            ActorMoveType moveType = humanoidMoveType(terrain_object_matrix_, pos_x, pos_z);
-            // 移動なし
+            ActorMoveType moveType = humanoidMoveType(terrain_object_matrix_, pos_x, pos_z, is_jump_);
             switch(moveType) {
+                // 移動なし
                 case ActorMoveType::stay:
                     return;
                 case ActorMoveType::walk:
@@ -172,6 +187,12 @@ namespace Crafterra {
                 case ActorMoveType::climb_down_cliff:
                     climbDownCliffHumanoid(cs_);
                     return;
+                // 崖登り(cliffなし)
+                case ActorMoveType::climb_up:
+                    this->x = pos_x;
+                    this->z = pos_z;
+                    this->y++;
+                    drawActor(cs_);
                 default:
                     return;
             }
