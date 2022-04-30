@@ -375,18 +375,18 @@ namespace Crafterra {
 
 			if (amount_of_rainfall >= 100 && temperature >= 20) {
 				if (temperature < 44) {
-					coniferous_tree_generation_probability = ((temperature - 20.0) / (44 - 20)) * 0.3; // 針葉樹の生成確率
+					coniferous_tree_generation_probability = ((temperature - 20.0) / (44.0 - 20.0)) * 0.3; // 針葉樹の生成確率
 				}
 				else if (temperature < 64) {
-					coniferous_tree_generation_probability = (1.0 - ((temperature - 44.0) / (64 - 44))) * 0.3; // 針葉樹の生成確率
+					coniferous_tree_generation_probability = (1.0 - ((temperature - 44.0) / (64.0 - 44.0))) * 0.3; // 針葉樹の生成確率
 				}
 
 				if (temperature >= 44) {
 					if (temperature < 72) {
-						green_broadleaf_tree_generation_probability = ((temperature - 44.0) / (72 - 44)) * 0.1; // 緑色の広葉樹の生成確率
+						green_broadleaf_tree_generation_probability = ((temperature - 44.0) / (72.0 - 44.0)) * 0.1; // 緑色の広葉樹の生成確率
 					}
 					else {
-						green_broadleaf_tree_generation_probability = 0.1 + ((temperature - 72.0) / (240 - 72)) * 0.6; // 緑色の広葉樹の生成確率
+						green_broadleaf_tree_generation_probability = 0.1 + ((temperature - 72.0) / (240.0 - 72.0)) * 0.6; // 緑色の広葉樹の生成確率
 					}
 				}
 			}
@@ -483,7 +483,7 @@ namespace Crafterra {
 		// フィールドマップを生成
 		void generation(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, TerrainPerlinNoise& terrain_noise_, const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const ::As::IndexAreaXZ& area) const {
 
-			const ElevationUint sea_elevation = ElevationUint(::Crafterra::getElevationOfSeaLevel());
+			constexpr ElevationUint sea_elevation = ElevationUint(::Crafterra::getElevationOfSeaLevel());
 
 			terrain_noise_.generation(terrain_information_matrix, chunk_index_x_, chunk_index_y_, area);
 
