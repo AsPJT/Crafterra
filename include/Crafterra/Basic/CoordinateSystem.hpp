@@ -113,7 +113,6 @@ namespace Crafterra {
 					((cs_int(this->camera_size.getStartX()) >= cs_int(this->field_map_size.getStartX())) ?
 					((cs_f32(cs_int(this->camera_size.getStartX())) - this->camera_size.getStartX()) * cs_f32(this->map_chip_size.getWidth())) :
 						(cs_f32(this->window_size.getWidthHalf()) - (this->camera_size.getCenterX() - cs_f32(this->field_map_size.getStartX())) * cs_f32(this->map_chip_size.getWidth())));
-
 				for (cs_uint x = sx; x < this->field_map_size.getEndX(); ++x) {
 
 					drawRect_(

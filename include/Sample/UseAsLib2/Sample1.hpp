@@ -177,6 +177,9 @@ namespace Crafterra {
 				::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 16),
 					int(cs.map_chip_size.getWidthHalf() * 6), int(cs.map_chip_size.getHeightHalf() * 3), 0x00111111, TRUE);
 				::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+#elif defined(SIV3D_INCLUDED)
+				::s3d::Ellipse(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 16),
+					int(cs.map_chip_size.getWidthHalf() * 6), int(cs.map_chip_size.getHeightHalf() * 3)).draw(::s3d::Color(17,17,17,128));
 #endif // __DXLIB
 
 				// 飛空艇を描画

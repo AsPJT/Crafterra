@@ -46,8 +46,8 @@ namespace Crafterra {
 	template<typename Matrix_, typename ElevationUint_, typename MapMat_>
 	void generatePerlinNoiseOnFieldMap(
 		const Matrix_& matrix_,
-		const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, MapMat_& terrain_information_matrix,
-		const ::As::IndexAreaXZ& area, ::Crafterra::PerlinNoise& perlin, const double frequency_, const ::As::IndexUint octaves_,
+		const ::As::IndexUint chunk_index_x_, const ::As::IndexUint chunk_index_y_, const MapMat_& terrain_information_matrix,
+		const ::As::IndexAreaXZ& area, const ::Crafterra::PerlinNoise& perlin, const double frequency_, const ::As::IndexUint octaves_,
 		const bool for_elevation_, const ElevationUint_ max_height_, const ElevationUint_ min_height_ = 0) {
 
 		const ::As::IndexUint one_chunk_width_  = terrain_information_matrix.getWidth() / 2;
@@ -55,24 +55,38 @@ namespace Crafterra {
 		
 		const ::As::IndexUint end_x_ = area.start_x + area.width;
 		const ::As::IndexUint end_y_ = area.start_z + area.depth;
-		for (::As::IndexUint row_index{ area.start_z }, row{}; row_index < end_y_; ++row_index, ++row){
-			for (::As::IndexUint col_index{ area.start_x }, col{}; col_index < end_x_; ++col_index, ++col){
 
-				double noise = perlin.octaveNoise(octaves_,
+#ifdef _OPENMP
+		::As::IndexUint row{};
+//#pragma omp parallel for
+		for (::As::Int64 row_index{ ::As::Int64(area.start_z) }; row_index < ::As::Int64(end_y_); ++row_index) {
+			::As::IndexUint col{};
+			for (::As::Int64 col_index{ ::As::Int64(area.start_x) }; col_index < ::As::Int64(end_x_); ++col_index) {
+#else
+		for (::As::IndexUint row_index{ area.start_z }, row{}; row_index < end_y_; ++row_index, ++row) {
+			for (::As::IndexUint col_index{ area.start_x }, col{}; col_index < end_x_; ++col_index, ++col) {
+#endif
+
+				const double noise = perlin.octaveNoise(octaves_,
 								(::As::Uint64(chunk_index_x_) * ::As::Uint64(one_chunk_width_)  + ::As::Uint64(col)) / frequency_,
 								(::As::Uint64(chunk_index_y_) * ::As::Uint64(one_chunk_height_) + ::As::Uint64(row)) / frequency_
 							);
 
-				if (for_elevation_) {
+				const double fix_noise = (for_elevation_) ?
 					// ノイズ値、最低/最高標高、険しさ値(0.0 - 1.0)、海面の標高
-					noise = Crafterra::processNoiseUsingHypsographicCurve(
+					Crafterra::processNoiseUsingHypsographicCurve(
 						noise, min_height_, max_height_,
-						getMountainousnessByTemperatureAndRainFall(terrain_information_matrix[row_index][col_index].getTemperature(), terrain_information_matrix[row_index][col_index].getAmountOfRainfall()),
-						::Crafterra::getElevationOfSeaLevel());
-				}
-				matrix_(col_index, row_index,
-					ElevationUint_(min_height_ + static_cast<ElevationUint_>((max_height_ - min_height_) * noise)));
+						getMountainousnessByTemperatureAndRainFall(terrain_information_matrix[::As::IndexUint(row_index)][::As::IndexUint(col_index)].getTemperature(), terrain_information_matrix[::As::IndexUint(row_index)][::As::IndexUint(col_index)].getAmountOfRainfall()),
+						::Crafterra::getElevationOfSeaLevel()) : noise;
+				matrix_(::As::IndexUint(col_index), ::As::IndexUint(row_index), ElevationUint_(double(min_height_) + (double(max_height_) - double(min_height_)) * fix_noise));
+			
+#ifdef _OPENMP
+				++col;
+#endif
 			}
+#ifdef _OPENMP
+			++row;
+#endif
 		}
 	}
 

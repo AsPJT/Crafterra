@@ -82,7 +82,12 @@ namespace Crafterra {
 		// 描画マップの描画範囲を作成
 		void setDrawRange(DrawMapMat& draw_map_matrix) const {
 			// 崖上のバイオームオートタイルを調べる
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int64 col{}; col < ::As::Int64(draw_map_matrix.getWidth()); ++col)
+#else
 			for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col)
+#endif
 				for (::As::IndexUint row{}; row < draw_map_matrix.getDepth(); ++row)
 					for (::As::IndexUint layer = 0; layer < draw_map_layer_max; ++layer) {
 						DrawMapChipUnit& draw_map = draw_map_matrix[row][col].getTile(layer);
@@ -243,8 +248,7 @@ namespace Crafterra {
 		}
 		// 地形から描画マップを作成
 		void setDrawMapFromTerrain(ObjectMapMat& terrain_object_matrix, const MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix) const {
-
-			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row)
+			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row) {
 				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col, ++mat_index) {
 					const TerrainInformation& terrain_info = terrain_information_matrix[row][col];
 					DrawMapChip& draw_map = draw_map_matrix[row][col];
@@ -254,7 +258,7 @@ namespace Crafterra {
 						draw_map.getTile(layer).setElevation(0); // 初期化
 					}
 
-					for (::As::IndexUint row3{ row }, terrain_obj_index{}; terrain_obj_index < terrain_object_matrix.getHeight(); --row3, ++terrain_obj_index) {
+					for (::As::IndexUint row3{ ::As::IndexUint(row) }, terrain_obj_index{}; terrain_obj_index < terrain_object_matrix.getHeight(); --row3, ++terrain_obj_index) {
 						for (::As::IndexUint terrain_obj_layer_index = 0; terrain_obj_layer_index < terrain_object_matrix.getLayer(); ++terrain_obj_layer_index) {
 							const TerrainObject terrain_obj = terrain_object_matrix.getValueZXYL(mat_index, terrain_obj_index, terrain_obj_layer_index);
 							if (terrain_obj != TerrainObject::empty) {
@@ -283,12 +287,19 @@ namespace Crafterra {
 					}
 
 				}
+			}
 		}
 
 		// フィールドマップの下半分の地形が上半分へ移動する
 		void moveUp(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_height_half_) const {
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int32 row{}; row < ::As::Int32(field_height_half_); ++row)
+				for (::As::Int32 col{}; col < ::As::Int32(terrain_information_matrix.getWidth()); ++col) {
+#else
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
 				for (::As::IndexUint col{}; col < terrain_information_matrix.getWidth(); ++col) {
+#endif
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
@@ -305,8 +316,14 @@ namespace Crafterra {
 		}
 		// フィールドマップの上半分の地形が下半分へ移動する
 		void moveDown(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_height_half_) const {
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int32 row{}; row < ::As::Int32(field_height_half_); ++row)
+				for (::As::Int32 col{}; col < ::As::Int32(terrain_information_matrix.getWidth()); ++col) {
+#else
 			for (::As::IndexUint row{}; row < field_height_half_; ++row)
 				for (::As::IndexUint col{}; col < terrain_information_matrix.getWidth(); ++col) {
+#endif
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row + field_height_half_, col);
@@ -323,8 +340,14 @@ namespace Crafterra {
 		}
 		// フィールドマップの右半分の地形が左半分へ移動する
 		void moveLeft(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_width_half_) const {
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int32 row{}; row < ::As::Int32(terrain_information_matrix.getDepth()); ++row)
+				for (::As::Int32 col{}; col < ::As::Int32(field_width_half_); ++col) {
+#else
 			for (::As::IndexUint row{}; row < terrain_information_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
+#endif
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col + field_width_half_);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
@@ -341,8 +364,14 @@ namespace Crafterra {
 		}
 		// フィールドマップの左半分の地形が右半分へ移動する
 		void moveRight(ObjectMapMat& terrain_object_matrix, MapMat& terrain_information_matrix, const ::As::IndexUint field_width_half_) const {
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int32 row{}; row < ::As::Int32(terrain_information_matrix.getDepth()); ++row)
+				for (::As::Int32 col{}; col < ::As::Int32(field_width_half_); ++col) {
+#else
 			for (::As::IndexUint row{}; row < terrain_information_matrix.getDepth(); ++row)
 				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
+#endif
 
 					const ::As::IndexUint before_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
 					const ::As::IndexUint after_bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col + field_width_half_);
@@ -492,10 +521,16 @@ namespace Crafterra {
 			const ::As::IndexUint end_x_ = area.start_x + area.width;
 			const ::As::IndexUint end_y_ = area.start_z + area.depth;
 			//バイオームの分類分け
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int64 row{ ::As::Int64(area.start_z) }; row < ::As::Int64(end_y_); ++row)
+				for (::As::Int64 col{ ::As::Int64(area.start_x) }; col < ::As::Int64(end_x_); ++col) {
+#else
 			for (::As::IndexUint row{ area.start_z }; row < end_y_; ++row)
 				for (::As::IndexUint col{ area.start_x }; col < end_x_; ++col) {
-					const ::As::IndexUint bo_index_2d = terrain_object_matrix.getIndexMulZX(row, col);
-					TerrainInformation& field_map = terrain_information_matrix[row][col];
+#endif
+					const ::As::IndexUint bo_index_2d = terrain_object_matrix.getIndexMulZX(::As::IndexUint(row), ::As::IndexUint(col));
+					TerrainInformation& field_map = terrain_information_matrix[::As::IndexUint(row)][::As::IndexUint(col)];
 
 					const ElevationUint elevation = field_map.getElevation();
 					const ElevationUint block_elevation = elevation / 2;

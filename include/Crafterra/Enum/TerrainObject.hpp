@@ -22,6 +22,7 @@
 /*#######################################################################################
 	日本語リファレンス (Reference-ja)
 	https://github.com/AsPJT/Crafterra/wiki/仕様：地形オブジェクト
+	https://github.com/AsPJT/Crafterra/wiki/%E4%BB%95%E6%A7%98%EF%BC%9A%E5%9C%B0%E5%BD%A2%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88
 #######################################################################################*/
 
 #include <AsLib2/DataType/PrimitiveDataType.hpp>
