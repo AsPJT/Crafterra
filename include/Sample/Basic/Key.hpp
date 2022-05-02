@@ -70,7 +70,7 @@ namespace Crafterra {
 //        }
 		if (key.isDown(::As::Key::key_g)) {
 			terrain.initialGeneration(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk);
-			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());
 			terrain.setDrawAutoTileConnection(draw_map_matrix);
 			terrain.setDrawRange(draw_map_matrix);
 		}

@@ -66,7 +66,7 @@ namespace Crafterra {
 		Terrain					 terrain;
 
 		terrain.initialGeneration(terrain_obj_matrix, terrain_info_matrix, terrain_noise, terrain_chunk);	 // 初回の地形生成
-		terrain.setDrawMapFromTerrain(terrain_obj_matrix, terrain_info_matrix, draw_map_matrix);		 // 地形から描画マップを作成
+		terrain.setDrawMapFromTerrain(terrain_obj_matrix, terrain_info_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());		 // 地形から描画マップを作成
 		terrain.setDrawAutoTileConnection(draw_map_matrix);												 // 描画マップのオートタイルの接続を計算する
 		terrain.setDrawRange(draw_map_matrix);																 // 描画マップの描画範囲を作成
 

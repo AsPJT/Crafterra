@@ -247,20 +247,22 @@ namespace Crafterra {
 				}
 		}
 		// 地形から描画マップを作成
-		void setDrawMapFromTerrain(ObjectMapMat& terrain_object_matrix, const MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix) const {
-			for (::As::IndexUint row{}, mat_index{}; row < draw_map_matrix.getDepth(); ++row) {
-				for (::As::IndexUint col{}; col < draw_map_matrix.getWidth(); ++col, ++mat_index) {
+		void setDrawMapFromTerrain(ObjectMapMat& terrain_object_matrix, const MapMat& terrain_information_matrix, DrawMapMat& draw_map_matrix, 
+			const ::As::IndexUint start_x_, const ::As::IndexUint start_z_, const ::As::IndexUint width_, const ::As::IndexUint depth_) const {
+
+			for (::As::IndexUint row{ start_z_ }, mat_index{}; row < depth_; ++row) {
+				for (::As::IndexUint col{ start_x_ }; col < width_; ++col, ++mat_index) {
+					const ::As::IndexUint index_zx = terrain_object_matrix.getIndexMulZX(mat_index);
 					const TerrainInformation& terrain_info = terrain_information_matrix[row][col];
 					DrawMapChip& draw_map = draw_map_matrix[row][col];
 					draw_map.setTileNum(0);
 					draw_map.clearTile();
-					for (::As::IndexUint layer{}; layer < draw_map_layer_max; ++layer) {
-						draw_map.getTile(layer).setElevation(0); // 初期化
-					}
+					for (::As::Int64 layer{}; layer < ::As::Int64(draw_map_layer_max); ++layer) draw_map.getTile(::As::IndexUint(layer)).setElevation(0); // 初期化
 
 					for (::As::IndexUint row3{ ::As::IndexUint(row) }, terrain_obj_index{}; terrain_obj_index < terrain_object_matrix.getHeight(); --row3, ++terrain_obj_index) {
+						const ::As::IndexUint index_zxy = terrain_object_matrix.getIndexMulZXY(index_zx, terrain_obj_index);
 						for (::As::IndexUint terrain_obj_layer_index = 0; terrain_obj_layer_index < terrain_object_matrix.getLayer(); ++terrain_obj_layer_index) {
-							const TerrainObject terrain_obj = terrain_object_matrix.getValueZXYL(mat_index, terrain_obj_index, terrain_obj_layer_index);
+							const TerrainObject terrain_obj = terrain_object_matrix.getValueZXYL(index_zxy + ::As::IndexUint(terrain_obj_layer_index));
 							if (terrain_obj != TerrainObject::empty) {
 								DrawMapChip& draw_map_2 = draw_map_matrix[row3][col];
 								draw_map_2.setNextTile();
@@ -386,6 +388,21 @@ namespace Crafterra {
 					field_map_after = field_map_before;
 				}
 		}
+		// フィールドマップの左半分の地形が右半分へ移動する
+		void moveRightDraw(DrawMapMat& draw_map_matrix, const ::As::IndexUint field_width_half_) const {
+#ifdef _OPENMP
+#pragma omp parallel for
+			for (::As::Int32 row{}; row < ::As::Int32(draw_map_matrix.getDepth()); ++row)
+				for (::As::Int32 col{}; col < ::As::Int32(field_width_half_); ++col) {
+#else
+			for (::As::IndexUint row{}; row < draw_map_matrix.getDepth(); ++row)
+				for (::As::IndexUint col{}; col < field_width_half_; ++col) {
+#endif
+					DrawMapChip& field_map_after = draw_map_matrix[row][col + field_width_half_];
+					const DrawMapChip& field_map_before = draw_map_matrix[row][col];
+					field_map_after = field_map_before;
+				}
+				}
 
 		// 木の生成
 		void generationTree(ObjectMapMat& terrain_object_matrix, const ::As::IndexUint bo_index_2d, TerrainInformation& field_map) const {

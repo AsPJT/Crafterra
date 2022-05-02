@@ -44,7 +44,7 @@ namespace Crafterra {
 			terrain.moveLeft(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getWidth() / 2);
 			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX() + 1, chunk.getZ(), 
 				::As::IndexAreaXZ(terrain_information_matrix.getWidth() / 2, 0, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth()));
-			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());
 			terrain.setDrawAutoTileConnection(draw_map_matrix);
 			terrain.setDrawRange(draw_map_matrix);
 		}
@@ -55,7 +55,8 @@ namespace Crafterra {
 			terrain.moveRight(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getWidth() / 2);
 			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 
 				::As::IndexAreaXZ(0, 0, terrain_information_matrix.getWidth() / 2, terrain_information_matrix.getDepth()));
-			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			//terrain.moveRightDraw(draw_map_matrix, draw_map_matrix.getWidth() / 2);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());
 			terrain.setDrawAutoTileConnection(draw_map_matrix);
 			terrain.setDrawRange(draw_map_matrix);
 		}
@@ -66,7 +67,7 @@ namespace Crafterra {
 			terrain.moveUp(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getDepth() / 2);
 			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ() + 1, 
 				::As::IndexAreaXZ(0, terrain_information_matrix.getDepth() / 2, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth() / 2));
-			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());
 			terrain.setDrawAutoTileConnection(draw_map_matrix);
 			terrain.setDrawRange(draw_map_matrix);
 		}
@@ -77,7 +78,7 @@ namespace Crafterra {
 			terrain.moveDown(terrain_object_matrix, terrain_information_matrix, terrain_information_matrix.getDepth() / 2);
 			terrain.generation(terrain_object_matrix, terrain_information_matrix, terrain_noise, chunk.getX(), chunk.getZ(), 
 				::As::IndexAreaXZ(0, 0, terrain_information_matrix.getWidth(), terrain_information_matrix.getDepth() / 2));
-			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix);
+			terrain.setDrawMapFromTerrain(terrain_object_matrix, terrain_information_matrix, draw_map_matrix, 0, 0, draw_map_matrix.getWidth(), draw_map_matrix.getDepth());
 			terrain.setDrawAutoTileConnection(draw_map_matrix);
 			terrain.setDrawRange(draw_map_matrix);
 		}
